@@ -1,0 +1,917 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><script src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/widgets.js" id="twitter-wjs"></script><script id="bug.surrogate.20">FB={Event:{subscribe:function(){}},UIServer:{},XFBML:{parse:function(){}},init:function(){},__noSuchMethod__:function(){}};</script><script src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/all.js" id="facebook-jssdk"></script><script id="bug.surrogate.1">var urchinTracker=function(){},_gaq={push:function(){try {if(arguments[0][0]=='_link')window.location.href=arguments[0][1]}catch(er){}}},_gat={_createTracker:function(){}, _getTracker:function(){return{__noSuchMethod__:function(){},_link:function(o){if(o)location.href=o;},_linkByPost:function(){return true;},_getLinkerUrl:function(o){return o;},_trackEvent:function(){}}}};</script><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>The Flask Mega-Tutorial, Part V: User Logins - miguelgrinberg.com</title>
+
+	<meta name="description" content="miguelgrinberg.com">
+	<meta name="copyright" content="Copyright (c) 2012 Miguel Grinberg">
+	<meta name="author" content="Miguel Grinberg">
+    
+    <meta name="keywords" content="python, programming, flask, web, tutorial, database, sqlalchemy">
+    
+    <link rel="shortcut icon" href="http://blog.miguelgrinberg.com/static/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed" title="miguelgrinberg.com RSS feed">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/prettify.css" type="text/css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/colorbox.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/jquery_002.js"></script>
+	<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/jquery.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/moment.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/prettify.js"></script>
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/bootstrap-responsive.css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/style.css" rel="stylesheet" type="text/css">
+    <script src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/bootstrap.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css" media="screen, print, projection">
+    </style>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-4777284-15']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".gallery").colorbox({rel:".gallery",maxWidth:"95%",maxHeight:"95%",scalePhotos:true});
+            // add prettyprint class to all <pre><code></code></pre> blocks
+            var prettify = false;
+            $("pre code").parent().each(function() {
+                $(this).addClass('prettyprint');
+                prettify = true;
+            });
+            prettyPrint();
+        });
+    </script>
+<style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_r1_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 -63px no-repeat;width:318px;height:9px}.recaptchatable .recaptcha_r2_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r2_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -27px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r3_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r3_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px -57px no-repeat;width:300px;height:6px}.recaptchatable .recaptcha_r3_c3{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -9px 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r4_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px 0 no-repeat;width:171px;height:49px}.recaptchatable .recaptcha_r4_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -36px 0 no-repeat;width:7px;height:57px}.recaptchatable .recaptcha_r4_c4{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -214px 0 no-repeat;width:97px;height:57px}.recaptchatable .recaptcha_r7_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:171px;height:8px}.recaptchatable .recaptcha_r8_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:25px;height:8px}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px}#recaptcha_area,#recaptcha_table{width:318px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;padding:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;font-family:helvetica,sans-serif;font-size:8pt;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{position:relative;margin:auto}.recaptchatable #recaptcha_image #recaptcha_challenge_image{display:block}.recaptchatable #recaptcha_image #recaptcha_ad_image{display:block;position:absolute;top:0}.recaptchatable img{border:0!important;margin:0!important;padding:0!important}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;width:153px!important;height:45px!important;margin-left:7px!important;margin-right:7px!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;background:none!important;height:auto!important;width:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{width:153px!important;position:relative!important;bottom:7px!important;padding:0!important;margin:15px 0 0 0!important;font-size:10pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1!important}#recaptcha_instructions_error{color:red!important}.recaptcha_only_if_privacy{float:right;text-align:right}#recaptcha-ad-choices{position:absolute;height:15px;top:0;right:0}#recaptcha-ad-choices img{height:15px}.recaptcha-ad-choices-collapsed{width:15px;height:15px;display:block}.recaptcha-ad-choices-expanded{width:75px;height:15px;display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-collapsed{display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-expanded{display:block}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><style>#cntzcerporwzrifpxepoozusneqbsscdwqjoecm{border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.cntzcerporwzrifpxepoozusneqbsscdwqjoecm-blocked{color:#777 !important;display:inline !important;text-decoration:line-through !important;}#cntzcerporwzrifpxepoozusneqbsscdwqjoecm span{background:transparent !important;}#cntzcerporwzrifpxepoozusneqbsscdwqjoecm div{border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#cntzcerporwzrifpxepoozusneqbsscdwqjoecm a{font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}@media print{#cntzcerporwzrifpxepoozusneqbsscdwqjoecm{display:none !important;}}</style></head>
+<body style="padding-top: 40px;">
+<!-- facebook sdk -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- google plus sdk -->
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/plusone.js"></script>
+<!-- twitter sdk -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<!-- linkedin sdk -->
+<script src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/in.js" type="text/javascript"></script>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="http://blog.miguelgrinberg.com/">miguelgrinberg.com</a>
+            <ul class="nav">
+                <li><a href="http://blog.miguelgrinberg.com/">Home</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-me">About Me</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-this-blog">About This Blog</a></li>
+				
+            </ul>
+            <div class="nav pull-right">
+                <p class="navbar-text">
+                    <a type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss.png" alt="RSS Feed" title="RSS Feed"></a>
+                    <a href="https://www.facebook.com/miguelgrinbergblog"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/facebook.png" alt="Facebook" title="Facebook"></a>
+                    <a href="https://plus.google.com/u/0/117786742456929977820"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/googleplus.png" alt="Google+" title="Google+"></a>
+                    <a href="http://www.linkedin.com/in/miguelgrinberg"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/linkedin.png" alt="LinkedIn" title="LinkedIn"></a>
+                    <a href="https://twitter.com/#%21/miguelgrinberg"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/twitter.png" alt="Twitter" title="Twitter"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="banner"></div>
+<div class="container">
+    <div class="row">
+        <div class="span8">
+            <div id="main">
+                
+                
+                
+                
+                
+
+<div class="post">
+<p class="date">
+<script type="text/javascript">
+document.write(moment("2012-06-09T06:44:24Z").format("LL"));
+</script>June 9 2012
+</p>
+<div class="social-outer">
+    <div class="social">
+        <div class="social-box"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" data-via="miguelgrinberg" data-count="vertical">Tweet</a></div>
+        <div class="social-box" style="padding-left: 6px;"><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" data-send="false" data-layout="box_count" data-width="450" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="rmtusabjolaurdzzbwcloafkruongdfscatyqmob"></iframe></div></div>
+        <div class="social-box"><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" size="tall"></g:plusone></div>
+        <div class="social-box"><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" data-counter="top"></script></div>
+    </div>
+</div>
+<h1 class="post-title">The Flask Mega-Tutorial, Part V: User Logins</h1>
+<div class="posted">Posted by <span class="label label-important"><a href="http://blog.miguelgrinberg.com/author/Miguel%20Grinberg">Miguel Grinberg</a></span> under <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span>. </div>
+<div class="post_body"><p>This is the fifth article in the series in which I document my experience writing web applications in <a href="http://python.org/">Python</a> using the <a href="http://flask.pocoo.org/">Flask</a> microframework.</p>
+<p>The goal of the tutorial series is to develop a decently featured 
+microblogging application that demonstrating total lack of originality I
+ have decided to call <code>microblog</code>.</p>
+<p>Here is an index of all the articles in the series that have been published to date:</p>
+<ul>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world">Part I: Hello, World!</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates">Part II: Templates</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms">Part III: Web Forms</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database">Part IV: Database</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins">Part V: User Logins</a> (this article)</li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars">Part VI: Profile Page And Avatars</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-unit-testing">Part VII: Unit Testing</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers-contacts-and-friends">Part VIII: Followers, Contacts And Friends</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ix-pagination">Part IX: Pagination</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search">Part X: Full Text Search</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support">Part XI: Email Support</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xii-facelift">Part XII: Facelift</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times">Part XIII: Dates and Times</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n">Part XIV: I18n and L10n</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax">Part XV: Ajax</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling">Part XVI: Debugging, Testing and Profiling</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux-even-on-the-raspberry-pi">Part XVII: Deployment on Linux (even on the Raspberry Pi!)</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud">Part XVIII: Deployment on the Heroku Cloud</a></li>
+</ul>
+<h2>Recap</h2>
+<p>In the previous chapter of the series we created our database and 
+learned how to populate it with users and posts, but we haven't hooked 
+up any of that into our app yet. And two chapters ago we've seen how to 
+create web forms and left with a fully implemented login form.</p>
+<p>In this article we are going to build on what we learned about web 
+forms and databases and write our user login system. At the end of this 
+tutorial our little application will register new users and log them in 
+and out.</p>
+<p>To follow this chapter along you need to have the <code>microblog</code> app as we left it at the end of the previous chapter. Please make sure the app is installed and running.</p>
+<h2>Configuration</h2>
+<p>As in previous chapters, we start by configuring the Flask extensions
+ that we will use. For the login system we will use two extensions, 
+Flask-Login and Flask-OpenID. These are configured as follows (file <code>app/__init__.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">import</span><span class="pln"> os
+</span><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">login </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">LoginManager</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">openid </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">OpenID</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> config </span><span class="kwd">import</span><span class="pln"> basedir
+
+lm </span><span class="pun">=</span><span class="pln"> </span><span class="typ">LoginManager</span><span class="pun">()</span><span class="pln">
+lm</span><span class="pun">.</span><span class="pln">init_app</span><span class="pun">(</span><span class="pln">app</span><span class="pun">)</span><span class="pln">
+oid </span><span class="pun">=</span><span class="pln"> </span><span class="typ">OpenID</span><span class="pun">(</span><span class="pln">app</span><span class="pun">,</span><span class="pln"> os</span><span class="pun">.</span><span class="pln">path</span><span class="pun">.</span><span class="pln">join</span><span class="pun">(</span><span class="pln">basedir</span><span class="pun">,</span><span class="pln"> </span><span class="str">'tmp'</span><span class="pun">))</span></code></pre>
+<p>The Flask-OpenID extension requires a path to a temp folder where files can be stored. For this we provide the location of our <code>tmp</code> folder.</p>
+<h2>Revisiting our User model</h2>
+<p>The Flask-Login extension expects certain methods to be implemented in our <code>User</code> class. Outside of these methods there are no requirements for how the class has to be implemented.</p>
+<p>Below is our Flask-Login friendly <code>User</code> class (file <code>app/models.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">class</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Model</span><span class="pun">):</span><span class="pln">
+    id </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Integer</span><span class="pun">,</span><span class="pln"> primary_key </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">64</span><span class="pun">),</span><span class="pln"> unique </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    email </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">120</span><span class="pun">),</span><span class="pln"> unique </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    role </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">SmallInteger</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">default</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> ROLE_USER</span><span class="pun">)</span><span class="pln">
+    posts </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="pln">relationship</span><span class="pun">(</span><span class="str">'Post'</span><span class="pun">,</span><span class="pln"> backref </span><span class="pun">=</span><span class="pln"> </span><span class="str">'author'</span><span class="pun">,</span><span class="pln"> lazy </span><span class="pun">=</span><span class="pln"> </span><span class="str">'dynamic'</span><span class="pun">)</span><span class="pln">
+
+    </span><span class="kwd">def</span><span class="pln"> is_authenticated</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">True</span><span class="pln">
+
+    </span><span class="kwd">def</span><span class="pln"> is_active</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">True</span><span class="pln">
+
+    </span><span class="kwd">def</span><span class="pln"> is_anonymous</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">False</span><span class="pln">
+
+    </span><span class="kwd">def</span><span class="pln"> get_id</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> unicode</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">id</span><span class="pun">)</span><span class="pln">
+
+    </span><span class="kwd">def</span><span class="pln"> __repr__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> </span><span class="str">'&lt;User %r&gt;'</span><span class="pln"> </span><span class="pun">%</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">)</span></code></pre>
+<p>The <code>is_authenticated</code> method has a misleading name. In general this method should just return <code>True</code> unless the object represents a user that should not be allowed to authenticate for some reason.</p>
+<p>The <code>is_active</code> method should return True for users unless they are inactive, for example because they have been banned.</p>
+<p>The <code>is_anonymous</code> method should return True only for fake users that are not supposed to log in to the system.</p>
+<p>Finally, the <code>get_id</code> method should return a unique 
+identifier for the user, in unicode format. We use the unique id 
+generated by the database layer for this.</p>
+<h2>User loader callback</h2>
+<p>Now we are ready to start implementing the login system using the Flask-Login and Flask-OpenID extensions.</p>
+<p>First, we have to write a function that loads a user from the database. This function will be used by Flask-Login (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@lm</span><span class="pun">.</span><span class="pln">user_loader
+</span><span class="kwd">def</span><span class="pln"> load_user</span><span class="pun">(</span><span class="pln">id</span><span class="pun">):</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">query</span><span class="pun">.</span><span class="kwd">get</span><span class="pun">(</span><span class="kwd">int</span><span class="pun">(</span><span class="pln">id</span><span class="pun">))</span></code></pre>
+<p>Remember that user ids in Flask-Login are always unicode strings, so a
+ conversion to an integer is necessary before we can send the id to 
+Flask-SQLAlchemy.</p>
+<h2>The login view function</h2>
+<p>Next let's update our login view function (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask </span><span class="kwd">import</span><span class="pln"> render_template</span><span class="pun">,</span><span class="pln"> flash</span><span class="pun">,</span><span class="pln"> redirect</span><span class="pun">,</span><span class="pln"> session</span><span class="pun">,</span><span class="pln"> url_for</span><span class="pun">,</span><span class="pln"> request</span><span class="pun">,</span><span class="pln"> g
+</span><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">login </span><span class="kwd">import</span><span class="pln"> login_user</span><span class="pun">,</span><span class="pln"> logout_user</span><span class="pun">,</span><span class="pln"> current_user</span><span class="pun">,</span><span class="pln"> login_required
+</span><span class="kwd">from</span><span class="pln"> app </span><span class="kwd">import</span><span class="pln"> app</span><span class="pun">,</span><span class="pln"> db</span><span class="pun">,</span><span class="pln"> lm</span><span class="pun">,</span><span class="pln"> oid
+</span><span class="kwd">from</span><span class="pln"> forms </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">LoginForm</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> models </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">User</span><span class="pun">,</span><span class="pln"> ROLE_USER</span><span class="pun">,</span><span class="pln"> ROLE_ADMIN
+
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/login'</span><span class="pun">,</span><span class="pln"> methods </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'GET'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'POST'</span><span class="pun">])</span><span class="pln">
+</span><span class="lit">@oid</span><span class="pun">.</span><span class="pln">loginhandler
+</span><span class="kwd">def</span><span class="pln"> login</span><span class="pun">():</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user </span><span class="kwd">is</span><span class="pln"> </span><span class="kwd">not</span><span class="pln"> </span><span class="kwd">None</span><span class="pln"> </span><span class="kwd">and</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">is_authenticated</span><span class="pun">():</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span><span class="pln">
+    form </span><span class="pun">=</span><span class="pln"> </span><span class="typ">LoginForm</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">validate_on_submit</span><span class="pun">():</span><span class="pln">
+        session</span><span class="pun">[</span><span class="str">'remember_me'</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">remember_me</span><span class="pun">.</span><span class="pln">data
+        </span><span class="kwd">return</span><span class="pln"> oid</span><span class="pun">.</span><span class="pln">try_login</span><span class="pun">(</span><span class="pln">form</span><span class="pun">.</span><span class="pln">openid</span><span class="pun">.</span><span class="pln">data</span><span class="pun">,</span><span class="pln"> ask_for </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'nickname'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'email'</span><span class="pun">])</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> render_template</span><span class="pun">(</span><span class="str">'login.html'</span><span class="pun">,</span><span class="pln"> 
+        title </span><span class="pun">=</span><span class="pln"> </span><span class="str">'Sign In'</span><span class="pun">,</span><span class="pln">
+        form </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">,</span><span class="pln">
+        providers </span><span class="pun">=</span><span class="pln"> app</span><span class="pun">.</span><span class="pln">config</span><span class="pun">[</span><span class="str">'OPENID_PROVIDERS'</span><span class="pun">])</span></code></pre>
+<p>Notice we have imported several new modules, some of which we will use later.</p>
+<p>The changes from our previous version are very small. We have added a new decorator to our view function. The <code>oid.loginhandler</code> tells Flask-OpenID that this is our login view function. </p>
+<p>At the top of the function body we check if <code>g.user</code> is 
+set to an authenticated user, and in that case we redirect to the index 
+page. The idea here is that if there is a logged in user already we will
+ not do a second login on top.</p>
+<p>The <code>g</code> global is setup by Flask as a place to store and 
+share data during the life of a request. As I'm sure you guessed by now,
+ we will be storing the logged in user here.</p>
+<p>The <code>url_for</code> function that we used in the <code>redirect</code>
+ call is defined by Flask as a clean way to obtain the URL for a given 
+view function. If you want to redirect to the index page you may very 
+well use <code>redirect('/index')</code>, but there are very <a href="http://flask.pocoo.org/docs/quickstart/#url-building">good reasons</a> to let Flask build URLs for you.</p>
+<p>The code that runs when we get a data back from the login form is 
+also new. Here we do two things. First we store the value of the <code>remember_me</code> boolean in the flask <em>session</em>, not to be confused with the <code>db.session</code> from Flask-SQLAlchemy. We've seen that the <code>flask.g</code> object stores and shares data though the life of a request. The <code>flask.session</code>
+ provides a much more complex service along those lines. Once data is 
+stored in the session object it will be available during that request 
+and any future requests <em>made by the same client</em>. Data remains 
+in the session until explicitly removed. To be able to do this, Flask 
+keeps a different session file for each client of our application.</p>
+<p>The <code>oid.try_login</code> call in the following line is the call
+ that triggers the user authentication through Flask-OpenID. The 
+function takes two arguments, the <code>openid</code> given by the user 
+in the web form and a list of data items that we want from the OpenID 
+provider. Since we defined our User class to include <code>nickname</code> and <code>email</code>, those are the items we are going to ask for.</p>
+<p>The OpenID authentication happens asynchronously. Flask-OpenID will call a function that is registered with the <code>oid.after_login</code> decorator if the authentication is successful. If the authentication fails the user will be taken back to the login page.</p>
+<h2>The Flask-OpenID login callback</h2>
+<p>Here is our implementation of the <code>after_login</code> function (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@oid</span><span class="pun">.</span><span class="pln">after_login
+</span><span class="kwd">def</span><span class="pln"> after_login</span><span class="pun">(</span><span class="pln">resp</span><span class="pun">):</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email </span><span class="kwd">is</span><span class="pln"> </span><span class="kwd">None</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email </span><span class="pun">==</span><span class="pln"> </span><span class="str">""</span><span class="pun">:</span><span class="pln">
+        flash</span><span class="pun">(</span><span class="str">'Invalid login. Please try again.'</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'login'</span><span class="pun">))</span><span class="pln">
+    user </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">query</span><span class="pun">.</span><span class="pln">filter_by</span><span class="pun">(</span><span class="pln">email </span><span class="pun">=</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email</span><span class="pun">).</span><span class="pln">first</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> user </span><span class="kwd">is</span><span class="pln"> </span><span class="kwd">None</span><span class="pun">:</span><span class="pln">
+        nickname </span><span class="pun">=</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">nickname
+        </span><span class="kwd">if</span><span class="pln"> nickname </span><span class="kwd">is</span><span class="pln"> </span><span class="kwd">None</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> nickname </span><span class="pun">==</span><span class="pln"> </span><span class="str">""</span><span class="pun">:</span><span class="pln">
+            nickname </span><span class="pun">=</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email</span><span class="pun">.</span><span class="pln">split</span><span class="pun">(</span><span class="str">'@'</span><span class="pun">)[</span><span class="lit">0</span><span class="pun">]</span><span class="pln">
+        user </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> nickname</span><span class="pun">,</span><span class="pln"> email </span><span class="pun">=</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email</span><span class="pun">,</span><span class="pln"> role </span><span class="pun">=</span><span class="pln"> ROLE_USER</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">user</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+    remember_me </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">False</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> </span><span class="str">'remember_me'</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> session</span><span class="pun">:</span><span class="pln">
+        remember_me </span><span class="pun">=</span><span class="pln"> session</span><span class="pun">[</span><span class="str">'remember_me'</span><span class="pun">]</span><span class="pln">
+        session</span><span class="pun">.</span><span class="pln">pop</span><span class="pun">(</span><span class="str">'remember_me'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">None</span><span class="pun">)</span><span class="pln">
+    login_user</span><span class="pun">(</span><span class="pln">user</span><span class="pun">,</span><span class="pln"> remember </span><span class="pun">=</span><span class="pln"> remember_me</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">request</span><span class="pun">.</span><span class="pln">args</span><span class="pun">.</span><span class="kwd">get</span><span class="pun">(</span><span class="str">'next'</span><span class="pun">)</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span></code></pre>
+<p>The <code>resp</code> argument passed to the <code>after_login</code> function contains information returned by the OpenID provider.</p>
+<p>The first <code>if</code> statement is just for validation. We require a valid email, so if an email was not provided we cannot log the user in.</p>
+<p>Next, we search our database for the email provided. If the email is 
+not found we consider this a new user, so we add a new user to our 
+database, pretty much as we have learned in the previous chapter. Note 
+that we handle the case of a missing <code>nickname</code>, since some OpenID providers may not have that information.</p>
+<p>After that we load the <code>remember_me</code> value from the Flask session, this is the boolean that we stored in the login view function, if it is available.</p>
+<p>Then we call Flask-Login's <code>login_user</code> function, to register this is a valid login.</p>
+<p>Finally, in the last line we redirect to the <em>next</em> page, or the index page if a next page was not provided in the request.</p>
+<p>The concept of the next page is simple. Let's say you navigate to a 
+page that requires you to be logged in, but you aren't just yet. In 
+Flask-Login you can protect views against non logged in users by adding 
+the <code>login_required</code> decorator. If the user tries to access 
+one of the affected URLs then it will be redirected to the login page 
+automatically. Flask-Login will store the original URL as the <code>next</code> page, and it is up to us to return the user to this page once the login process completed.</p>
+<p>For this to work Flask-Login needs to know what view logs users in. We can configure this in the app's module initializer (file <code>app/__init__.py</code>):</p>
+<pre class="prettyprint"><code><span class="pln">lm </span><span class="pun">=</span><span class="pln"> </span><span class="typ">LoginManager</span><span class="pun">()</span><span class="pln">
+lm</span><span class="pun">.</span><span class="pln">init_app</span><span class="pun">(</span><span class="pln">app</span><span class="pun">)</span><span class="pln">
+lm</span><span class="pun">.</span><span class="pln">login_view </span><span class="pun">=</span><span class="pln"> </span><span class="str">'login'</span></code></pre>
+<h2>The g.user global</h2>
+<p>If you were paying attention, you will remember that in the login view function we check <code>g.user</code> to determine if a user is already logged in. To implement this we will use the <code>before_request</code> event from Flask. Any functions that are decorated with <code>before_request</code> will run before the view function each time a request is received. So this is the right place to setup our <code>g.user</code> variable (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@app</span><span class="pun">.</span><span class="pln">before_request
+</span><span class="kwd">def</span><span class="pln"> before_request</span><span class="pun">():</span><span class="pln">
+    g</span><span class="pun">.</span><span class="pln">user </span><span class="pun">=</span><span class="pln"> current_user</span></code></pre>
+<p>This is all it takes. The <code>current_user</code> global is set by Flask-Login, so we just put a copy in the <code>g</code> object to have better access to it. With this, all requests will have access to the logged in user, even inside templates.</p>
+<h2>The index view</h2>
+<p>In a previous chapter we left our <code>index</code> view function 
+using fake objects, because at the time we did not have users or posts 
+in our system. Well, we have users now, so let's hook that up:</p>
+<pre class="prettyprint"><code><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/'</span><span class="pun">)</span><span class="pln">
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/index'</span><span class="pun">)</span><span class="pln">
+</span><span class="lit">@login_required</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> index</span><span class="pun">():</span><span class="pln">
+    user </span><span class="pun">=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user
+    posts </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="pln">
+        </span><span class="pun">{</span><span class="pln"> 
+            </span><span class="str">'author'</span><span class="pun">:</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="str">'nickname'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'John'</span><span class="pln"> </span><span class="pun">},</span><span class="pln"> 
+            </span><span class="str">'body'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'Beautiful day in Portland!'</span><span class="pln"> 
+        </span><span class="pun">},</span><span class="pln">
+        </span><span class="pun">{</span><span class="pln"> 
+            </span><span class="str">'author'</span><span class="pun">:</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="str">'nickname'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'Susan'</span><span class="pln"> </span><span class="pun">},</span><span class="pln"> 
+            </span><span class="str">'body'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'The Avengers movie was so cool!'</span><span class="pln"> 
+        </span><span class="pun">}</span><span class="pln">
+    </span><span class="pun">]</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> render_template</span><span class="pun">(</span><span class="str">'index.html'</span><span class="pun">,</span><span class="pln">
+        title </span><span class="pun">=</span><span class="pln"> </span><span class="str">'Home'</span><span class="pun">,</span><span class="pln">
+        user </span><span class="pun">=</span><span class="pln"> user</span><span class="pun">,</span><span class="pln">
+        posts </span><span class="pun">=</span><span class="pln"> posts</span><span class="pun">)</span></code></pre>
+<p>There are only two changes to this function. First, we have added the <code>login_required</code> decorator. This will ensure that this page is only seen by logged in users.</p>
+<p>The other change is that we pass <code>g.user</code> down to the template, instead of the fake object we used in the past.</p>
+<p>This is a good time to run the application.</p>
+<p>When you navigate to <code>http://localhost:5000</code> you will 
+instead get the login page. Keep in mind that to login with OpenID you 
+have to use the OpenID URL from your provider. You can use one of the 
+OpenID provider links below the URL text field to generate the correct 
+URL for you.</p>
+<p>As part of the login process you will be redirected to your 
+provider's web site, where you will authenticate and authorize the 
+sharing of some information with our application (just the email and 
+nickname that we requested, no passwords or other personal information 
+will be exposed).</p>
+<p>Once the login is complete you will be taken to the index page, this time as a logged in user.</p>
+<p>Feel free to try the <code>remember_me</code> checkbox. With this option enabled you can close and reopen your web browser and will continue to be logged in.</p>
+<h2>Logging out</h2>
+<p>We have implemented the log in, now it's time to add the log out.</p>
+<p>The view function for logging out is extremely simple (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/logout'</span><span class="pun">)</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> logout</span><span class="pun">():</span><span class="pln">
+    logout_user</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span></code></pre>
+<p>But we are also missing a link to logout in the template. We are 
+going to put this link in the top navigation bar which is in the base 
+layout (file <code>app/templates/base.html</code>):</p>
+<pre class="prettyprint"><code><span class="tag">&lt;html&gt;</span><span class="pln">
+  </span><span class="tag">&lt;head&gt;</span><span class="pln">
+    {% if title %}
+    </span><span class="tag">&lt;title&gt;</span><span class="pln">{{title}} - microblog</span><span class="tag">&lt;/title&gt;</span><span class="pln">
+    {% else %}
+    </span><span class="tag">&lt;title&gt;</span><span class="pln">microblog</span><span class="tag">&lt;/title&gt;</span><span class="pln">
+    {% endif %}
+  </span><span class="tag">&lt;/head&gt;</span><span class="pln">
+  </span><span class="tag">&lt;body&gt;</span><span class="pln">
+    </span><span class="tag">&lt;div&gt;</span><span class="pln">Microblog:
+        </span><span class="tag">&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('index') }}"</span><span class="tag">&gt;</span><span class="pln">Home</span><span class="tag">&lt;/a&gt;</span><span class="pln">
+        {% if g.user.is_authenticated() %}
+        | </span><span class="tag">&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('logout') }}"</span><span class="tag">&gt;</span><span class="pln">Logout</span><span class="tag">&lt;/a&gt;</span><span class="pln">
+        {% endif %}
+    </span><span class="tag">&lt;/div&gt;</span><span class="pln">
+    </span><span class="tag">&lt;hr&gt;</span><span class="pln">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    </span><span class="tag">&lt;ul&gt;</span><span class="pln">
+    {% for message in messages %}
+        </span><span class="tag">&lt;li&gt;</span><span class="pln">{{ message }} </span><span class="tag">&lt;/li&gt;</span><span class="pln">
+    {% endfor %}
+    </span><span class="tag">&lt;/ul&gt;</span><span class="pln">
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </span><span class="tag">&lt;/body&gt;</span><span class="pln">
+</span><span class="tag">&lt;/html&gt;</span></code></pre>
+<p>Note how easy it is to do this. We just needed to check if we have a valid user set in <code>g.user</code> and if we do we just add the logout link. We have also used the opportunity to use <code>url_for</code> in our template.</p>
+<h2>Final words</h2>
+<p>We now have a fully functioning user login system. In the next 
+chapter we will be creating the user profile page and will be displaying
+ user avatars on them.</p>
+<p>In the meantime, here is the updated application code including all the changes in this article:</p>
+<p>Download <a href="https://github.com/miguelgrinberg/microblog/archive/v0.5.zip">microblog-0.5.zip</a>.</p>
+<p>See you next time!</p>
+<p>Miguel</p></div>
+<div class="social-mini"><table><tbody><tr>
+    <td><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" data-via="miguelgrinberg" data-count="none">Tweet</a></td>
+    <td><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" size="medium" witdh="100" annotation="none"></g:plusone></td>
+    <td><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins"></script></td>
+    <td><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins" data-send="false" data-layout="button_count" data-width="100" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="nfibnagdorkzvcrnyaoprrevvdimebnblm"></iframe></div></td>
+</tr></tbody></table></div>
+
+<h4 style="text-align: right"><a name="comments"></a>110 comments</h4>
+
+
+<div class="comment">
+    <ul>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#1</span> <span class="label label-info">buxur</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-14T15:47:54Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hey miguel so rush but when are you going to post the next chapter?  
+
+Thx</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#2</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-14T17:44:21Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">buxur, I need a 
+few more days to complete it. I was hoping I would get into a rhythm of 
+one article per month, but I'm a bit behind.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#3</span> <span class="label label-info">JonoB</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-19T18:05:50Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">There are a few mistakes on this page:
+1. its flask.ext. not flaskext.
+2. You did not define a login_view from the LoginManager in __init-.py__ as follows lm.login_view = 'login'</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#4</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-20T03:22:12Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@JonoB: thanks for
+ your detailed review. Regarding #1 I confirmed that at least in my 
+installation (as I described in the first tutorial post) I have login.py
+ inside site-packages/flaskext, not site-packages/flask/ext. Regarding 
+#2 you are absolutely correct. I have the change in the code, but forgot
+ to mention it. This is now corrected.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#5</span> <span class="label label-info">drew</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-09-11T19:12:20Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Greetings again 
+Minguel, first and foremost thanks so much for providing this resource. I
+ was hoping you might have insight as to why i get this error:
+
+/microblog/app/views.py", line 2, in &lt;module&gt;
+    from flaskext.login import login_user, logout_user, current_user, 
+login_required
+ImportError: No module named login
+
+Secondly, I’m new to web design and have a great interest in flask, are 
+you aware of any resources which might better help me understand how to 
+get off the ground? </p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#6</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-09-12T05:34:39Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@drew: the error 
+likely means that the flask-login module isn't installed, or that it 
+isn't installed in the right place. As far as learning resources, there 
+isn't much out there that is specific to Flask, unfortunately. Since 
+Flask is actually a pretty thin layer on top of regular Python, learning
+ about general Python programming is very helpful, as is to learn about 
+the HTTP protocol. Good luck!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#7</span> <span class="label label-info">Jaco</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-09-30T17:10:19Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hello there. 
+Firstly let me concur. Thank you for highly informative, well written 
+and accurate tutorial. Really enjoying finding my way through it. I also
+ got the "No module named login" import error. Had a look, found the 
+following. Under site-packages there is now a flask_login module. 
+Changed the code to "from flask_login import LoginManager" and it 
+worked. Looking forward to next installment. Thank you.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#8</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-09-30T17:34:35Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Jaco: for some 
+reason the flask-login sources got installed in a different place for 
+you than for me. I have a login.py file inside "site-packages/flaskext",
+ and this seems to agree with the Flask-Login documentation. In any 
+case, I don't think it matters much, as long as you can import the 
+module the rest should work in the same way. Thanks!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/1661cae67eb67a731d0ce517f641719a.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#9</span> <span class="label label-info">jaco_</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-09-30T17:44:55Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hello again 
+Miguel. All was going great up to this point. I checked the file 
+flask_login and it contains the docs from the flask login extension as 
+well as the LoginManager class. I'm running on Ubuntu 12.04 btw.
+However adding the view (with decorator) @lm.user_loader I get NameError
+ 'lm' is not defined. Error occurs in last line of __init__.py when 
+importing views. Not sure where to look now?</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/1661cae67eb67a731d0ce517f641719a.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#10</span> <span class="label label-info">jaco</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-09-30T19:39:09Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hello Miguel. 
+Doing some research i found this link 
+http://flask.pocoo.org/docs/extensiondev/#extension-import-transition = 
+right at the bottom there is a discussion on Extension Import Transition
+ that you might find handy. Explains the problem I encountered. Still 
+trying to figure out the rest though. Thanks again for the efforts and 
+informatinve tutorials.</p>
+                </div>
+            </div>
+        </li>
+        
+    </ul>
+    <!--
+    <table width="100%">
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/5e68c0b4e50e5e2792849a92ae5dab2c?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#1</span> <span class="label label-info">buxur</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-14T15:47:54Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hey miguel so rush but when are you going to post the next chapter?  
+
+Thxaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#2</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-14T17:44:21Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">buxur, I need a few more days to complete it. I was hoping I would get into a rhythm of one article per month, but I&#39;m a bit behind.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#3</span> <span class="label label-info">JonoB</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-19T18:05:50Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">There are a few mistakes on this page:
+1. its flask.ext. not flaskext.
+2. You did not define a login_view from the LoginManager in __init-.py__ as follows lm.login_view = &#39;login&#39;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#4</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-20T03:22:12Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@JonoB: thanks for your detailed review. Regarding #1 I confirmed that at least in my installation (as I described in the first tutorial post) I have login.py inside site-packages/flaskext, not site-packages/flask/ext. Regarding #2 you are absolutely correct. I have the change in the code, but forgot to mention it. This is now corrected.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/8d7dd06bd18b8fce6a4c04dfede7f616?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#5</span> <span class="label label-info">drew</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-09-11T19:12:20Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Greetings again Minguel, first and foremost thanks so much for providing this resource. I was hoping you might have insight as to why i get this error:
+
+/microblog/app/views.py&#34;, line 2, in &lt;module&gt;
+    from flaskext.login import login_user, logout_user, current_user, login_required
+ImportError: No module named login
+
+Secondly, I’m new to web design and have a great interest in flask, are you aware of any resources which might better help me understand how to get off the ground? aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#6</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-09-12T05:34:39Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@drew: the error likely means that the flask-login module isn&#39;t installed, or that it isn&#39;t installed in the right place. As far as learning resources, there isn&#39;t much out there that is specific to Flask, unfortunately. Since Flask is actually a pretty thin layer on top of regular Python, learning about general Python programming is very helpful, as is to learn about the HTTP protocol. Good luck!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/1661cae67eb67a731d0ce517f641719a?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#7</span> <span class="label label-info">Jaco</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-09-30T17:10:19Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hello there. Firstly let me concur. Thank you for highly informative, well written and accurate tutorial. Really enjoying finding my way through it. I also got the &#34;No module named login&#34; import error. Had a look, found the following. Under site-packages there is now a flask_login module. Changed the code to &#34;from flask_login import LoginManager&#34; and it worked. Looking forward to next installment. Thank you.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#8</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-09-30T17:34:35Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Jaco: for some reason the flask-login sources got installed in a different place for you than for me. I have a login.py file inside &#34;site-packages/flaskext&#34;, and this seems to agree with the Flask-Login documentation. In any case, I don&#39;t think it matters much, as long as you can import the module the rest should work in the same way. Thanks!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/1661cae67eb67a731d0ce517f641719a?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#9</span> <span class="label label-info">jaco_</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-09-30T17:44:55Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hello again Miguel. All was going great up to this point. I checked the file flask_login and it contains the docs from the flask login extension as well as the LoginManager class. I&#39;m running on Ubuntu 12.04 btw.
+However adding the view (with decorator) @lm.user_loader I get NameError &#39;lm&#39; is not defined. Error occurs in last line of __init__.py when importing views. Not sure where to look now?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/1661cae67eb67a731d0ce517f641719a?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#10</span> <span class="label label-info">jaco</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-09-30T19:39:09Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hello Miguel. Doing some research i found this link http://flask.pocoo.org/docs/extensiondev/#extension-import-transition = right at the bottom there is a discussion on Extension Import Transition that you might find handy. Explains the problem I encountered. Still trying to figure out the rest though. Thanks again for the efforts and informatinve tutorials.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    </table>
+    -->
+</div>
+
+<div class="page">
+<ul class="pager">
+  <li class="previous disabled">
+    <a href="#">««</a>
+  </li>
+  <li class="previous disabled">
+    <a href="#">«</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins/page/0#comments">»»</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins/page/2#comments">»</a>
+  </li>
+</ul>
+</div>
+
+<h3><a name="commentform"></a>Leave a Comment</h3>
+<div class="commentform">
+<form class="form-horizontal" method="post" action="#commentform">
+<div style="display:none;"><input id="csrf_token" name="csrf_token" value="20140210210107##15d4993c9ede15e9418afda47b09169d7bfb587d" type="hidden"></div>
+
+<div class="control-group">
+    <label class="control-label" for="name">Name <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="name" name="name" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="url">Website</label>
+    <div class="controls"><input class="span5" id="url" name="url" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="email">Email <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="email" name="email" type="text"></div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="comment">Comment <span class="label label-important">*</span></label>
+    <div class="controls"><textarea class="span5" id="comment" name="comment" rows="4"></textarea><img style="cursor: pointer ! important; display: none ! important; position: absolute ! important; padding: 0px ! important; margin: 0px ! important; border: medium none ! important; width: 28px ! important; height: 14px ! important; opacity: 0.0152174 ! important; left: 664px ! important; top: 10261px ! important;" title="It's All Text!" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/gumdrop.png"></div>
+</div>
+
+<div class="control-group">
+    <div class="controls">
+<script type="text/javascript">var RecaptchaOptions = {"theme": "white", "custom_translations": {"incorrect_try_again": "Incorrect. Try again.", "help_btn": "Help", "cant_hear_this": "Download sound as MP3", "instructions_audio": "Type what you hear:", "instructions_visual": "Type the two words:", "refresh_btn": "Get a new challenge", "play_again": "Play sound again", "visual_challenge": "Get a visual challenge", "audio_challenge": "Get an audio challenge"}};</script>
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/challenge.js"></script><script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/recaptcha.js"></script><div class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio" id="recaptcha_widget_div" style=""><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_white"> <tbody><tr> <td colspan="6" class="recaptcha_r1_c1"></td> </tr> <tr> <td class="recaptcha_r2_c1"></td> <td colspan="4" class="recaptcha_image_cell"><center><div style="width: 300px; height: 57px;" id="recaptcha_image"><img id="recaptcha_challenge_image" alt="reCAPTCHA challenge image" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/image.jpg" height="57" width="300"></div></center></td> <td class="recaptcha_r2_c2"></td> </tr> <tr> <td rowspan="6" class="recaptcha_r3_c1"></td> <td colspan="4" class="recaptcha_r3_c2"></td> <td rowspan="6" class="recaptcha_r3_c3"></td> </tr> <tr> <td rowspan="3" class="recaptcha_r4_c1" height="49"> <div class="recaptcha_input_area"> <span style="display: none;" id="recaptcha_challenge_field_holder"><input name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_VuuYsqiHgbLiMVyH4HalNeX9BMXZfdzir5YqDCNljjp4ucfUmI95Ed0Y-q-yPoxDLVT8czh5m1PjJsqNvSheAZ08HXYJG04Tv5SM98t2jmAI4lu1GhcPY6bB-8jzO8pLZEP_OObu0F1O55cpopbEAjaayEVSXt8Vf1CMWMjic-hS70rMawE" type="hidden"></span><input autocomplete="off" name="recaptcha_response_field" id="recaptcha_response_field" autocorrect="off" autocapitalize="off" placeholder="Type the two words" type="text"> <span id="recaptcha_privacy" class="recaptcha_only_if_privacy"><a target="_blank" href="http://www.google.com/intl/en/policies/">Privacy &amp; Terms</a></span> </div> </td> <td rowspan="4" class="recaptcha_r4_c2"></td> <td><a title="Get a new challenge" id="recaptcha_reload_btn"><img alt="Get a new challenge" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/refresh.gif" id="recaptcha_reload" height="17" width="25"></a></td> <td rowspan="4" class="recaptcha_r4_c4"></td> </tr> <tr> <td><a title="Get an audio challenge" id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/audio.gif" id="recaptcha_switch_audio" alt="Get an audio challenge" height="16" width="25"></a><a title="Get a visual challenge" id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/text.gif" id="recaptcha_switch_img" alt="Get a visual challenge" height="16" width="25"></a></td> </tr> <tr> <td><a title="Help" id="recaptcha_whatsthis_btn"><img alt="Help" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/help.gif" id="recaptcha_whatsthis" height="16" width="25"></a></td> </tr> <tr> <td class="recaptcha_r7_c1"></td> <td class="recaptcha_r8_c1"></td> </tr> </tbody></table> </div></div>
+<noscript>
+  <div><iframe src="http://api.recaptcha.net/noscript?k=6Ld5Zs4SAAAAAOY0DOi4r18bgHlEaz41qAoRf__S" height="300" width="500"></iframe></div>
+  <div><textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  <input type="hidden" name="recaptcha_response_field" value="manual_challenge"></div>
+</noscript>
+</div>
+</div>
+
+<div class="control-group">
+    <div class="controls"><input name="submit" class="btn btn-primary" value="Post Comment" type="submit"> <span class="help-inline">Note: all comments are screened before they are published. Thank you for your patience!</span></div>
+</div>
+</form>
+</div>
+
+
+</div>
+
+            </div>
+        </div>
+        <div class="span4">
+            <div id="sidebar">
+                <h1>About Miguel</h1>
+                <img style="float: right; margin: 0px 8px 8px 0px; padding: 4px; border: 1px solid #ccc;" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/miguel.jpg">
+                <p>Welcome to my blog!</p>
+                <p>I'm a software engineer, photographer and filmmaker in Portland, Oregon, USA.</p>
+                <p>You can also find me on <a href="https://www.facebook.com/miguelgrinbergblog">Facebook</a>, <a href="https://plus.google.com/u/0/117786742456929977820">Google+</a>, <a href="http://www.linkedin.com/in/miguelgrinberg">LinkedIn</a> and <a href="https://twitter.com/#%21/miguelgrinberg">Twitter</a>.</p>
+                <p>Thank you for visiting!</p>
+                <h1>Flask Web Development Book</h1>
+                <p>I'm currently writing a book on web development with 
+Python and Flask, to be published by O'Reilly Media in 2014. The 
+official site for this book is <a href="http://flaskbook.com/">http://flaskbook.com</a>.</p>
+                <center><a href="http://flaskbook.com/"><img style="border: 1px solid black;" src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/flask-book-cover-tiny.png"></a></center>
+                <h1>Flask Tutorial at PyCon 2014</h1>
+                <p>If you want to learn Flask in a class setting then I 
+hope you will consider my upcoming tutorial session at PyCon 2014 in 
+Montréal on April 10th, 2014. Visit the <a href="https://us.pycon.org/2014/schedule/presentation/54/">tutorial page</a> for more information. I hope to see you there!</p>
+                <center><a href="https://us.pycon.org/2014/schedule/presentation/54/"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/pycon2014-blog-image.png"></a></center>
+                
+                		<h1>Categories</h1>
+		<ul>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Arduino/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Arduino RSS Feed" label="Arduino RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Arduino">Arduino</a></span> (7)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Blog/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Blog RSS Feed" label="Blog RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Blog">Blog</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/C++/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="C++ RSS Feed" label="C++ RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/C++">C++</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Cloud/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Cloud RSS Feed" label="Cloud RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Cloud">Cloud</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Filmmaking/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Filmmaking RSS Feed" label="Filmmaking RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Filmmaking">Filmmaking</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Flask/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Flask RSS Feed" label="Flask RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span> (28)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Games/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Games RSS Feed" label="Games RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Games">Games</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Gear/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Gear RSS Feed" label="Gear RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Gear">Gear</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/HTML5/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="HTML5 RSS Feed" label="HTML5 RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/HTML5">HTML5</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Heroku/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Heroku RSS Feed" label="Heroku RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Heroku">Heroku</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Javascript/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Javascript RSS Feed" label="Javascript RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Javascript">Javascript</a></span> (3)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Movie Reviews RSS Feed" label="Movie Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews">Movie Reviews</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Netflix/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Netflix RSS Feed" label="Netflix RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Netflix">Netflix</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Node.js/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Node.js RSS Feed" label="Node.js RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Node.js">Node.js</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Personal/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Personal RSS Feed" label="Personal RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Personal">Personal</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Photography/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Photography RSS Feed" label="Photography RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Photography">Photography</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Product Reviews RSS Feed" label="Product Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews">Product Reviews</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Programming/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Programming RSS Feed" label="Programming RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span> (36)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Project%20Management/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Project Management RSS Feed" label="Project Management RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Project%20Management">Project Management</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Python/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Python RSS Feed" label="Python RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span> (29)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/REST/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="REST RSS Feed" label="REST RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/REST">REST</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Raspberry Pi RSS Feed" label="Raspberry Pi RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi">Raspberry Pi</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/RhinoSteady/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="RhinoSteady RSS Feed" label="RhinoSteady RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/RhinoSteady">RhinoSteady</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Robotics/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Robotics RSS Feed" label="Robotics RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Robotics">Robotics</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Video/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20V_%20User%20Logins%20-%20miguelgrinberg.com_files/rss-small.png" title="Video RSS Feed" label="Video RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Video">Video</a></span> (2)</li>
+		
+		</ul>
+
+                
+            </div>
+        </div>
+    </div>
+	<div id="footer">
+        <p class="elapsed">This page was generated in 0.119 seconds.</p>
+		<p>© 2013 by Miguel Grinberg. All rights reserved. <a href="mailto:webmaster%20_at_%20miguelgrinberg%20_dot_%20com">Questions?</a></p>
+	</div>
+</div>
+<div id="wrap">
+</div>
+<div style="display: none;" id="cboxOverlay"></div><div style="display: none; padding-bottom: 42px; padding-right: 42px;" class="" id="colorbox"><div id="cboxWrapper"><div><div style="float: left;" id="cboxTopLeft"></div><div style="float: left;" id="cboxTopCenter"></div><div style="float: left;" id="cboxTopRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxMiddleLeft"></div><div style="float: left;" id="cboxContent"><div style="width: 0px; height: 0px; overflow: hidden; float: left;" id="cboxLoadedContent"></div><div style="float: left;" id="cboxLoadingOverlay"></div><div style="float: left;" id="cboxLoadingGraphic"></div><div style="float: left;" id="cboxTitle"></div><div style="float: left;" id="cboxCurrent"></div><div style="float: left;" id="cboxNext"></div><div style="float: left;" id="cboxPrevious"></div><div style="float: left;" id="cboxSlideshow"></div><div style="float: left;" id="cboxClose"></div></div><div style="float: left;" id="cboxMiddleRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxBottomLeft"></div><div style="float: left;" id="cboxBottomCenter"></div><div style="float: left;" id="cboxBottomRight"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div></body></html>

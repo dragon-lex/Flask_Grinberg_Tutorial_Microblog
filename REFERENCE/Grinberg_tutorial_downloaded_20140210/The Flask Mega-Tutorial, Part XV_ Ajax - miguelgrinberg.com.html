@@ -1,0 +1,1022 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><script src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/widgets.js" id="twitter-wjs"></script><script id="bug.surrogate.20">FB={Event:{subscribe:function(){}},UIServer:{},XFBML:{parse:function(){}},init:function(){},__noSuchMethod__:function(){}};</script><script src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/all.js" id="facebook-jssdk"></script><script id="bug.surrogate.1">var urchinTracker=function(){},_gaq={push:function(){try {if(arguments[0][0]=='_link')window.location.href=arguments[0][1]}catch(er){}}},_gat={_createTracker:function(){}, _getTracker:function(){return{__noSuchMethod__:function(){},_link:function(o){if(o)location.href=o;},_linkByPost:function(){return true;},_getLinkerUrl:function(o){return o;},_trackEvent:function(){}}}};</script><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>The Flask Mega-Tutorial, Part XV: Ajax - miguelgrinberg.com</title>
+
+	<meta name="description" content="miguelgrinberg.com">
+	<meta name="copyright" content="Copyright (c) 2012 Miguel Grinberg">
+	<meta name="author" content="Miguel Grinberg">
+    
+    <meta name="keywords" content="python, programming, flask, web, tutorial, ajax, jquery, translation">
+    
+    <link rel="shortcut icon" href="http://blog.miguelgrinberg.com/static/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed" title="miguelgrinberg.com RSS feed">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/prettify.css" type="text/css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/colorbox.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/jquery_002.js"></script>
+	<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/jquery.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/moment.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/prettify.js"></script>
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/bootstrap-responsive.css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/style.css" rel="stylesheet" type="text/css">
+    <script src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/bootstrap.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css" media="screen, print, projection">
+    </style>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-4777284-15']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".gallery").colorbox({rel:".gallery",maxWidth:"95%",maxHeight:"95%",scalePhotos:true});
+            // add prettyprint class to all <pre><code></code></pre> blocks
+            var prettify = false;
+            $("pre code").parent().each(function() {
+                $(this).addClass('prettyprint');
+                prettify = true;
+            });
+            prettyPrint();
+        });
+    </script>
+<style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_r1_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 -63px no-repeat;width:318px;height:9px}.recaptchatable .recaptcha_r2_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r2_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -27px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r3_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r3_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px -57px no-repeat;width:300px;height:6px}.recaptchatable .recaptcha_r3_c3{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -9px 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r4_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px 0 no-repeat;width:171px;height:49px}.recaptchatable .recaptcha_r4_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -36px 0 no-repeat;width:7px;height:57px}.recaptchatable .recaptcha_r4_c4{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -214px 0 no-repeat;width:97px;height:57px}.recaptchatable .recaptcha_r7_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:171px;height:8px}.recaptchatable .recaptcha_r8_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:25px;height:8px}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px}#recaptcha_area,#recaptcha_table{width:318px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;padding:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;font-family:helvetica,sans-serif;font-size:8pt;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{position:relative;margin:auto}.recaptchatable #recaptcha_image #recaptcha_challenge_image{display:block}.recaptchatable #recaptcha_image #recaptcha_ad_image{display:block;position:absolute;top:0}.recaptchatable img{border:0!important;margin:0!important;padding:0!important}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;width:153px!important;height:45px!important;margin-left:7px!important;margin-right:7px!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;background:none!important;height:auto!important;width:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{width:153px!important;position:relative!important;bottom:7px!important;padding:0!important;margin:15px 0 0 0!important;font-size:10pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1!important}#recaptcha_instructions_error{color:red!important}.recaptcha_only_if_privacy{float:right;text-align:right}#recaptcha-ad-choices{position:absolute;height:15px;top:0;right:0}#recaptcha-ad-choices img{height:15px}.recaptcha-ad-choices-collapsed{width:15px;height:15px;display:block}.recaptcha-ad-choices-expanded{width:75px;height:15px;display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-collapsed{display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-expanded{display:block}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><style>#bpcgonhdjmpzirperweqdxlwlpjcpkgldco{border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.bpcgonhdjmpzirperweqdxlwlpjcpkgldco-blocked{color:#777 !important;display:inline !important;text-decoration:line-through !important;}#bpcgonhdjmpzirperweqdxlwlpjcpkgldco span{background:transparent !important;}#bpcgonhdjmpzirperweqdxlwlpjcpkgldco div{border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#bpcgonhdjmpzirperweqdxlwlpjcpkgldco a{font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}@media print{#bpcgonhdjmpzirperweqdxlwlpjcpkgldco{display:none !important;}}</style></head>
+<body style="padding-top: 40px;">
+<!-- facebook sdk -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- google plus sdk -->
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/plusone.js"></script>
+<!-- twitter sdk -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<!-- linkedin sdk -->
+<script src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/in.js" type="text/javascript"></script>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="http://blog.miguelgrinberg.com/">miguelgrinberg.com</a>
+            <ul class="nav">
+                <li><a href="http://blog.miguelgrinberg.com/">Home</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-me">About Me</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-this-blog">About This Blog</a></li>
+				
+            </ul>
+            <div class="nav pull-right">
+                <p class="navbar-text">
+                    <a type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss.png" alt="RSS Feed" title="RSS Feed"></a>
+                    <a href="https://www.facebook.com/miguelgrinbergblog"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/facebook.png" alt="Facebook" title="Facebook"></a>
+                    <a href="https://plus.google.com/u/0/117786742456929977820"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/googleplus.png" alt="Google+" title="Google+"></a>
+                    <a href="http://www.linkedin.com/in/miguelgrinberg"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/linkedin.png" alt="LinkedIn" title="LinkedIn"></a>
+                    <a href="https://twitter.com/#%21/miguelgrinberg"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/twitter.png" alt="Twitter" title="Twitter"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="banner"></div>
+<div class="container">
+    <div class="row">
+        <div class="span8">
+            <div id="main">
+                
+                
+                
+                
+                
+
+<div class="post">
+<p class="date">
+<script type="text/javascript">
+document.write(moment("2013-02-20T07:04:48Z").format("LL"));
+</script>February 20 2013
+</p>
+<div class="social-outer">
+    <div class="social">
+        <div class="social-box"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" data-via="miguelgrinberg" data-count="vertical">Tweet</a></div>
+        <div class="social-box" style="padding-left: 6px;"><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" data-send="false" data-layout="box_count" data-width="450" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="qjmebjrhrweeislrhczftqislccyediyeuqvn"></iframe></div></div>
+        <div class="social-box"><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" size="tall"></g:plusone></div>
+        <div class="social-box"><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" data-counter="top"></script></div>
+    </div>
+</div>
+<h1 class="post-title">The Flask Mega-Tutorial, Part XV: Ajax</h1>
+<div class="posted">Posted by <span class="label label-important"><a href="http://blog.miguelgrinberg.com/author/Miguel%20Grinberg">Miguel Grinberg</a></span> under <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span>. </div>
+<div class="post_body"><p>This is the fifteenth article in the series in which I document my experience writing web applications in <a href="http://python.org/">Python</a> using the <a href="http://flask.pocoo.org/">Flask</a> microframework.</p>
+<p>The goal of the tutorial series is to develop a decently featured 
+microblogging application that demonstrating total lack of originality I
+ have decided to call <code>microblog</code>.</p>
+<p>Here is an index of all the articles in the series that have been published to date:</p>
+<ul>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world">Part I: Hello, World!</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates">Part II: Templates</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms">Part III: Web Forms</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database">Part IV: Database</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins">Part V: User Logins</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars">Part VI: Profile Page And Avatars</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-unit-testing">Part VII: Unit Testing</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers-contacts-and-friends">Part VIII: Followers, Contacts And Friends</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ix-pagination">Part IX: Pagination</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search">Part X: Full Text Search</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support">Part XI: Email Support</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xii-facelift">Part XII: Facelift</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times">Part XIII: Dates and Times</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n">Part XIV: I18n, L10n</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax">Part XV: Ajax</a> (this article)</li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling">Part XVI: Debugging, Testing and Profiling</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux-even-on-the-raspberry-pi">Part XVII: Deployment on Linux (even on the Raspberry Pi!)</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud">Part XVIII: Deployment on the Heroku Cloud</a></li>
+</ul>
+<p>This will be the last of the I18n and L10n themed articles, as we complete our effort to make our <code>microblog</code> application accessible and friendly to non-English speakers.</p>
+<p>In this article we will take a departure from the "safe zone" of 
+server-side development we've come to love and will work on a feature 
+that has equally important server and client-side components. Have you 
+seen the "Translate" links that some sites show next to user generated 
+content? These are links that trigger a real time automated translation 
+of content that is not in the user's native language. The translated 
+content is typically inserted below the original version. Google shows 
+it for search results in foreign languages. Facebook shows it for posts.
+ Today we are adding that very same feature to <code>microblog</code>!</p>
+<h2>Server-side vs. Client-side</h2>
+<p>In the traditional server-side model that we've followed so far we 
+have a client (the user's web browser) making requests to our server. A 
+request can simply ask for a web page, like when you click the "Your 
+Profile" link, or it can make us perform an action, like when the user 
+edits his or her profile information and clicks the Submit button. In 
+both types of requests the server completes the request by sending a new
+ web page to the client, either directly or by issuing a redirect. The 
+client then replaces the current page with the new one. This cycle 
+repeats for as long as the user stays on our web site. We call this 
+model server-side because the server does all the work while the client 
+just displays the web pages as it receives them.</p>
+<p>In the client-side model we have a web browser that again, issues a 
+request to the server. The server responds with a web page like in 
+server-side, but not all the page data is HTML, there is also code, 
+typically written in Javascript. Once the client receives the page it 
+will display it and then execute the code that came with it. From then 
+on you have an active client that can do work on its own without 
+reaching out to the server. In a strict client-side application the 
+entire application is downloaded to the client with the initial page 
+request, and then the application runs on the client without ever 
+refreshing the page, only contacting the server to retrieve or store 
+data. This type of applications are called <a href="http://en.wikipedia.org/wiki/Single-page_application">Single Page Applications</a> or SPAs.</p>
+<p>Most applications are a hybrid between the two models and combine techniques of both worlds. Our <code>microblog</code>
+ application is clearly a server-side application, but today we will be 
+adding a little bit of client-side action to the mix. To do real time 
+translations of user posts the client browser will send requests to the 
+server, but the server will respond with translated texts without 
+causing a page refresh. The client will then insert the translations 
+into the current page dynamically. This technique is known as <a href="http://en.wikipedia.org/wiki/Ajax_%28programming%29">Ajax</a>, which is short for Asynchronous Javascript and XML (even though these days XML is often replaced with JSON).</p>
+<h2>Translating user generated content</h2>
+<p>We now have pretty good support for foreign languages thanks to 
+Flask-Babel. Assuming we can find translators willing to help us, we 
+could publish our application in as many languages as we want.</p>
+<p>But there is one element missing. We made the application very 
+friendly and inviting to people of all places, so now we are going to 
+get content in a variety of languages, so our users are likely to come 
+across blog posts that are written in languages they don't understand. 
+Wouldn't it be nice if we could offer an automated translation service? 
+The quality of automated translations isn't great, but in most cases it 
+is good enough to get an idea of what someone said in a language we 
+don't speak, so all our users (even ourselves!) can benefit from such a 
+feature.</p>
+<p>This is an ideal feature to implement as an Ajax service. Consider 
+that our index page could be showing several posts, some of which might 
+be in several different foreign languages. If we implemented the 
+translation using traditional server-side techniques a request for a 
+translation would cause the original page to get replaced with a new 
+page showing just the translation for the selected post. After reading 
+the translation the user would have to hit the back button to go back to
+ the post listing. The fact is that requesting a translation isn't a big
+ enough action to require a full page update, this feature works much 
+better if the translated text is dynamically inserted below the original
+ text while leaving the rest of the page untouched. So today we are 
+implementing our first Ajax service!</p>
+<p>Implementing live automated translations requires a few steps. First 
+we need to identify the source language for the text we want to 
+translate. Once we know the language we also know if a translation is 
+needed for a given user, because we also know what language the user has
+ chosen. When a translation is offered and the user wishes to see it we 
+invoke the Ajax translation service, which will run on our server. In 
+the final step the client-side javascript code will dynamically insert 
+the translated text into the page.</p>
+<h2>Identifying the language of a post</h2>
+<p>Our first problem is identifying what language a post was written in.
+ This isn't an exact science, it will not always be possible to detect a
+ language, so we will consider it a "best effort" kind of thing. We are 
+going to use the <a href="http://code.google.com/p/guess-language/"><code>guess-language</code></a> Python module for this. So go ahead and install it. For Linux and Mac OS X users:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pip install guess</span><span class="pun">-</span><span class="pln">language</span></code></pre>
+<p>For Windows users:</p>
+<pre class="prettyprint"><code><span class="pln">flask\Scripts\pip install guess</span><span class="pun">-</span><span class="pln">language</span></code></pre>
+<p>With this module we will scan the text of each blog post to try to 
+guess its language. Since we don't want to scan the same posts over and 
+over again we will do this once for each post, at the time the post is 
+submitted by the user. We will then store the detected language along 
+with the post in our database.</p>
+<p>So let's begin by adding a <code>language</code> field to our <code>Posts</code> table:</p>
+<pre class="prettyprint"><code><span class="kwd">class</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Model</span><span class="pun">):</span><span class="pln">
+    __searchable__ </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'body'</span><span class="pun">]</span><span class="pln">
+
+    id </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Integer</span><span class="pun">,</span><span class="pln"> primary_key </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    body </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">140</span><span class="pun">))</span><span class="pln">
+    timestamp </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">DateTime</span><span class="pun">)</span><span class="pln">
+    user_id </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Integer</span><span class="pun">,</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">ForeignKey</span><span class="pun">(</span><span class="str">'user.id'</span><span class="pun">))</span><span class="pln">
+    language </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">5</span><span class="pun">))</span></code></pre>
+<p>Each time we modify the database we also need to do a migration:</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">db_migrate</span><span class="pun">.</span><span class="pln">py
+</span><span class="typ">New</span><span class="pln"> migration saved </span><span class="kwd">as</span><span class="pln"> microblog</span><span class="pun">/</span><span class="pln">db_repository</span><span class="pun">/</span><span class="pln">versions</span><span class="pun">/</span><span class="lit">005</span><span class="pln">_migration</span><span class="pun">.</span><span class="pln">py
+</span><span class="typ">Current</span><span class="pln"> database version</span><span class="pun">:</span><span class="pln"> </span><span class="lit">5</span></code></pre>
+<p>Now we have a place to store the language of each post, so let's detect the language of each added blog post:</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> guess_language </span><span class="kwd">import</span><span class="pln"> guessLanguage
+
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/'</span><span class="pun">,</span><span class="pln"> methods </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'GET'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'POST'</span><span class="pun">])</span><span class="pln">
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/index'</span><span class="pun">,</span><span class="pln"> methods </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'GET'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'POST'</span><span class="pun">])</span><span class="pln">
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/index/&lt;int:page&gt;'</span><span class="pun">,</span><span class="pln"> methods </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'GET'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'POST'</span><span class="pun">])</span><span class="pln">
+</span><span class="lit">@login_required</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> index</span><span class="pun">(</span><span class="pln">page </span><span class="pun">=</span><span class="pln"> </span><span class="lit">1</span><span class="pun">):</span><span class="pln">
+    form </span><span class="pun">=</span><span class="pln"> </span><span class="typ">PostForm</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">validate_on_submit</span><span class="pun">():</span><span class="pln">
+        language </span><span class="pun">=</span><span class="pln"> guessLanguage</span><span class="pun">(</span><span class="pln">form</span><span class="pun">.</span><span class="pln">post</span><span class="pun">.</span><span class="pln">data</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> language </span><span class="pun">==</span><span class="pln"> </span><span class="str">'UNKNOWN'</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> len</span><span class="pun">(</span><span class="pln">language</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&gt;</span><span class="pln"> </span><span class="lit">5</span><span class="pun">:</span><span class="pln">
+            language </span><span class="pun">=</span><span class="pln"> </span><span class="str">''</span><span class="pln">
+        post </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">(</span><span class="pln">body </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">post</span><span class="pun">.</span><span class="pln">data</span><span class="pun">,</span><span class="pln"> 
+            timestamp </span><span class="pun">=</span><span class="pln"> datetime</span><span class="pun">.</span><span class="pln">utcnow</span><span class="pun">(),</span><span class="pln"> 
+            author </span><span class="pun">=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">,</span><span class="pln"> 
+            language </span><span class="pun">=</span><span class="pln"> language</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">post</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+        flash</span><span class="pun">(</span><span class="pln">gettext</span><span class="pun">(</span><span class="str">'Your post is now live!'</span><span class="pun">))</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span><span class="pln">
+    posts </span><span class="pun">=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">followed_posts</span><span class="pun">().</span><span class="pln">paginate</span><span class="pun">(</span><span class="pln">page</span><span class="pun">,</span><span class="pln"> POSTS_PER_PAGE</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">False</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> render_template</span><span class="pun">(</span><span class="str">'index.html'</span><span class="pun">,</span><span class="pln">
+        title </span><span class="pun">=</span><span class="pln"> </span><span class="str">'Home'</span><span class="pun">,</span><span class="pln">
+        form </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">,</span><span class="pln">
+        posts </span><span class="pun">=</span><span class="pln"> posts</span><span class="pun">)</span></code></pre>
+<p>If the language guessing doesn't work or returns an unexpectedly long
+ result we play it safe and save an empty string to the database, a 
+convention that we will use to signal that a post has an unknown 
+language.</p>
+<h2>Displaying the "Translate" link</h2>
+<p>The next step is to show a "Translate" link next to any posts that are not in the language used by the user (file <code>app/templates/posts.html</code>):</p>
+<pre class="prettyprint"><code><span class="pun">{%</span><span class="pln"> </span><span class="kwd">if</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">language </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">None</span><span class="pln"> </span><span class="kwd">and</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">language </span><span class="pun">!=</span><span class="pln"> </span><span class="str">''</span><span class="pln"> </span><span class="kwd">and</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">language </span><span class="pun">!=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">locale </span><span class="pun">%}</span><span class="pln">
+</span><span class="str">&lt;div&gt;</span><span class="pun">&lt;</span><span class="pln">a href</span><span class="pun">=</span><span class="str">"#"</span><span class="pun">&gt;{{</span><span class="pln"> _</span><span class="pun">(</span><span class="str">'Translate'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">}}&lt;/</span><span class="pln">a</span><span class="pun">&gt;&lt;/</span><span class="pln">div</span><span class="pun">&gt;</span><span class="pln">
+</span><span class="pun">{%</span><span class="pln"> endif </span><span class="pun">%}</span></code></pre>
+<p>We are doing this in the <code>post.html</code> sub-template, so any 
+page that displays blog posts will get this functionality. The Translate
+ link will only be visible if we could detect the language of the blog 
+post and the language we detected is different than the language 
+selected by the <code>localeselector</code> function from Flask-Babel, which based on the work we did in the previous article we can now access at <code>g.locale</code>.</p>
+<p>This link required us to add a new text, the word "Translate" which 
+needs to be included in our translation files, so we entered it with the
+ translation wrapper to make it visible to Flask-Babel. To get it 
+translated we have to refresh our language catalog (<code>tr_update.py</code>), translate in poedit and recompile (<code>tr_compile.py</code>), as seen in the <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-l10n">I18n article</a>.</p>
+<p>We don't really know what we will be doing to trigger a translation yet, so for now the link does nothing.</p>
+<h2>Translation services</h2>
+<p>Before we can proceed with our application we need to find a translation service that we can use.</p>
+<p>There are many translation services available, but unfortunately most are either paid services or free with big limitations.</p>
+<p>The two major translation services are <a href="https://developers.google.com/translate/">Google Translate</a> and <a href="http://www.microsofttranslator.com/dev/">Microsoft Translator</a>.
+ Both are paid services, but the Microsoft offering has an entry level 
+option for low volume of translations that is free. Google offered a 
+free translation service in the past but that isn't available anymore. 
+That makes our choice of translation service very easy.</p>
+<h2>Using the Microsoft Translator service</h2>
+<p>To use the Microsoft Translator there are a couple of requirements that need to be met:</p>
+<ul>
+<li>The application developer needs to register with the <a href="https://datamarket.azure.com/dataset/1899a118-d202-492c-aa16-ba21c33c06cb">Microsoft Translator app</a> at the Azure Marketplace. Here the level of service can be selected (the free option is at the bottom).</li>
+<li>Then the developer needs to <a href="https://datamarket.azure.com/developer/applications/">register an application</a>. The registered application will get Client ID and Client Secret codes to be used as part of the requests sent to this service.</li>
+</ul>
+<p>Once the registration part is complete the process to request a translation is as follows:</p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/hh454950.aspx">Get an access token</a>, passing in the client id and secret.</li>
+<li>Call the desired translation method, either <a href="http://msdn.microsoft.com/en-us/library/ff512404.aspx">Ajax</a>, <a href="http://msdn.microsoft.com/en-us/library/ff512419.aspx">HTTP</a> or <a href="http://msdn.microsoft.com/en-us/library/ff512435.aspx">SOAP</a>, providing the access token and the text to translate.</li>
+</ul>
+<p>This really sounds more complicated than it really is, so without 
+going into details here is a function that does all the dirty work and 
+translates a text to another language (file <code>app/translate.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">import</span><span class="pln"> urllib</span><span class="pun">,</span><span class="pln"> httplib
+</span><span class="kwd">import</span><span class="pln"> json
+</span><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">babel </span><span class="kwd">import</span><span class="pln"> gettext
+</span><span class="kwd">from</span><span class="pln"> config </span><span class="kwd">import</span><span class="pln"> MS_TRANSLATOR_CLIENT_ID</span><span class="pun">,</span><span class="pln"> MS_TRANSLATOR_CLIENT_SECRET
+
+</span><span class="kwd">def</span><span class="pln"> microsoft_translate</span><span class="pun">(</span><span class="pln">text</span><span class="pun">,</span><span class="pln"> sourceLang</span><span class="pun">,</span><span class="pln"> destLang</span><span class="pun">):</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> MS_TRANSLATOR_CLIENT_ID </span><span class="pun">==</span><span class="pln"> </span><span class="str">""</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> MS_TRANSLATOR_CLIENT_SECRET </span><span class="pun">==</span><span class="pln"> </span><span class="str">""</span><span class="pun">:</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> gettext</span><span class="pun">(</span><span class="str">'Error: translation service not configured.'</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">try</span><span class="pun">:</span><span class="pln">
+        </span><span class="com"># get access token</span><span class="pln">
+        </span><span class="kwd">params</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> urllib</span><span class="pun">.</span><span class="pln">urlencode</span><span class="pun">({</span><span class="pln">
+            </span><span class="str">'client_id'</span><span class="pun">:</span><span class="pln"> MS_TRANSLATOR_CLIENT_ID</span><span class="pun">,</span><span class="pln">
+            </span><span class="str">'client_secret'</span><span class="pun">:</span><span class="pln"> MS_TRANSLATOR_CLIENT_SECRET</span><span class="pun">,</span><span class="pln">
+            </span><span class="str">'scope'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'http://api.microsofttranslator.com'</span><span class="pun">,</span><span class="pln"> 
+            </span><span class="str">'grant_type'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'client_credentials'</span><span class="pln">
+        </span><span class="pun">})</span><span class="pln">
+        conn </span><span class="pun">=</span><span class="pln"> httplib</span><span class="pun">.</span><span class="typ">HTTPSConnection</span><span class="pun">(</span><span class="str">"datamarket.accesscontrol.windows.net"</span><span class="pun">)</span><span class="pln">
+        conn</span><span class="pun">.</span><span class="pln">request</span><span class="pun">(</span><span class="str">"POST"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"/v2/OAuth2-13"</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">params</span><span class="pun">)</span><span class="pln">
+        response </span><span class="pun">=</span><span class="pln"> json</span><span class="pun">.</span><span class="pln">loads </span><span class="pun">(</span><span class="pln">conn</span><span class="pun">.</span><span class="pln">getresponse</span><span class="pun">().</span><span class="pln">read</span><span class="pun">())</span><span class="pln">
+        token </span><span class="pun">=</span><span class="pln"> response</span><span class="pun">[</span><span class="pln">u</span><span class="str">'access_token'</span><span class="pun">]</span><span class="pln">
+
+        </span><span class="com"># translate</span><span class="pln">
+        conn </span><span class="pun">=</span><span class="pln"> httplib</span><span class="pun">.</span><span class="typ">HTTPConnection</span><span class="pun">(</span><span class="str">'api.microsofttranslator.com'</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">params</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            </span><span class="str">'appId'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'Bearer '</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> token</span><span class="pun">,</span><span class="pln">
+            </span><span class="str">'from'</span><span class="pun">:</span><span class="pln"> sourceLang</span><span class="pun">,</span><span class="pln">
+            </span><span class="str">'to'</span><span class="pun">:</span><span class="pln"> destLang</span><span class="pun">,</span><span class="pln">
+            </span><span class="str">'text'</span><span class="pun">:</span><span class="pln"> text</span><span class="pun">.</span><span class="pln">encode</span><span class="pun">(</span><span class="str">"utf-8"</span><span class="pun">)</span><span class="pln">
+        </span><span class="pun">}</span><span class="pln">
+        conn</span><span class="pun">.</span><span class="pln">request</span><span class="pun">(</span><span class="str">"GET"</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/V2/Ajax.svc/Translate?'</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> urllib</span><span class="pun">.</span><span class="pln">urlencode</span><span class="pun">(</span><span class="kwd">params</span><span class="pun">))</span><span class="pln">
+        response </span><span class="pun">=</span><span class="pln"> json</span><span class="pun">.</span><span class="pln">loads</span><span class="pun">(</span><span class="str">"{\"response\":"</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> conn</span><span class="pun">.</span><span class="pln">getresponse</span><span class="pun">().</span><span class="pln">read</span><span class="pun">().</span><span class="pln">decode</span><span class="pun">(</span><span class="str">'utf-8-sig'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="str">"}"</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> response</span><span class="pun">[</span><span class="str">"response"</span><span class="pun">]</span><span class="pln">
+    </span><span class="kwd">except</span><span class="pun">:</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> gettext</span><span class="pun">(</span><span class="str">'Error: Unexpected error.'</span><span class="pun">)</span></code></pre>
+<p>This function imports two new items from our configuration file, the id and secret codes assigned by Microsoft (file <code>config.py</code>):</p>
+<pre class="prettyprint"><code><span class="com"># microsoft translation service</span><span class="pln">
+MS_TRANSLATOR_CLIENT_ID </span><span class="pun">=</span><span class="pln"> </span><span class="str">''</span><span class="pln"> </span><span class="com"># enter your MS translator app id here</span><span class="pln">
+MS_TRANSLATOR_CLIENT_SECRET </span><span class="pun">=</span><span class="pln"> </span><span class="str">''</span><span class="pln"> </span><span class="com"># enter your MS translator app secret here</span></code></pre>
+<p>To use the service you will need to register yourself and the 
+application to receive the codes that go in the above configuration 
+variables. Even if you just intend to test this application you can 
+register with the service for free.</p>
+<p>We have added more texts, this time a few error messages. These need translations, so we have to re-run <code>tr_update.py</code>, <code>poedit</code> and <code>tr_compile.py</code> to update our translation files.</p>
+<h2>Let's translate some text!</h2>
+<p>So how do we use the translator service? It's actually very simple. Here is an example:</p>
+<pre class="prettyprint"><code><span class="pln">$ flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">python
+</span><span class="typ">Python</span><span class="pln"> </span><span class="lit">2.6</span><span class="pun">.</span><span class="lit">8</span><span class="pln"> </span><span class="pun">(</span><span class="pln">unknown</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Jun</span><span class="pln">  </span><span class="lit">9</span><span class="pln"> </span><span class="lit">2012</span><span class="pun">,</span><span class="pln"> </span><span class="lit">11</span><span class="pun">:</span><span class="lit">30</span><span class="pun">:</span><span class="lit">32</span><span class="pun">)</span><span class="pln">
+</span><span class="pun">&gt;&gt;&gt;</span><span class="pln"> </span><span class="kwd">from</span><span class="pln"> app </span><span class="kwd">import</span><span class="pln"> translate
+</span><span class="pun">&gt;&gt;&gt;</span><span class="pln"> translate</span><span class="pun">.</span><span class="pln">microsoft_translate</span><span class="pun">(</span><span class="str">'Hi, how are you today?'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'en'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'es'</span><span class="pun">)</span><span class="pln">
+u</span><span class="str">'¿Hola, cómo estás hoy?'</span></code></pre>
+<h2>Ajax in the server</h2>
+<p>Now we can translate texts between languages, so we are ready to integrate this functionality into our application.</p>
+<p>When the user clicks the Translate link in a post there will be an 
+Ajax call issued to our server. We'll see how this call is made in a 
+bit, for now let's concentrate on implementing the server side of the 
+Ajax call.</p>
+<p>An Ajax service in the server is like a regular view function with 
+the only difference that instead of returning an HTML page or a redirect
+ it returns data, typically formatted as either <a href="http://en.wikipedia.org/wiki/XML">XML</a> or <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>. Since JSON is much more friendly to Javascript we will go with that format (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask </span><span class="kwd">import</span><span class="pln"> jsonify
+</span><span class="kwd">from</span><span class="pln"> translate </span><span class="kwd">import</span><span class="pln"> microsoft_translate
+
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/translate'</span><span class="pun">,</span><span class="pln"> methods </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'POST'</span><span class="pun">])</span><span class="pln">
+</span><span class="lit">@login_required</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> translate</span><span class="pun">():</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> jsonify</span><span class="pun">({</span><span class="pln"> 
+        </span><span class="str">'text'</span><span class="pun">:</span><span class="pln"> microsoft_translate</span><span class="pun">(</span><span class="pln">
+            request</span><span class="pun">.</span><span class="pln">form</span><span class="pun">[</span><span class="str">'text'</span><span class="pun">],</span><span class="pln"> 
+            request</span><span class="pun">.</span><span class="pln">form</span><span class="pun">[</span><span class="str">'sourceLang'</span><span class="pun">],</span><span class="pln"> 
+            request</span><span class="pun">.</span><span class="pln">form</span><span class="pun">[</span><span class="str">'destLang'</span><span class="pun">])</span><span class="pln"> </span><span class="pun">})</span></code></pre>
+<p>There is not much new here. This route handles a POST request that 
+should come with the text to translate and the source and destination 
+language codes. Since this is a POST request we access these items as if
+ this was data entered in an HTML form, using the <code>request.form</code>
+ dictionary. We call one of our translation functions with this data and
+ once we get the translated text we just convert it to JSON using 
+Flask's <code>jsonify</code> function. The data that the client will see as a response to this request will have this format:</p>
+<pre class="prettyprint"><code><span class="pun">{</span><span class="pln"> </span><span class="str">"text"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"&lt;translated text goes here&gt;"</span><span class="pln"> </span><span class="pun">}</span></code></pre>
+<h2>Ajax in the client</h2>
+<p>Now we need to call the Ajax view function from the web browser, so we need to go back to the <code>post.html</code> sub-template to complete the work we started earlier.</p>
+<p>We start by wrapping the post text in a <code>span</code> element with a unique id, so that we can later find it in the <a href="http://en.wikipedia.org/wiki/Document_Object_Model">DOM</a> and replace it with the translated text (file <code>app/templates/post.html</code>):</p>
+<pre class="prettyprint"><code><span class="tag">&lt;p&gt;&lt;strong&gt;&lt;span</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"post{{post.id}}"</span><span class="tag">&gt;</span><span class="pln">{{post.body}}</span><span class="tag">&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</span></code></pre>
+<p>Note how we construct the unique id using the post's id number. If a given post has an <code>id = 3</code> then the id of the <code>&lt;span&gt;</code> element that wraps it will be <code>post3</code>.</p>
+<p>We are also going to wrap the Translate link in a span with a unique 
+id, in this case so that we can hide it once the translation is shown:</p>
+<pre class="prettyprint"><code><span class="tag">&lt;div&gt;&lt;span</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"translation{{post.id}}"</span><span class="tag">&gt;&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"#"</span><span class="tag">&gt;</span><span class="pln">{{ _('Translate') }}</span><span class="tag">&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;</span></code></pre>
+<p>Continuing with the example above, the translation link would get the id <code>translation3</code>.</p>
+<p>And to make it a nice and user friendly feature we are also going to 
+throw in a spinning wheel animation that starts hidden and will only 
+appears while the translation service is running on the server, also 
+with a unique id:</p>
+<pre class="prettyprint"><code><span class="tag">&lt;img</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"loading{{post.id}}"</span><span class="pln"> </span><span class="atn">style</span><span class="pun">=</span><span class="atv">"</span><span class="pln">display</span><span class="pun">:</span><span class="pln"> none</span><span class="atv">"</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"/static/img/loading.gif"</span><span class="tag">&gt;</span></code></pre>
+<p>So now we have an element called <code>post&lt;id&gt;</code> that contains the text to translate, an element called <code>translation&lt;id&gt;</code> that contains the Translate link but will later be replaced with the translated text and an image with id <code>loading&lt;id&gt;</code> that will be shown while the translation service is working. The <code>&lt;id&gt;</code> suffix is what makes these elements unique, we can have many posts in a page and each will get its own set of three elements.</p>
+<p>We now need to trigger the Ajax call when the Translate link is 
+clicked. Instead of triggering the call directly from the link we'll 
+create a Javascript function that does all the work, since we have a few
+ things to do there and we don't want to duplicate code in every post. 
+Let's start by adding a call to this function when the translate link is
+ clicked:</p>
+<pre class="prettyprint"><code><span class="tag">&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"javascript:translate('{{post.language}}', '{{g.locale}}', '#post{{post.id}}', '#translation{{post.id}}', '#loading{{post.id}}');"</span><span class="tag">&gt;</span><span class="pln">{{ _('Translate') }}</span><span class="tag">&lt;/a&gt;</span></code></pre>
+<p>The template variables obscure this code a bit, but really the 
+function that we are calling is simple. Assuming a post with id = 23 
+that is written in Spanish and is viewed by a user that uses English 
+then this function will be called as follows:</p>
+<pre class="prettyprint"><code><span class="pln">translate</span><span class="pun">(</span><span class="str">'es'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'en'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'#post23'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'#translation23'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'#loading23'</span><span class="pun">)</span></code></pre>
+<p>So this function will receive the source and destination languages 
+and the three DOM elements associated with the post to translate.</p>
+<p>We can't write this function in the <code>post.html</code> 
+sub-template because its contents are repeated for each post. We'll 
+implement the function in our base template, so that there is a single 
+copy of it that is accessible in all pages (file <code>app/templates/base.html</code>):</p>
+<pre class="prettyprint"><code><span class="tag">&lt;script&gt;</span><span class="pln">
+</span><span class="kwd">function</span><span class="pln"> translate</span><span class="pun">(</span><span class="pln">sourceLang</span><span class="pun">,</span><span class="pln"> destLang</span><span class="pun">,</span><span class="pln"> sourceId</span><span class="pun">,</span><span class="pln"> destId</span><span class="pun">,</span><span class="pln"> loadingId</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    $</span><span class="pun">(</span><span class="pln">destId</span><span class="pun">).</span><span class="pln">hide</span><span class="pun">();</span><span class="pln">
+    $</span><span class="pun">(</span><span class="pln">loadingId</span><span class="pun">).</span><span class="pln">show</span><span class="pun">();</span><span class="pln">
+    $</span><span class="pun">.</span><span class="pln">post</span><span class="pun">(</span><span class="str">'/translate'</span><span class="pun">,</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        text</span><span class="pun">:</span><span class="pln"> $</span><span class="pun">(</span><span class="pln">sourceId</span><span class="pun">).</span><span class="pln">text</span><span class="pun">(),</span><span class="pln">
+        sourceLang</span><span class="pun">:</span><span class="pln"> sourceLang</span><span class="pun">,</span><span class="pln">
+        destLang</span><span class="pun">:</span><span class="pln"> destLang
+    </span><span class="pun">}).</span><span class="pln">done</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">(</span><span class="pln">translated</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        $</span><span class="pun">(</span><span class="pln">destId</span><span class="pun">).</span><span class="pln">text</span><span class="pun">(</span><span class="pln">translated</span><span class="pun">[</span><span class="str">'text'</span><span class="pun">])</span><span class="pln">
+        $</span><span class="pun">(</span><span class="pln">loadingId</span><span class="pun">).</span><span class="pln">hide</span><span class="pun">();</span><span class="pln">
+        $</span><span class="pun">(</span><span class="pln">destId</span><span class="pun">).</span><span class="pln">show</span><span class="pun">();</span><span class="pln">
+    </span><span class="pun">}).</span><span class="pln">fail</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        $</span><span class="pun">(</span><span class="pln">destId</span><span class="pun">).</span><span class="pln">text</span><span class="pun">(</span><span class="str">"{{ _('Error: Could not contact server.') }}"</span><span class="pun">);</span><span class="pln">
+        $</span><span class="pun">(</span><span class="pln">loadingId</span><span class="pun">).</span><span class="pln">hide</span><span class="pun">();</span><span class="pln">
+        $</span><span class="pun">(</span><span class="pln">destId</span><span class="pun">).</span><span class="pln">show</span><span class="pun">();</span><span class="pln">
+    </span><span class="pun">});</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+</span><span class="tag">&lt;/script&gt;</span></code></pre>
+<p>We rely on <a href="http://jquery.com/">jQuery</a> for this functionality. Recall that we included jQuery back when we styled the application using Twitter's Bootstrap framework.</p>
+<p>We start by hiding the element that contains the translate link and showing the spinning wheel image.</p>
+<p>Then we use jQuery's <code>$.post()</code> function to send the Ajax request to our server. The <code>$.post</code>
+ function issues a POST request that to the server will be identical to a
+ request issued by the browser when a form is submitted. The difference 
+is that in the client this request happens in the background without 
+causing a page reload. When a response is received from the server the 
+function given as an argument to the <code>done()</code> call will 
+execute and will have a chance to insert the data received into the 
+page. This function receives the response as an argument, so we just 
+overwrite the translate link in the DOM with the translated text, then 
+hide the spinning wheel and finally display the translated text for the 
+user to see. Neat!</p>
+<p>If there is any error that prevents the client from getting a response from the server then the function inside the <code>fail()</code>
+ call will be invoked. In this case we just show a generic error 
+message, which also needs to be translated into all languages and thus 
+requires a refresh of our translation database.</p>
+<h2>Unit testing</h2>
+<p>Remember our unit test framework? It is always a good idea to 
+evaluate if it makes sense to write tests every time we add a new 
+feature. Invoking the text translation service could be something we 
+could inadvertently break while we work on our code, or it could break 
+due to updates in the service. Let's write a quick test that makes sure 
+we can contact the service and obtain translations:</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> app</span><span class="pun">.</span><span class="pln">translate </span><span class="kwd">import</span><span class="pln"> microsoft_translate
+
+</span><span class="kwd">class</span><span class="pln"> </span><span class="typ">TestCase</span><span class="pun">(</span><span class="pln">unittest</span><span class="pun">.</span><span class="typ">TestCase</span><span class="pun">):</span><span class="pln">
+    </span><span class="com">#...</span><span class="pln">
+    </span><span class="kwd">def</span><span class="pln"> test_translation</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">assert</span><span class="pln"> microsoft_translate</span><span class="pun">(</span><span class="pln">u</span><span class="str">'English'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'en'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'es'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> u</span><span class="str">'Inglés'</span><span class="pln">
+        </span><span class="kwd">assert</span><span class="pln"> microsoft_translate</span><span class="pun">(</span><span class="pln">u</span><span class="str">'Español'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'es'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'en'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> u</span><span class="str">'Spanish'</span></code></pre>
+<p>We do not have a client-side testing framework at this time, so we will not test the end-to-end Ajax procedure.</p>
+<p>Running our testing framework should give us no errors:</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">tests</span><span class="pun">.</span><span class="pln">py
+</span><span class="pun">.....</span><span class="pln">
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Ran</span><span class="pln"> </span><span class="lit">5</span><span class="pln"> tests </span><span class="kwd">in</span><span class="pln"> </span><span class="lit">5.932s</span><span class="pln">
+
+OK</span></code></pre>
+<p>But if you run the test framework without having done the proper configuration for the Microsoft Translator you would get:</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">tests</span><span class="pun">.</span><span class="pln">py
+</span><span class="pun">....</span><span class="pln">F
+</span><span class="pun">======================================================================</span><span class="pln">
+FAIL</span><span class="pun">:</span><span class="pln"> test_translation </span><span class="pun">(</span><span class="pln">__main__</span><span class="pun">.</span><span class="typ">TestCase</span><span class="pun">)</span><span class="pln">
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Traceback</span><span class="pln"> </span><span class="pun">(</span><span class="pln">most recent call </span><span class="kwd">last</span><span class="pun">):</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"./tests.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">120</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> test_translation
+    </span><span class="kwd">assert</span><span class="pln"> microsoft_translate</span><span class="pun">(</span><span class="pln">u</span><span class="str">'English'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'en'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'es'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> u</span><span class="str">'Inglés'</span><span class="pln">
+</span><span class="typ">AssertionError</span><span class="pln">
+
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Ran</span><span class="pln"> </span><span class="lit">5</span><span class="pln"> tests </span><span class="kwd">in</span><span class="pln"> </span><span class="lit">3.877s</span><span class="pln">
+
+FAILED </span><span class="pun">(</span><span class="pln">failures</span><span class="pun">=</span><span class="lit">1</span><span class="pun">)</span></code></pre>
+<h2>Final words</h2>
+<p>And with this we conclude this article. I hope it was as fun to read for you as it was for me to write!</p>
+<p>I have recently been alerted of some issues with the database when 
+Flask-WhooshAlchemy is used for the full text search. In the next 
+chapter I will use this problem as an excuse to go over some of my 
+debugging techniques for Flask applications. Stay tuned for episode XVI!</p>
+<p>The code for the updated application is available on github, <a href="https://github.com/miguelgrinberg/microblog/tree/v0.15">here</a>. For those that do not use github below is a friendly download link:</p>
+<p>Download <a href="https://github.com/miguelgrinberg/microblog/archive/v0.15.zip">microblog-0.15.zip</a>.</p>
+<p>I look forward to see you in the next article!</p>
+<p>Miguel</p></div>
+<div class="social-mini"><table><tbody><tr>
+    <td><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" data-via="miguelgrinberg" data-count="none">Tweet</a></td>
+    <td><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" size="medium" witdh="100" annotation="none"></g:plusone></td>
+    <td><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax"></script></td>
+    <td><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax" data-send="false" data-layout="button_count" data-width="100" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="zpygjubodtbdbcexgvlgthlsavglvucfigk"></iframe></div></td>
+</tr></tbody></table></div>
+
+<h4 style="text-align: right"><a name="comments"></a>13 comments</h4>
+
+
+<div class="comment">
+    <ul>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#1</span> <span class="label label-info">Dogukan Tufekci</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-20T14:09:25Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">You are simply an amazing person! Thanks for this new article!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#2</span> <span class="label label-info">crazygit</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-21T07:37:01Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Thanks for this series articles, learned so much.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#3</span> <span class="label label-info">Jimmy Juno</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-03T04:26:19Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">An amazing set of 
+tutorials -- and they just keep coming!
+
+Thank you Miguel for your hard work.  I've been shopping for a framework
+ for an upcoming project and these non-trivial and clearly written 
+examples have made my choice easy.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#4</span> <span class="label label-info">gason</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-04T01:58:19Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">amazing,thank you very much.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#5</span> <span class="label label-info">A Thankful Reader</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-06T01:24:09Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">This is an amazing tutorial! Thanks for putting in the time and effort to do this. </p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#6</span> <span class="label label-info">James</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-04-23T19:11:41Z").fromNow());
+                    </script>10 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Nice step by step tutorial. 
+At this part I've got some problems with the unit tests. 
+It seems its getting the post of the app.db instead of the test.db.
+I tried printing the post as the first statement of an unit test and I've got the posts of the website.
+Any ideas?</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#7</span> <span class="label label-info">Hari </span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-08-04T09:43:15Z").fromNow());
+                    </script>6 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Thank you so much for your time !! learned so much.. </p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#8</span> <span class="label label-info">dowlf</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-09-16T00:58:36Z").fromNow());
+                    </script>5 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">I am getting the 
+similar behavior as James above in the unit tests, it is getting posts 
+from the app.db instead of test.db. I am pretty stumped by it. I'll post
+ again if I figure something out.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#9</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-09-16T06:12:56Z").fromNow());
+                    </script>5 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@dowlf: I believe I
+ see what the problem is. The place I chose to configure the testing 
+database (in the setUp() method of the test case) is too late, by that 
+time the application and the database have already been instantiated. I 
+believe this worked when I wrote it, but maybe with newer releases of 
+Flask or other dependencies this does not work. I haven't done this the 
+right way anyway, the configuration should be set correctly from the 
+start. I'll correct the problem and update the article.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#10</span> <span class="label label-info">bs4h</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-12-14T17:24:08Z").fromNow());
+                    </script>2 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">I don't think 
+putting the translate service in your test suite is a good idea. Running
+ the tests shouldn't have any side-effects on the outside world (like 
+fetching URLs or writing non-temporary files to disk), this makes test 
+results less predictable and possibly, non-repeatable. Also, you might 
+simply exceed some API quota ;)
+
+Instead, similarly to how an in-memory, temporary DB is set up for 
+SQLAlchemy, you should write a simple "dummy" service exposing an 
+identical API, and provide a simple abstraction layer that will call the
+ "dummy" or the "real" service based on the configuration in effect. As 
+long as your app calls the real service only through the abstraction, 
+the abstraction layer and the dummy service will catch most of the 
+errors in your code during testing.
+
+An extra benefit is that your tests will run in 20ms instead of 6 
+seconds! For big projects short times matter a lot. If the test suite 
+can run in under a few seconds, I just leave a terminal open with "watch
+ ./run_tests" and see a runtime error the moment I save the file.</p>
+                </div>
+            </div>
+        </li>
+        
+    </ul>
+    <!--
+    <table width="100%">
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/bafafefac4abe76b1218317d841e167b?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#1</span> <span class="label label-info">Dogukan Tufekci</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-20T14:09:25Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">You are simply an amazing person! Thanks for this new article!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/c946fa5e3c88eda4210c0a1ad5310fb9?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#2</span> <span class="label label-info">crazygit</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-21T07:37:01Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Thanks for this series articles, learned so much.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/6dcc85f5501798d6895335487c49df51?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#3</span> <span class="label label-info">Jimmy Juno</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-03T04:26:19Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">An amazing set of tutorials -- and they just keep coming!
+
+Thank you Miguel for your hard work.  I&#39;ve been shopping for a framework for an upcoming project and these non-trivial and clearly written examples have made my choice easy.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/cafcc48b8e315bdc56eadb019caad29e?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#4</span> <span class="label label-info">gason</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-04T01:58:19Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">amazing,thank you very much.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/5658ffccee7f0ebfda2b226238b1eb6e?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#5</span> <span class="label label-info">A Thankful Reader</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-06T01:24:09Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">This is an amazing tutorial! Thanks for putting in the time and effort to do this. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/154f1eafc30ac035dc0fc9c12cc26512?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#6</span> <span class="label label-info">James</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-04-23T19:11:41Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Nice step by step tutorial. 
+At this part I&#39;ve got some problems with the unit tests. 
+It seems its getting the post of the app.db instead of the test.db.
+I tried printing the post as the first statement of an unit test and I&#39;ve got the posts of the website.
+Any ideas?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/3f7c97f0febbb0e403133a095648dc91?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#7</span> <span class="label label-info">Hari </span> said
+                <script type="text/javascript">
+                document.write(moment("2013-08-04T09:43:15Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Thank you so much for your time !! learned so much.. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/51cd79c5142528e8d4417b38099cf372?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#8</span> <span class="label label-info">dowlf</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-09-16T00:58:36Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">I am getting the similar behavior as James above in the unit tests, it is getting posts from the app.db instead of test.db. I am pretty stumped by it. I&#39;ll post again if I figure something out.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#9</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-09-16T06:12:56Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@dowlf: I believe I see what the problem is. The place I chose to configure the testing database (in the setUp() method of the test case) is too late, by that time the application and the database have already been instantiated. I believe this worked when I wrote it, but maybe with newer releases of Flask or other dependencies this does not work. I haven&#39;t done this the right way anyway, the configuration should be set correctly from the start. I&#39;ll correct the problem and update the article.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/102d7651c525422dd11501ed89896c75?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#10</span> <span class="label label-info">bs4h</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-12-14T17:24:08Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">I don&#39;t think putting the translate service in your test suite is a good idea. Running the tests shouldn&#39;t have any side-effects on the outside world (like fetching URLs or writing non-temporary files to disk), this makes test results less predictable and possibly, non-repeatable. Also, you might simply exceed some API quota ;)
+
+Instead, similarly to how an in-memory, temporary DB is set up for SQLAlchemy, you should write a simple &#34;dummy&#34; service exposing an identical API, and provide a simple abstraction layer that will call the &#34;dummy&#34; or the &#34;real&#34; service based on the configuration in effect. As long as your app calls the real service only through the abstraction, the abstraction layer and the dummy service will catch most of the errors in your code during testing.
+
+An extra benefit is that your tests will run in 20ms instead of 6 seconds! For big projects short times matter a lot. If the test suite can run in under a few seconds, I just leave a terminal open with &#34;watch ./run_tests&#34; and see a runtime error the moment I save the file.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    </table>
+    -->
+</div>
+
+<div class="page">
+<ul class="pager">
+  <li class="previous disabled">
+    <a href="#">««</a>
+  </li>
+  <li class="previous disabled">
+    <a href="#">«</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax/page/0#comments">»»</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax/page/2#comments">»</a>
+  </li>
+</ul>
+</div>
+
+<h3><a name="commentform"></a>Leave a Comment</h3>
+<div class="commentform">
+<form class="form-horizontal" method="post" action="#commentform">
+<div style="display:none;"><input id="csrf_token" name="csrf_token" value="20140210210330##2debd3ff5b175064e7e248b2e45c3c2bd200bf68" type="hidden"></div>
+
+<div class="control-group">
+    <label class="control-label" for="name">Name <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="name" name="name" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="url">Website</label>
+    <div class="controls"><input class="span5" id="url" name="url" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="email">Email <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="email" name="email" type="text"></div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="comment">Comment <span class="label label-important">*</span></label>
+    <div class="controls"><textarea class="span5" id="comment" name="comment" rows="4"></textarea><img style="cursor: pointer ! important; display: none ! important; position: absolute ! important; padding: 0px ! important; margin: 0px ! important; border: medium none ! important; width: 28px ! important; height: 14px ! important; opacity: 0.0152174 ! important; left: 664px ! important; top: 12850px ! important;" title="It's All Text!" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/gumdrop.png"></div>
+</div>
+
+<div class="control-group">
+    <div class="controls">
+<script type="text/javascript">var RecaptchaOptions = {"theme": "white", "custom_translations": {"incorrect_try_again": "Incorrect. Try again.", "help_btn": "Help", "cant_hear_this": "Download sound as MP3", "instructions_audio": "Type what you hear:", "instructions_visual": "Type the two words:", "refresh_btn": "Get a new challenge", "play_again": "Play sound again", "visual_challenge": "Get a visual challenge", "audio_challenge": "Get an audio challenge"}};</script>
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/challenge.js"></script><script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/recaptcha.js"></script><div class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio" id="recaptcha_widget_div" style=""><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_white"> <tbody><tr> <td colspan="6" class="recaptcha_r1_c1"></td> </tr> <tr> <td class="recaptcha_r2_c1"></td> <td colspan="4" class="recaptcha_image_cell"><center><div style="width: 300px; height: 57px;" id="recaptcha_image"><img id="recaptcha_challenge_image" alt="reCAPTCHA challenge image" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/image.jpg" height="57" width="300"></div></center></td> <td class="recaptcha_r2_c2"></td> </tr> <tr> <td rowspan="6" class="recaptcha_r3_c1"></td> <td colspan="4" class="recaptcha_r3_c2"></td> <td rowspan="6" class="recaptcha_r3_c3"></td> </tr> <tr> <td rowspan="3" class="recaptcha_r4_c1" height="49"> <div class="recaptcha_input_area"> <span style="display: none;" id="recaptcha_challenge_field_holder"><input name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_VusOWtLm_SBcB7dBxWnsegUXTNJOZ3B0_dKdH0yzzfIecnYoFWdVfDyUWke-_PCVp1nrRXY8pBGukLP8J-1Eqi7UUHnHY1AVOf6-esc3QDJjcM0AraIsnr2sfHsJIpw6UbEkrvz-dS4g7UEmlpRd_4LeYeE0mIXxq0oAzHE6QtWEBLP4ee8" type="hidden"></span><input autocomplete="off" name="recaptcha_response_field" id="recaptcha_response_field" autocorrect="off" autocapitalize="off" placeholder="Type the two words" type="text"> <span id="recaptcha_privacy" class="recaptcha_only_if_privacy"><a target="_blank" href="http://www.google.com/intl/en/policies/">Privacy &amp; Terms</a></span> </div> </td> <td rowspan="4" class="recaptcha_r4_c2"></td> <td><a title="Get a new challenge" id="recaptcha_reload_btn"><img alt="Get a new challenge" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/refresh.gif" id="recaptcha_reload" height="17" width="25"></a></td> <td rowspan="4" class="recaptcha_r4_c4"></td> </tr> <tr> <td><a title="Get an audio challenge" id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/audio.gif" id="recaptcha_switch_audio" alt="Get an audio challenge" height="16" width="25"></a><a title="Get a visual challenge" id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/text.gif" id="recaptcha_switch_img" alt="Get a visual challenge" height="16" width="25"></a></td> </tr> <tr> <td><a title="Help" id="recaptcha_whatsthis_btn"><img alt="Help" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/help.gif" id="recaptcha_whatsthis" height="16" width="25"></a></td> </tr> <tr> <td class="recaptcha_r7_c1"></td> <td class="recaptcha_r8_c1"></td> </tr> </tbody></table> </div></div>
+<noscript>
+  <div><iframe src="http://api.recaptcha.net/noscript?k=6Ld5Zs4SAAAAAOY0DOi4r18bgHlEaz41qAoRf__S" height="300" width="500"></iframe></div>
+  <div><textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  <input type="hidden" name="recaptcha_response_field" value="manual_challenge"></div>
+</noscript>
+</div>
+</div>
+
+<div class="control-group">
+    <div class="controls"><input name="submit" class="btn btn-primary" value="Post Comment" type="submit"> <span class="help-inline">Note: all comments are screened before they are published. Thank you for your patience!</span></div>
+</div>
+</form>
+</div>
+
+
+</div>
+
+            </div>
+        </div>
+        <div class="span4">
+            <div id="sidebar">
+                <h1>About Miguel</h1>
+                <img style="float: right; margin: 0px 8px 8px 0px; padding: 4px; border: 1px solid #ccc;" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/miguel.jpg">
+                <p>Welcome to my blog!</p>
+                <p>I'm a software engineer, photographer and filmmaker in Portland, Oregon, USA.</p>
+                <p>You can also find me on <a href="https://www.facebook.com/miguelgrinbergblog">Facebook</a>, <a href="https://plus.google.com/u/0/117786742456929977820">Google+</a>, <a href="http://www.linkedin.com/in/miguelgrinberg">LinkedIn</a> and <a href="https://twitter.com/#%21/miguelgrinberg">Twitter</a>.</p>
+                <p>Thank you for visiting!</p>
+                <h1>Flask Web Development Book</h1>
+                <p>I'm currently writing a book on web development with 
+Python and Flask, to be published by O'Reilly Media in 2014. The 
+official site for this book is <a href="http://flaskbook.com/">http://flaskbook.com</a>.</p>
+                <center><a href="http://flaskbook.com/"><img style="border: 1px solid black;" src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/flask-book-cover-tiny.png"></a></center>
+                <h1>Flask Tutorial at PyCon 2014</h1>
+                <p>If you want to learn Flask in a class setting then I 
+hope you will consider my upcoming tutorial session at PyCon 2014 in 
+Montréal on April 10th, 2014. Visit the <a href="https://us.pycon.org/2014/schedule/presentation/54/">tutorial page</a> for more information. I hope to see you there!</p>
+                <center><a href="https://us.pycon.org/2014/schedule/presentation/54/"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/pycon2014-blog-image.png"></a></center>
+                
+                		<h1>Categories</h1>
+		<ul>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Arduino/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Arduino RSS Feed" label="Arduino RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Arduino">Arduino</a></span> (7)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Blog/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Blog RSS Feed" label="Blog RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Blog">Blog</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/C++/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="C++ RSS Feed" label="C++ RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/C++">C++</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Cloud/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Cloud RSS Feed" label="Cloud RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Cloud">Cloud</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Filmmaking/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Filmmaking RSS Feed" label="Filmmaking RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Filmmaking">Filmmaking</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Flask/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Flask RSS Feed" label="Flask RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span> (28)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Games/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Games RSS Feed" label="Games RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Games">Games</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Gear/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Gear RSS Feed" label="Gear RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Gear">Gear</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/HTML5/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="HTML5 RSS Feed" label="HTML5 RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/HTML5">HTML5</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Heroku/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Heroku RSS Feed" label="Heroku RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Heroku">Heroku</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Javascript/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Javascript RSS Feed" label="Javascript RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Javascript">Javascript</a></span> (3)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Movie Reviews RSS Feed" label="Movie Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews">Movie Reviews</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Netflix/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Netflix RSS Feed" label="Netflix RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Netflix">Netflix</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Node.js/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Node.js RSS Feed" label="Node.js RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Node.js">Node.js</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Personal/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Personal RSS Feed" label="Personal RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Personal">Personal</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Photography/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Photography RSS Feed" label="Photography RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Photography">Photography</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Product Reviews RSS Feed" label="Product Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews">Product Reviews</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Programming/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Programming RSS Feed" label="Programming RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span> (36)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Project%20Management/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Project Management RSS Feed" label="Project Management RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Project%20Management">Project Management</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Python/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Python RSS Feed" label="Python RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span> (29)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/REST/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="REST RSS Feed" label="REST RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/REST">REST</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Raspberry Pi RSS Feed" label="Raspberry Pi RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi">Raspberry Pi</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/RhinoSteady/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="RhinoSteady RSS Feed" label="RhinoSteady RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/RhinoSteady">RhinoSteady</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Robotics/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Robotics RSS Feed" label="Robotics RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Robotics">Robotics</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Video/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XV_%20Ajax%20-%20miguelgrinberg.com_files/rss-small.png" title="Video RSS Feed" label="Video RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Video">Video</a></span> (2)</li>
+		
+		</ul>
+
+                
+            </div>
+        </div>
+    </div>
+	<div id="footer">
+        <p class="elapsed">This page was generated in 0.324 seconds.</p>
+		<p>© 2013 by Miguel Grinberg. All rights reserved. <a href="mailto:webmaster%20_at_%20miguelgrinberg%20_dot_%20com">Questions?</a></p>
+	</div>
+</div>
+<div id="wrap">
+</div>
+<div style="display: none;" id="cboxOverlay"></div><div style="display: none; padding-bottom: 42px; padding-right: 42px;" class="" id="colorbox"><div id="cboxWrapper"><div><div style="float: left;" id="cboxTopLeft"></div><div style="float: left;" id="cboxTopCenter"></div><div style="float: left;" id="cboxTopRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxMiddleLeft"></div><div style="float: left;" id="cboxContent"><div style="width: 0px; height: 0px; overflow: hidden; float: left;" id="cboxLoadedContent"></div><div style="float: left;" id="cboxLoadingOverlay"></div><div style="float: left;" id="cboxLoadingGraphic"></div><div style="float: left;" id="cboxTitle"></div><div style="float: left;" id="cboxCurrent"></div><div style="float: left;" id="cboxNext"></div><div style="float: left;" id="cboxPrevious"></div><div style="float: left;" id="cboxSlideshow"></div><div style="float: left;" id="cboxClose"></div></div><div style="float: left;" id="cboxMiddleRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxBottomLeft"></div><div style="float: left;" id="cboxBottomCenter"></div><div style="float: left;" id="cboxBottomRight"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div></body></html>

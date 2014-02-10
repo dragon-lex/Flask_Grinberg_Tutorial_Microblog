@@ -1,0 +1,1056 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><script src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/widgets.js" id="twitter-wjs"></script><script id="bug.surrogate.20">FB={Event:{subscribe:function(){}},UIServer:{},XFBML:{parse:function(){}},init:function(){},__noSuchMethod__:function(){}};</script><script src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/all.js" id="facebook-jssdk"></script><script id="bug.surrogate.1">var urchinTracker=function(){},_gaq={push:function(){try {if(arguments[0][0]=='_link')window.location.href=arguments[0][1]}catch(er){}}},_gat={_createTracker:function(){}, _getTracker:function(){return{__noSuchMethod__:function(){},_link:function(o){if(o)location.href=o;},_linkByPost:function(){return true;},_getLinkerUrl:function(o){return o;},_trackEvent:function(){}}}};</script><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>The Flask Mega-Tutorial, Part VI: Profile Page And Avatars - miguelgrinberg.com</title>
+
+	<meta name="description" content="miguelgrinberg.com">
+	<meta name="copyright" content="Copyright (c) 2012 Miguel Grinberg">
+	<meta name="author" content="Miguel Grinberg">
+    
+    <meta name="keywords" content="python, programming, flask, web, tutorial, avatar, gravatar, forms">
+    
+    <link rel="shortcut icon" href="http://blog.miguelgrinberg.com/static/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed" title="miguelgrinberg.com RSS feed">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/prettify.css" type="text/css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/colorbox.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/jquery_002.js"></script>
+	<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/jquery.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/moment.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/prettify.js"></script>
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/bootstrap-responsive.css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/style.css" rel="stylesheet" type="text/css">
+    <script src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/bootstrap.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css" media="screen, print, projection">
+    </style>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-4777284-15']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".gallery").colorbox({rel:".gallery",maxWidth:"95%",maxHeight:"95%",scalePhotos:true});
+            // add prettyprint class to all <pre><code></code></pre> blocks
+            var prettify = false;
+            $("pre code").parent().each(function() {
+                $(this).addClass('prettyprint');
+                prettify = true;
+            });
+            prettyPrint();
+        });
+    </script>
+<style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_r1_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 -63px no-repeat;width:318px;height:9px}.recaptchatable .recaptcha_r2_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r2_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -27px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r3_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r3_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px -57px no-repeat;width:300px;height:6px}.recaptchatable .recaptcha_r3_c3{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -9px 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r4_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px 0 no-repeat;width:171px;height:49px}.recaptchatable .recaptcha_r4_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -36px 0 no-repeat;width:7px;height:57px}.recaptchatable .recaptcha_r4_c4{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -214px 0 no-repeat;width:97px;height:57px}.recaptchatable .recaptcha_r7_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:171px;height:8px}.recaptchatable .recaptcha_r8_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:25px;height:8px}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px}#recaptcha_area,#recaptcha_table{width:318px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;padding:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;font-family:helvetica,sans-serif;font-size:8pt;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{position:relative;margin:auto}.recaptchatable #recaptcha_image #recaptcha_challenge_image{display:block}.recaptchatable #recaptcha_image #recaptcha_ad_image{display:block;position:absolute;top:0}.recaptchatable img{border:0!important;margin:0!important;padding:0!important}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;width:153px!important;height:45px!important;margin-left:7px!important;margin-right:7px!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;background:none!important;height:auto!important;width:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{width:153px!important;position:relative!important;bottom:7px!important;padding:0!important;margin:15px 0 0 0!important;font-size:10pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1!important}#recaptcha_instructions_error{color:red!important}.recaptcha_only_if_privacy{float:right;text-align:right}#recaptcha-ad-choices{position:absolute;height:15px;top:0;right:0}#recaptcha-ad-choices img{height:15px}.recaptcha-ad-choices-collapsed{width:15px;height:15px;display:block}.recaptcha-ad-choices-expanded{width:75px;height:15px;display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-collapsed{display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-expanded{display:block}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><style>#ugpbgljizdtshsvqdmapspdqhqkohjuch{border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.ugpbgljizdtshsvqdmapspdqhqkohjuch-blocked{color:#777 !important;display:inline !important;text-decoration:line-through !important;}#ugpbgljizdtshsvqdmapspdqhqkohjuch span{background:transparent !important;}#ugpbgljizdtshsvqdmapspdqhqkohjuch div{border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#ugpbgljizdtshsvqdmapspdqhqkohjuch a{font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}@media print{#ugpbgljizdtshsvqdmapspdqhqkohjuch{display:none !important;}}</style></head>
+<body style="padding-top: 40px;">
+<!-- facebook sdk -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- google plus sdk -->
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/plusone.js"></script>
+<!-- twitter sdk -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<!-- linkedin sdk -->
+<script src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/in.js" type="text/javascript"></script>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="http://blog.miguelgrinberg.com/">miguelgrinberg.com</a>
+            <ul class="nav">
+                <li><a href="http://blog.miguelgrinberg.com/">Home</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-me">About Me</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-this-blog">About This Blog</a></li>
+				
+            </ul>
+            <div class="nav pull-right">
+                <p class="navbar-text">
+                    <a type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss.png" alt="RSS Feed" title="RSS Feed"></a>
+                    <a href="https://www.facebook.com/miguelgrinbergblog"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/facebook.png" alt="Facebook" title="Facebook"></a>
+                    <a href="https://plus.google.com/u/0/117786742456929977820"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/googleplus.png" alt="Google+" title="Google+"></a>
+                    <a href="http://www.linkedin.com/in/miguelgrinberg"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/linkedin.png" alt="LinkedIn" title="LinkedIn"></a>
+                    <a href="https://twitter.com/#%21/miguelgrinberg"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/twitter.png" alt="Twitter" title="Twitter"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="banner"></div>
+<div class="container">
+    <div class="row">
+        <div class="span8">
+            <div id="main">
+                
+                
+                
+                
+                
+
+<div class="post">
+<p class="date">
+<script type="text/javascript">
+document.write(moment("2012-07-16T03:44:16Z").format("LL"));
+</script>July 15 2012
+</p>
+<div class="social-outer">
+    <div class="social">
+        <div class="social-box"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" data-via="miguelgrinberg" data-count="vertical">Tweet</a></div>
+        <div class="social-box" style="padding-left: 6px;"><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" data-send="false" data-layout="box_count" data-width="450" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="dzfvyovcmiskxthfyhyjpnztgfzkesdncxn"></iframe></div></div>
+        <div class="social-box"><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" size="tall"></g:plusone></div>
+        <div class="social-box"><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" data-counter="top"></script></div>
+    </div>
+</div>
+<h1 class="post-title">The Flask Mega-Tutorial, Part VI: Profile Page And Avatars</h1>
+<div class="posted">Posted by <span class="label label-important"><a href="http://blog.miguelgrinberg.com/author/Miguel%20Grinberg">Miguel Grinberg</a></span> under <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span>. </div>
+<div class="post_body"><p>This is the sixth article in the series in which I document my experience writing web applications in <a href="http://python.org/">Python</a> using the <a href="http://flask.pocoo.org/">Flask</a> microframework.</p>
+<p>The goal of the tutorial series is to develop a decently featured 
+microblogging application that demonstrating total lack of originality I
+ have decided to call <code>microblog</code>.</p>
+<p>Here is an index of all the articles in the series that have been published to date:</p>
+<ul>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world">Part I: Hello, World!</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates">Part II: Templates</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms">Part III: Web Forms</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database">Part IV: Database</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins">Part V: User Logins</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars">Part VI: Profile Page And Avatars</a> (this article)</li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-unit-testing">Part VII: Unit Testing</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers-contacts-and-friends">Part VIII: Followers, Contacts And Friends</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ix-pagination">Part IX: Pagination</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search">Part X: Full Text Search</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support">Part XI: Email Support</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xii-facelift">Part XII: Facelift</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times">Part XIII: Dates and Times</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n">Part XIV: I18n and L10n</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax">Part XV: Ajax</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling">Part XVI: Debugging, Testing and Profiling</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux-even-on-the-raspberry-pi">Part XVII: Deployment on Linux (even on the Raspberry Pi!)</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud">Part XVIII: Deployment on the Heroku Cloud</a></li>
+</ul>
+<h2>Recap</h2>
+<p>In the previous chapter of this tutorial we created our user login 
+system, so we can now have users log in and out of the website using 
+their OpenIDs.</p>
+<p>Today, we are going to work on the user profiles. First, we'll create
+ the user profile page, which shows the user's information and more 
+recent blog posts, and as part of that we will learn how to show user 
+avatars. Then we are going to create a web form for users to edit their 
+profiles.</p>
+<h2>User Profile Page</h2>
+<p>Creating a user profile page does not really require any new major 
+concepts to be introduced. We just need to create a new view function 
+and its accompanying HTML template.</p>
+<p>Here is the view function (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/user/&lt;nickname&gt;'</span><span class="pun">)</span><span class="pln">
+</span><span class="lit">@login_required</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> user</span><span class="pun">(</span><span class="pln">nickname</span><span class="pun">):</span><span class="pln">
+    user </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">query</span><span class="pun">.</span><span class="pln">filter_by</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> nickname</span><span class="pun">).</span><span class="pln">first</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> user </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">None</span><span class="pun">:</span><span class="pln">
+        flash</span><span class="pun">(</span><span class="str">'User '</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> nickname </span><span class="pun">+</span><span class="pln"> </span><span class="str">' not found.'</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span><span class="pln">
+    posts </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="pln">
+        </span><span class="pun">{</span><span class="pln"> </span><span class="str">'author'</span><span class="pun">:</span><span class="pln"> user</span><span class="pun">,</span><span class="pln"> </span><span class="str">'body'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'Test post #1'</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
+        </span><span class="pun">{</span><span class="pln"> </span><span class="str">'author'</span><span class="pun">:</span><span class="pln"> user</span><span class="pun">,</span><span class="pln"> </span><span class="str">'body'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'Test post #2'</span><span class="pln"> </span><span class="pun">}</span><span class="pln">
+    </span><span class="pun">]</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> render_template</span><span class="pun">(</span><span class="str">'user.html'</span><span class="pun">,</span><span class="pln">
+        user </span><span class="pun">=</span><span class="pln"> user</span><span class="pun">,</span><span class="pln">
+        posts </span><span class="pun">=</span><span class="pln"> posts</span><span class="pun">)</span></code></pre>
+<p>The <code>@app.route</code> decorator that we used to declare this 
+view function looks a little bit different than the previous ones. In 
+this case we have an <em>argument</em> in it, which is indicated as <code>&lt;nickname&gt;</code>. This translates into an argument of the same name added to the view function. When the client requests, say, URL <code>/user/miguel</code> the view function will be invoked with <code>nickname = 'miguel'</code>.</p>
+<p>The implementation of the view function should have no surprises. 
+First we try to load the user from the database, using the nickname that
+ we received as argument. If that doesn't work then we just redirect to 
+the main page with an error message, as we have seen in the previous 
+chapter.</p>
+<p>Once we have our user, we just send it in the <code>render_template</code>
+ call, along with some fake posts. Note that in the user profile page we
+ will be displaying only posts by this user, so our fake posts have the <code>author</code> field correctly set.</p>
+<p>Our initial view template will be extremely simple (file <code>app/templates/user.html</code>):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;h1&gt;</span><span class="pln">User: {{user.nickname}}!</span><span class="tag">&lt;/h1&gt;</span><span class="pln">
+</span><span class="tag">&lt;hr&gt;</span><span class="pln">
+{% for post in posts %}
+</span><span class="tag">&lt;p&gt;</span><span class="pln">
+  {{post.author.nickname}} says: </span><span class="tag">&lt;b&gt;</span><span class="pln">{{post.body}}</span><span class="tag">&lt;/b&gt;</span><span class="pln">
+</span><span class="tag">&lt;/p&gt;</span><span class="pln">
+{% endfor %}
+{% endblock %}</span></code></pre>
+<p>The profile page is now complete, but a link to it does not exist 
+anywhere in the web site. To make it a bit more easy for a user to check
+ his or her own profile, we are going to add a link to it in the 
+navigation bar at the top (file `app/templates/base.html'):</p>
+<pre class="prettyprint"><code><span class="pln">    </span><span class="tag">&lt;div&gt;</span><span class="pln">Microblog:
+        </span><span class="tag">&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('index') }}"</span><span class="tag">&gt;</span><span class="pln">Home</span><span class="tag">&lt;/a&gt;</span><span class="pln">
+        {% if g.user.is_authenticated() %}
+        | </span><span class="tag">&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('user', nickname = g.user.nickname) }}"</span><span class="tag">&gt;</span><span class="pln">Your Profile</span><span class="tag">&lt;/a&gt;</span><span class="pln">
+        | </span><span class="tag">&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('logout') }}"</span><span class="tag">&gt;</span><span class="pln">Logout</span><span class="tag">&lt;/a&gt;</span><span class="pln">
+        {% endif %}
+    </span><span class="tag">&lt;/div&gt;</span></code></pre>
+<p>Note how in the <code>url_for</code> function we have added the required <code>nickname</code> argument.</p>
+<p>Give the application a try now. Clicking on the <code>Your Profile</code>
+ link at the top should take you to your user page. Since we don't have 
+any links that will direct you to an arbitrary user profile page you 
+will need to type the URL by hand if you want to see someone else. For 
+example, you would type <code>http://localhost:5000/user/miguel</code> to see the profile of user <code>miguel</code>.</p>
+<h2>Avatars</h2>
+<p>I'm sure you agree that our profile pages are pretty boring. To make them a bit more interesting, let's add user avatars.</p>
+<p>Instead of having to deal with a possibly large collection of uploaded images in our server, we will rely on the <a href="http://gravatar.com/">Gravatar</a> service to provide our user avatars.</p>
+<p>Since returning an avatar is a user related task, we will be putting it in the <code>User</code> class (file <code>app/models.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> hashlib </span><span class="kwd">import</span><span class="pln"> md5
+</span><span class="com"># ...</span><span class="pln">
+</span><span class="kwd">class</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Model</span><span class="pun">):</span><span class="pln">
+    </span><span class="com"># ...</span><span class="pln">
+    </span><span class="kwd">def</span><span class="pln"> avatar</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">,</span><span class="pln"> size</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> </span><span class="str">'http://www.gravatar.com/avatar/'</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> md5</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">email</span><span class="pun">).</span><span class="pln">hexdigest</span><span class="pun">()</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="str">'?d=mm&amp;s='</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> str</span><span class="pun">(</span><span class="pln">size</span><span class="pun">)</span></code></pre>
+<p>The <code>avatar</code> method of <code>User</code> returns the URL of the user's avatar image, scaled to the requested size in pixels.</p>
+<p>Turns out with the Gravatar service this is really easy to do. You 
+just need to create an md5 hash of the user email and then incorporate 
+it into the specially crafted URL that you see above. After the md5 of 
+the email you can provide a number of options to customize the avatar. 
+The <code>d=mm</code> determines what placeholder image is returned when a user does not have an Gravatar account. The <code>mm</code> option returns the "mystery man" image, a gray silhouette of a person. The <code>s=N</code> option requests the avatar scaled to the given size in pixels.</p>
+<p>The Gravatar's website has <a href="https://gravatar.com/site/implement/images">documentation</a> for the avatar URL.</p>
+<p>Now that our <code>User</code> class knows how to return avatar images, we can incorporate them into our profile page layout (file <code>app/templates/user.html</code>):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{user.avatar(128)}}"</span><span class="tag">&gt;&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;h1&gt;</span><span class="pln">User: {{user.nickname}}</span><span class="tag">&lt;/h1&gt;&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span><span class="pln">
+</span><span class="tag">&lt;hr&gt;</span><span class="pln">
+{% for post in posts %}
+</span><span class="tag">&lt;p&gt;</span><span class="pln">
+  {{post.author.nickname}} says: </span><span class="tag">&lt;b&gt;</span><span class="pln">{{post.body}}</span><span class="tag">&lt;/b&gt;</span><span class="pln">
+</span><span class="tag">&lt;/p&gt;</span><span class="pln">
+{% endfor %}
+{% endblock %}</span></code></pre>
+<p>The nice thing about making the <code>User</code> class responsible 
+for returning avatars is that if some day we decide Gravatar avatars are
+ not what we want, we just rewrite the <code>avatar</code> method to 
+return different URLs (even ones that points to our own web server, if 
+we decide we want to host our own avatars), and all our templates will 
+start showing the new avatars automatically.</p>
+<p>We have added the user avatar to the top of the profile page, but at 
+the bottom of the page we have posts, and those could have a little 
+avatar as well. For the user profile page we will of course be showing 
+the same avatar for all the posts, but then when we move this 
+functionality to the main page we will have each post decorated with the
+ author's avatar, and that will look really nice.</p>
+<p>To show avatars for the posts we just need to make a small change in our template (file `app/templates/user.html'):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{user.avatar(128)}}"</span><span class="tag">&gt;&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;h1&gt;</span><span class="pln">User: {{user.nickname}}</span><span class="tag">&lt;/h1&gt;&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span><span class="pln">
+</span><span class="tag">&lt;hr&gt;</span><span class="pln">
+{% for post in posts %}
+</span><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{post.author.avatar(50)}}"</span><span class="tag">&gt;&lt;/td&gt;&lt;td&gt;&lt;i&gt;</span><span class="pln">{{post.author.nickname}} says:</span><span class="tag">&lt;/i&gt;&lt;br&gt;</span><span class="pln">{{post.body}}</span><span class="tag">&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span><span class="pln">
+{% endfor %}
+{% endblock %}</span></code></pre>
+<p>Here is how our profile page looks at this point:</p>
+<p></p><center><img alt="microblog profile page" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/flask-mega-tutorial-part-vi-1.png"></center><p></p>
+<h2>Reusing at the sub-template level</h2>
+<p>We designed the user profile page so that it displays the posts 
+written by the user. Our index page also displays posts, this time of 
+any user. So now we have two templates that will need to display posts 
+made by users. We could just copy/paste the portion of the template that
+ deals with the rendering of a post, but that is really not ideal, 
+because when we decide to change the layout of a post we'll have to 
+remember to go update all the templates that have posts in them.</p>
+<p>Instead, we are going to make a sub-template that just renders a post, then we'll include it in all the templates that need it.</p>
+<p>To start, we create a post sub-template, which is really nothing more
+ than a regular template. We do so by simply extracting the HTML for a 
+post from our user template (file <code>/app/templates/post.html</code>):</p>
+<pre class="prettyprint"><code><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{post.author.avatar(50)}}"</span><span class="tag">&gt;&lt;/td&gt;&lt;td&gt;&lt;i&gt;</span><span class="pln">{{post.author.nickname}} says:</span><span class="tag">&lt;/i&gt;&lt;br&gt;</span><span class="pln">{{post.body}}</span><span class="tag">&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span></code></pre>
+<p>And then we invoke this sub-template from our user template using Jinja2's <code>include</code> command (file <code>app/templates/user.html</code>):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{user.avatar(128)}}"</span><span class="tag">&gt;&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;h1&gt;</span><span class="pln">User: {{user.nickname}}</span><span class="tag">&lt;/h1&gt;&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span><span class="pln">
+</span><span class="tag">&lt;hr&gt;</span><span class="pln">
+{% for post in posts %}
+    {% include 'post.html' %}
+{% endfor %}
+{% endblock %}</span></code></pre>
+<p>Once we have a fully functioning index page we will invoke this same 
+sub-template from over there, but we aren't quite ready to do that, 
+we'll leave that for a future chapter of this tutorial.</p>
+<h2>More interesting profiles</h2>
+<p>While we now have a nice profile page, we don't really have much 
+information to show on it. Users like to tell a bit about them on these 
+pages, so we'll let them write something about themselves that we can 
+show here. We will also keep track of what was the last time each user 
+accessed the site, so that we can also show that on their profile page.</p>
+<p>To add these things we have to start by modifying our database. More specifically, we need to add two new fields to our <code>User</code> class (file <code>app/models.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">class</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Model</span><span class="pun">):</span><span class="pln">
+    id </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Integer</span><span class="pun">,</span><span class="pln"> primary_key </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">64</span><span class="pun">),</span><span class="pln"> unique </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    email </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">120</span><span class="pun">),</span><span class="pln"> index </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">,</span><span class="pln"> unique </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span><span class="pln">
+    role </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">SmallInteger</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">default</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> ROLE_USER</span><span class="pun">)</span><span class="pln">
+    posts </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="pln">relationship</span><span class="pun">(</span><span class="str">'Post'</span><span class="pun">,</span><span class="pln"> backref </span><span class="pun">=</span><span class="pln"> </span><span class="str">'author'</span><span class="pun">,</span><span class="pln"> lazy </span><span class="pun">=</span><span class="pln"> </span><span class="str">'dynamic'</span><span class="pun">)</span><span class="pln">
+    about_me </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">String</span><span class="pun">(</span><span class="lit">140</span><span class="pun">))</span><span class="pln">
+    last_seen </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="typ">Column</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">DateTime</span><span class="pun">)</span></code></pre>
+<p>Every time we modify the database we have to generate a new 
+migration. Remember that in the database chapter we went through the 
+pain of setting up a database migration system. We can see the fruits of
+ that effort now. To add these two new fields to our database we just do
+ this:</p>
+<pre class="prettyprint"><code><span class="pun">./</span><span class="pln">db_migrate</span><span class="pun">.</span><span class="pln">py</span></code></pre>
+<p>To which our script will respond:</p>
+<pre class="prettyprint"><code><span class="typ">New</span><span class="pln"> migration saved </span><span class="kwd">as</span><span class="pln"> db_repository</span><span class="pun">/</span><span class="pln">versions</span><span class="pun">/</span><span class="lit">003</span><span class="pln">_migration</span><span class="pun">.</span><span class="pln">py
+</span><span class="typ">Current</span><span class="pln"> database version</span><span class="pun">:</span><span class="pln"> </span><span class="lit">3</span></code></pre>
+<p>And our two new fields are now in our database. Remember that if you are on Windows the way to invoke this script is different.</p>
+<p>If we did not have migration support you would have needed to edit 
+your database manually, or worse, delete it and recreate it from 
+scratch.</p>
+<p>Next, let's modify our profile page template to show these fields (file <code>app/templates/user.html</code>):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{user.avatar(128)}}"</span><span class="tag">&gt;&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;</span><span class="pln">
+            </span><span class="tag">&lt;h1&gt;</span><span class="pln">User: {{user.nickname}}</span><span class="tag">&lt;/h1&gt;</span><span class="pln">
+            {% if user.about_me %}</span><span class="tag">&lt;p&gt;</span><span class="pln">{{user.about_me}}</span><span class="tag">&lt;/p&gt;</span><span class="pln">{% endif %}
+            {% if user.last_seen %}</span><span class="tag">&lt;p&gt;&lt;i&gt;</span><span class="pln">Last seen on: {{user.last_seen}}</span><span class="tag">&lt;/i&gt;&lt;/p&gt;</span><span class="pln">{% endif %}
+        </span><span class="tag">&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span><span class="pln">
+</span><span class="tag">&lt;hr&gt;</span><span class="pln">
+{% for post in posts %}
+    {% include 'post.html' %}
+{% endfor %}
+{% endblock %}</span></code></pre>
+<p>Note we make use of Jinja2's conditionals to show these fields, because we only want to show them when they are set.</p>
+<p>At this point these two new fields are empty for all users, so nothing will show.</p>
+<p>The <code>last_seen</code> field is pretty easy to support. Remember that in a previous chapter we created a <code>before_request</code> handler, to register the logged in user with the <code>flask.g</code> global, as <code>g.user</code>. That is the perfect time to update our database with the last access time for a user (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> datetime </span><span class="kwd">import</span><span class="pln"> datetime
+</span><span class="com"># ...</span><span class="pln">
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">before_request
+</span><span class="kwd">def</span><span class="pln"> before_request</span><span class="pun">():</span><span class="pln">
+    g</span><span class="pun">.</span><span class="pln">user </span><span class="pun">=</span><span class="pln"> current_user
+    </span><span class="kwd">if</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">is_authenticated</span><span class="pun">():</span><span class="pln">
+        g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">last_seen </span><span class="pun">=</span><span class="pln"> datetime</span><span class="pun">.</span><span class="pln">utcnow</span><span class="pun">()</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span></code></pre>
+<p>If you log in to your profile page again the last seen time will now 
+display, and each time you refresh the page the time will update as 
+well, because each time the browser makes a request the <code>before_request</code> handler will update the time in the database.</p>
+<p>Note that we are writing the time in the standard UTC timezone. We 
+discussed this in a previous chapter, we will write all timestamps in 
+UTC so that they are consistent. That has the undesired side effect that
+ the time displayed in the user profile page is also in UTC. We will fix
+ this in a future chapter that will be dedicated to date and time 
+handling.</p>
+<p>To display the user's about me information we have to give them a 
+place to enter it, and the proper place for this is in the edit profile 
+page.</p>
+<h2>Editing the profile information</h2>
+<p>Adding a profile form is surprisingly easy. We start by creating the web form (file <code>app/forms.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">wtf </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">Form</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> wtforms </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">TextField</span><span class="pun">,</span><span class="pln"> </span><span class="typ">BooleanField</span><span class="pun">,</span><span class="pln"> </span><span class="typ">TextAreaField</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> wtforms</span><span class="pun">.</span><span class="pln">validators </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">Required</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Length</span><span class="pln">
+
+</span><span class="kwd">class</span><span class="pln"> </span><span class="typ">EditForm</span><span class="pun">(</span><span class="typ">Form</span><span class="pun">):</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> </span><span class="typ">TextField</span><span class="pun">(</span><span class="str">'nickname'</span><span class="pun">,</span><span class="pln"> validators </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="typ">Required</span><span class="pun">()])</span><span class="pln">
+    about_me </span><span class="pun">=</span><span class="pln"> </span><span class="typ">TextAreaField</span><span class="pun">(</span><span class="str">'about_me'</span><span class="pun">,</span><span class="pln"> validators </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="typ">Length</span><span class="pun">(</span><span class="pln">min </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> max </span><span class="pun">=</span><span class="pln"> </span><span class="lit">140</span><span class="pun">)])</span></code></pre>
+<p>Then the view template (file <code>app/templates/edit.html</code>):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;h1&gt;</span><span class="pln">Edit Your Profile</span><span class="tag">&lt;/h1&gt;</span><span class="pln">
+</span><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">action</span><span class="pun">=</span><span class="atv">""</span><span class="pln"> </span><span class="atn">method</span><span class="pun">=</span><span class="atv">"post"</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">"edit"</span><span class="tag">&gt;</span><span class="pln">
+    {{form.hidden_tag()}}
+    </span><span class="tag">&lt;table&gt;</span><span class="pln">
+        </span><span class="tag">&lt;tr&gt;</span><span class="pln">
+            </span><span class="tag">&lt;td&gt;</span><span class="pln">Your nickname:</span><span class="tag">&lt;/td&gt;</span><span class="pln">
+            </span><span class="tag">&lt;td&gt;</span><span class="pln">{{form.nickname(size = 24)}}</span><span class="tag">&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+        </span><span class="tag">&lt;tr&gt;</span><span class="pln">
+            </span><span class="tag">&lt;td&gt;</span><span class="pln">About yourself:</span><span class="tag">&lt;/td&gt;</span><span class="pln">
+            </span><span class="tag">&lt;td&gt;</span><span class="pln">{{form.about_me(cols = 32, rows = 4)}}</span><span class="tag">&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+        </span><span class="tag">&lt;tr&gt;</span><span class="pln">
+            </span><span class="tag">&lt;td&gt;&lt;/td&gt;</span><span class="pln">
+            </span><span class="tag">&lt;td&gt;&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">"submit"</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">"Save Changes"</span><span class="tag">&gt;&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/table&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+{% endblock %}</span></code></pre>
+<p>And finally we write the view function (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> forms </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">LoginForm</span><span class="pun">,</span><span class="pln"> </span><span class="typ">EditForm</span><span class="pln">
+
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/edit'</span><span class="pun">,</span><span class="pln"> methods </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'GET'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'POST'</span><span class="pun">])</span><span class="pln">
+</span><span class="lit">@login_required</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> edit</span><span class="pun">():</span><span class="pln">
+    form </span><span class="pun">=</span><span class="pln"> </span><span class="typ">EditForm</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">validate_on_submit</span><span class="pun">():</span><span class="pln">
+        g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">data
+        g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">about_me </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">.</span><span class="pln">about_me</span><span class="pun">.</span><span class="pln">data
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+        flash</span><span class="pun">(</span><span class="str">'Your changes have been saved.'</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'edit'</span><span class="pun">))</span><span class="pln">
+    </span><span class="kwd">else</span><span class="pun">:</span><span class="pln">
+        form</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">data </span><span class="pun">=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">nickname
+        form</span><span class="pun">.</span><span class="pln">about_me</span><span class="pun">.</span><span class="pln">data </span><span class="pun">=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">about_me
+    </span><span class="kwd">return</span><span class="pln"> render_template</span><span class="pun">(</span><span class="str">'edit.html'</span><span class="pun">,</span><span class="pln">
+        form </span><span class="pun">=</span><span class="pln"> form</span><span class="pun">)</span></code></pre>
+<p>To make this page easy to reach, we also add a link to it from the user profile page (file <code>app/templates/user.html</code>):</p>
+<pre class="prettyprint"><code><span class="com">&lt;!-- extend base layout --&gt;</span><span class="pln">
+{% extends "base.html" %}
+
+{% block content %}
+</span><span class="tag">&lt;table&gt;</span><span class="pln">
+    </span><span class="tag">&lt;tr</span><span class="pln"> </span><span class="atn">valign</span><span class="pun">=</span><span class="atv">"top"</span><span class="tag">&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;&lt;img</span><span class="pln"> </span><span class="atn">src</span><span class="pun">=</span><span class="atv">"{{user.avatar(128)}}"</span><span class="tag">&gt;&lt;/td&gt;</span><span class="pln">
+        </span><span class="tag">&lt;td&gt;</span><span class="pln">
+            </span><span class="tag">&lt;h1&gt;</span><span class="pln">User: {{user.nickname}}</span><span class="tag">&lt;/h1&gt;</span><span class="pln">
+            {% if user.about_me %}</span><span class="tag">&lt;p&gt;</span><span class="pln">{{user.about_me}}</span><span class="tag">&lt;/p&gt;</span><span class="pln">{% endif %}
+            {% if user.last_seen %}</span><span class="tag">&lt;p&gt;&lt;i&gt;</span><span class="pln">Last seen on: {{user.last_seen}}</span><span class="tag">&lt;/i&gt;&lt;/p&gt;</span><span class="pln">{% endif %}
+            {% if user.id == g.user.id %}</span><span class="tag">&lt;p&gt;&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{url_for('edit')}}"</span><span class="tag">&gt;</span><span class="pln">Edit</span><span class="tag">&lt;/a&gt;&lt;/p&gt;</span><span class="pln">{% endif %}
+        </span><span class="tag">&lt;/td&gt;</span><span class="pln">
+    </span><span class="tag">&lt;/tr&gt;</span><span class="pln">
+</span><span class="tag">&lt;/table&gt;</span><span class="pln">
+</span><span class="tag">&lt;hr&gt;</span><span class="pln">
+{% for post in posts %}
+    {% include 'post.html' %}
+{% endfor %}
+{% endblock %}</span></code></pre>
+<p>Pay attention to the clever conditional we are using to make sure 
+that the Edit link appears when you are viewing your own profile, but 
+not when you are viewing someone else's.</p>
+<p>Below is a new screenshot of the user profile page, with all the additions, and with some "about me" words written:</p>
+<p></p><center><img alt="microblog profile page" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/flask-mega-tutorial-part-vi-2.png"></center><p></p>
+<h2>Final words... and your homework!</h2>
+<p>So it seems we are pretty much done with user profiles, right? We sort of are, but we have a nasty bug that we need to fix. </p>
+<p>Can you find it?</p>
+<p>Here is a clue. We have introduced this bug in the previous chapter 
+of the tutorial, when we were looking at the login system. And today we 
+have written a new piece of code that has the same bug.</p>
+<p>Think about it, and if you know what the problem is feel free to show
+ off in the comments below. I will explain the bug, and how to fix it 
+properly in the next chapter.</p>
+<p>As always, here is the download link for the complete application with today's additions:</p>
+<p>Download <a href="https://github.com/miguelgrinberg/microblog/archive/v0.6.zip">microblog-0.6.zip</a>.</p>
+<p>Remember that I'm not including a database in the archive. If you 
+have a database from the previous chapter, just put it in the correct 
+location and then run <code>db_upgrade.py</code> to upgrade it. If you don't have a previous database then call <code>db_create.py</code> to make a brand new one.</p>
+<p>Thank you for following my tutorial. I hope to see you again in the next installment.</p>
+<p>Miguel</p></div>
+<div class="social-mini"><table><tbody><tr>
+    <td><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" data-via="miguelgrinberg" data-count="none">Tweet</a></td>
+    <td><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" size="medium" witdh="100" annotation="none"></g:plusone></td>
+    <td><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars"></script></td>
+    <td><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars" data-send="false" data-layout="button_count" data-width="100" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="glbilsdjmuolbgdgolxdrwhkjnomvmcifvc"></iframe></div></td>
+</tr></tbody></table></div>
+
+<h4 style="text-align: right"><a name="comments"></a>31 comments</h4>
+
+
+<div class="comment">
+    <ul>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#1</span> <span class="label label-info">JonoB</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-19T21:08:07Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Your post.html 
+template is wrong, since you are creating a new &lt;table&gt; element 
+for each post. Your for look should be inside the table, and inside the 
+post.html template (not inside the user.html template)</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/b50f24a5349355a5ce3845f2d1e1cf7e.png"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#2</span> <span class="label label-info">JonoB</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-19T21:49:14Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">I thought that 
+jinja2 templates are safe by default, and that auto-escaping happens by 
+default. By adding the |safe method, you STOP auto-escaping for that 
+field. See http://flask.pocoo.org/docs/templating/ : use the |safe 
+filter to explicitly mark a string as safe HTML ({{ myvariable|safe }})</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#3</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-20T03:26:35Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@JonoB: My 
+intention was to create a different table per post, as that allows you 
+to have other formatting elements or spacing between posts. The page 
+could also very well work with a single table like you suggest. Thanks.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#4</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2012-07-20T03:28:44Z").fromNow());
+                    </script>2 years ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@JonoB: absolutely
+ right about the the "safe" qualifier. I have removed it and will find 
+the opportunity to introduce it again in a later chapter. Thanks again 
+for keeping me honest!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#5</span> <span class="label label-info"><a href="http://gianpaj.com/">GianPaJ</a></span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-26T23:46:04Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">I already have 
+done a Flask app. But it's great to revisit the steps I did about year 
+ago and few things I should have done better :)
+
+Thanks so much for this tutorial!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#6</span> <span class="label label-info">American Gaucho</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-04-21T04:12:44Z").fromNow());
+                    </script>10 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">I haven't looked 
+at the later phases of the tutorial yet, but I'm guessing the bug has to
+ do with the fact that we may have collisions with our OpenIDs. In fact,
+ I would have hit this bug in my code if Yahoo presented its OpenIDs a 
+bit differently than Google does. Whenever a collision happens between 
+two OpenIDs, someone will simply be unable to register for our app.
+
+I'm glad you said there was a bug, because I noticed it during the login
+ chapter and was wondering if it would ever be fixed lol. Thanks for an 
+awesome tutorial so far - you could easily turn this thing into a great 
+book!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#7</span> <span class="label label-info">azed</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-06-02T16:48:53Z").fromNow());
+                    </script>8 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">This part of the code
+if g.user.is_authenticated():
+        g.user.last_seen = datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()
+
+raises  AttributeError: 'RequestContext' object has no attribute 'user'
+
+</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#8</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-06-02T16:54:11Z").fromNow());
+                    </script>8 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@azed: the line right above the "if g.user.is_authenticated" sets g.user to current_user. Do you have that in your code?</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/de14f1152bd5a6e789726d196f06fcf8.png"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#9</span> <span class="label label-info">azed</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-06-02T19:45:54Z").fromNow());
+                    </script>8 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Yeah i have it. This is the stack trace
+
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py", line 1701, in __call__
+return self.wsgi_app(environ, start_response)
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py", line 1689, in wsgi_app
+response = self.make_response(self.handle_exception(e))
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py", line 1687, in wsgi_app
+response = self.full_dispatch_request()
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py", line 1360, in full_dispatch_request
+rv = self.handle_user_exception(e)
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py", line 1356, in full_dispatch_request
+rv = self.preprocess_request()
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py", line 1539, in preprocess_request
+rv = func()
+File "C:\Users\NOD\microblog\app\views.py", line 75, in before_request
+if g.user.is_authenticated():
+File "C:\Users\NOD\microblog\flask\lib\site-packages\werkzeug\local.py", line 336, in __getattr__
+return getattr(self._get_current_object(), name)
+File "C:\Users\NOD\microblog\flask\lib\site-packages\werkzeug\local.py", line 295, in _get_current_object
+return self.__local()
+File "C:\Users\NOD\microblog\flask\lib\site-packages\flask_login.py", line 403, in &lt;lambda&gt;
+current_user = LocalProxy(lambda: _request_ctx_stack.top.user)
+AttributeError: 'RequestContext' object has no attribute 'user'</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#10</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-06-02T20:09:36Z").fromNow());
+                    </script>8 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@azed: I can't 
+really confirm that g.user was set before by looking at the stack trace.
+ I was able to reproduce your stack trace by not initializating the 
+LoginManager class. Look in app/__init__.py  for a line that reads 
+lm.init_app(app). Any chance you missed this?
+
+In general when you have a problem like this you may also want to 
+download my version of the application and try it alongside yours to see
+ what the differences are.</p>
+                </div>
+            </div>
+        </li>
+        
+    </ul>
+    <!--
+    <table width="100%">
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#1</span> <span class="label label-info">JonoB</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-19T21:08:07Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Your post.html template is wrong, since you are creating a new &lt;table&gt; element for each post. Your for look should be inside the table, and inside the post.html template (not inside the user.html template)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#2</span> <span class="label label-info">JonoB</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-19T21:49:14Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">I thought that jinja2 templates are safe by default, and that auto-escaping happens by default. By adding the |safe method, you STOP auto-escaping for that field. See http://flask.pocoo.org/docs/templating/ : use the |safe filter to explicitly mark a string as safe HTML ({{ myvariable|safe }})aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#3</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-20T03:26:35Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@JonoB: My intention was to create a different table per post, as that allows you to have other formatting elements or spacing between posts. The page could also very well work with a single table like you suggest. Thanks.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#4</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2012-07-20T03:28:44Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@JonoB: absolutely right about the the &#34;safe&#34; qualifier. I have removed it and will find the opportunity to introduce it again in a later chapter. Thanks again for keeping me honest!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/d9d2d692aef76c4131be177b693f109f?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#5</span> <span class="label label-info"><a href="http://gianpaj.com">GianPaJ</a></span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-26T23:46:04Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">I already have done a Flask app. But it&#39;s great to revisit the steps I did about year ago and few things I should have done better :)
+
+Thanks so much for this tutorial!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#6</span> <span class="label label-info">American Gaucho</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-04-21T04:12:44Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">I haven&#39;t looked at the later phases of the tutorial yet, but I&#39;m guessing the bug has to do with the fact that we may have collisions with our OpenIDs. In fact, I would have hit this bug in my code if Yahoo presented its OpenIDs a bit differently than Google does. Whenever a collision happens between two OpenIDs, someone will simply be unable to register for our app.
+
+I&#39;m glad you said there was a bug, because I noticed it during the login chapter and was wondering if it would ever be fixed lol. Thanks for an awesome tutorial so far - you could easily turn this thing into a great book!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/de14f1152bd5a6e789726d196f06fcf8?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#7</span> <span class="label label-info">azed</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-06-02T16:48:53Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">This part of the code
+if g.user.is_authenticated():
+        g.user.last_seen = datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()
+
+raises  AttributeError: &#39;RequestContext&#39; object has no attribute &#39;user&#39;
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#8</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-06-02T16:54:11Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@azed: the line right above the &#34;if g.user.is_authenticated&#34; sets g.user to current_user. Do you have that in your code?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/de14f1152bd5a6e789726d196f06fcf8?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#9</span> <span class="label label-info">azed</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-06-02T19:45:54Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Yeah i have it. This is the stack trace
+
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py&#34;, line 1701, in __call__
+return self.wsgi_app(environ, start_response)
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py&#34;, line 1689, in wsgi_app
+response = self.make_response(self.handle_exception(e))
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py&#34;, line 1687, in wsgi_app
+response = self.full_dispatch_request()
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py&#34;, line 1360, in full_dispatch_request
+rv = self.handle_user_exception(e)
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py&#34;, line 1356, in full_dispatch_request
+rv = self.preprocess_request()
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask\app.py&#34;, line 1539, in preprocess_request
+rv = func()
+File &#34;C:\Users\NOD\microblog\app\views.py&#34;, line 75, in before_request
+if g.user.is_authenticated():
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\werkzeug\local.py&#34;, line 336, in __getattr__
+return getattr(self._get_current_object(), name)
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\werkzeug\local.py&#34;, line 295, in _get_current_object
+return self.__local()
+File &#34;C:\Users\NOD\microblog\flask\lib\site-packages\flask_login.py&#34;, line 403, in &lt;lambda&gt;
+current_user = LocalProxy(lambda: _request_ctx_stack.top.user)
+AttributeError: &#39;RequestContext&#39; object has no attribute &#39;user&#39;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#10</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-06-02T20:09:36Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@azed: I can&#39;t really confirm that g.user was set before by looking at the stack trace. I was able to reproduce your stack trace by not initializating the LoginManager class. Look in app/__init__.py  for a line that reads lm.init_app(app). Any chance you missed this?
+
+In general when you have a problem like this you may also want to download my version of the application and try it alongside yours to see what the differences are.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    </table>
+    -->
+</div>
+
+<div class="page">
+<ul class="pager">
+  <li class="previous disabled">
+    <a href="#">««</a>
+  </li>
+  <li class="previous disabled">
+    <a href="#">«</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars/page/0#comments">»»</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars/page/2#comments">»</a>
+  </li>
+</ul>
+</div>
+
+<h3><a name="commentform"></a>Leave a Comment</h3>
+<div class="commentform">
+<form class="form-horizontal" method="post" action="#commentform">
+<div style="display:none;"><input id="csrf_token" name="csrf_token" value="20140210210111##6d4b927638738596f0bd24c11a709e1063c45f20" type="hidden"></div>
+
+<div class="control-group">
+    <label class="control-label" for="name">Name <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="name" name="name" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="url">Website</label>
+    <div class="controls"><input class="span5" id="url" name="url" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="email">Email <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="email" name="email" type="text"></div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="comment">Comment <span class="label label-important">*</span></label>
+    <div class="controls"><textarea class="span5" id="comment" name="comment" rows="4"></textarea><img style="cursor: pointer ! important; display: none ! important; position: absolute ! important; padding: 0px ! important; margin: 0px ! important; border: medium none ! important; width: 28px ! important; height: 14px ! important; opacity: 0.0152174 ! important; left: 664px ! important; top: 13265px ! important;" title="It's All Text!" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/gumdrop.png"></div>
+</div>
+
+<div class="control-group">
+    <div class="controls">
+<script type="text/javascript">var RecaptchaOptions = {"theme": "white", "custom_translations": {"incorrect_try_again": "Incorrect. Try again.", "help_btn": "Help", "cant_hear_this": "Download sound as MP3", "instructions_audio": "Type what you hear:", "instructions_visual": "Type the two words:", "refresh_btn": "Get a new challenge", "play_again": "Play sound again", "visual_challenge": "Get a visual challenge", "audio_challenge": "Get an audio challenge"}};</script>
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/challenge.js"></script><script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/recaptcha.js"></script><div class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio" id="recaptcha_widget_div" style=""><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_white"> <tbody><tr> <td colspan="6" class="recaptcha_r1_c1"></td> </tr> <tr> <td class="recaptcha_r2_c1"></td> <td colspan="4" class="recaptcha_image_cell"><center><div style="width: 300px; height: 57px;" id="recaptcha_image"><img id="recaptcha_challenge_image" alt="reCAPTCHA challenge image" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/image.jpg" height="57" width="300"></div></center></td> <td class="recaptcha_r2_c2"></td> </tr> <tr> <td rowspan="6" class="recaptcha_r3_c1"></td> <td colspan="4" class="recaptcha_r3_c2"></td> <td rowspan="6" class="recaptcha_r3_c3"></td> </tr> <tr> <td rowspan="3" class="recaptcha_r4_c1" height="49"> <div class="recaptcha_input_area"> <span style="display: none;" id="recaptcha_challenge_field_holder"><input name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_Vuv0nis3DTptEY-BRRw_8Kkii934KI9sFbPXPP_DpHE5m_02JxQv1OaUQRQ46JWzKNDxr049s49z2QWqWEhczfJqt63m0mXbJOJ3ShGAlYYEB_AH3gFidkXo1o1eJ1le774rN0y7akxSt9yZkOGmFRViPCYeM3nwhYzLe4urqeJVWkk6wRE" type="hidden"></span><input autocomplete="off" name="recaptcha_response_field" id="recaptcha_response_field" autocorrect="off" autocapitalize="off" placeholder="Type the two words" type="text"> <span id="recaptcha_privacy" class="recaptcha_only_if_privacy"><a target="_blank" href="http://www.google.com/intl/en/policies/">Privacy &amp; Terms</a></span> </div> </td> <td rowspan="4" class="recaptcha_r4_c2"></td> <td><a title="Get a new challenge" id="recaptcha_reload_btn"><img alt="Get a new challenge" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/refresh.gif" id="recaptcha_reload" height="17" width="25"></a></td> <td rowspan="4" class="recaptcha_r4_c4"></td> </tr> <tr> <td><a title="Get an audio challenge" id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/audio.gif" id="recaptcha_switch_audio" alt="Get an audio challenge" height="16" width="25"></a><a title="Get a visual challenge" id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/text.gif" id="recaptcha_switch_img" alt="Get a visual challenge" height="16" width="25"></a></td> </tr> <tr> <td><a title="Help" id="recaptcha_whatsthis_btn"><img alt="Help" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/help.gif" id="recaptcha_whatsthis" height="16" width="25"></a></td> </tr> <tr> <td class="recaptcha_r7_c1"></td> <td class="recaptcha_r8_c1"></td> </tr> </tbody></table> </div></div>
+<noscript>
+  <div><iframe src="http://api.recaptcha.net/noscript?k=6Ld5Zs4SAAAAAOY0DOi4r18bgHlEaz41qAoRf__S" height="300" width="500"></iframe></div>
+  <div><textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  <input type="hidden" name="recaptcha_response_field" value="manual_challenge"></div>
+</noscript>
+</div>
+</div>
+
+<div class="control-group">
+    <div class="controls"><input name="submit" class="btn btn-primary" value="Post Comment" type="submit"> <span class="help-inline">Note: all comments are screened before they are published. Thank you for your patience!</span></div>
+</div>
+</form>
+</div>
+
+
+</div>
+
+            </div>
+        </div>
+        <div class="span4">
+            <div id="sidebar">
+                <h1>About Miguel</h1>
+                <img style="float: right; margin: 0px 8px 8px 0px; padding: 4px; border: 1px solid #ccc;" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/miguel.jpg">
+                <p>Welcome to my blog!</p>
+                <p>I'm a software engineer, photographer and filmmaker in Portland, Oregon, USA.</p>
+                <p>You can also find me on <a href="https://www.facebook.com/miguelgrinbergblog">Facebook</a>, <a href="https://plus.google.com/u/0/117786742456929977820">Google+</a>, <a href="http://www.linkedin.com/in/miguelgrinberg">LinkedIn</a> and <a href="https://twitter.com/#%21/miguelgrinberg">Twitter</a>.</p>
+                <p>Thank you for visiting!</p>
+                <h1>Flask Web Development Book</h1>
+                <p>I'm currently writing a book on web development with 
+Python and Flask, to be published by O'Reilly Media in 2014. The 
+official site for this book is <a href="http://flaskbook.com/">http://flaskbook.com</a>.</p>
+                <center><a href="http://flaskbook.com/"><img style="border: 1px solid black;" src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/flask-book-cover-tiny.png"></a></center>
+                <h1>Flask Tutorial at PyCon 2014</h1>
+                <p>If you want to learn Flask in a class setting then I 
+hope you will consider my upcoming tutorial session at PyCon 2014 in 
+Montréal on April 10th, 2014. Visit the <a href="https://us.pycon.org/2014/schedule/presentation/54/">tutorial page</a> for more information. I hope to see you there!</p>
+                <center><a href="https://us.pycon.org/2014/schedule/presentation/54/"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/pycon2014-blog-image.png"></a></center>
+                
+                		<h1>Categories</h1>
+		<ul>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Arduino/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Arduino RSS Feed" label="Arduino RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Arduino">Arduino</a></span> (7)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Blog/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Blog RSS Feed" label="Blog RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Blog">Blog</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/C++/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="C++ RSS Feed" label="C++ RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/C++">C++</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Cloud/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Cloud RSS Feed" label="Cloud RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Cloud">Cloud</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Filmmaking/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Filmmaking RSS Feed" label="Filmmaking RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Filmmaking">Filmmaking</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Flask/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Flask RSS Feed" label="Flask RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span> (28)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Games/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Games RSS Feed" label="Games RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Games">Games</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Gear/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Gear RSS Feed" label="Gear RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Gear">Gear</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/HTML5/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="HTML5 RSS Feed" label="HTML5 RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/HTML5">HTML5</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Heroku/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Heroku RSS Feed" label="Heroku RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Heroku">Heroku</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Javascript/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Javascript RSS Feed" label="Javascript RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Javascript">Javascript</a></span> (3)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Movie Reviews RSS Feed" label="Movie Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews">Movie Reviews</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Netflix/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Netflix RSS Feed" label="Netflix RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Netflix">Netflix</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Node.js/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Node.js RSS Feed" label="Node.js RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Node.js">Node.js</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Personal/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Personal RSS Feed" label="Personal RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Personal">Personal</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Photography/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Photography RSS Feed" label="Photography RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Photography">Photography</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Product Reviews RSS Feed" label="Product Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews">Product Reviews</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Programming/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Programming RSS Feed" label="Programming RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span> (36)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Project%20Management/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Project Management RSS Feed" label="Project Management RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Project%20Management">Project Management</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Python/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Python RSS Feed" label="Python RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span> (29)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/REST/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="REST RSS Feed" label="REST RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/REST">REST</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Raspberry Pi RSS Feed" label="Raspberry Pi RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi">Raspberry Pi</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/RhinoSteady/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="RhinoSteady RSS Feed" label="RhinoSteady RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/RhinoSteady">RhinoSteady</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Robotics/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Robotics RSS Feed" label="Robotics RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Robotics">Robotics</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Video/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20VI_%20Profile%20Page%20And%20Avatars%20-%20miguelgrinberg.com_files/rss-small.png" title="Video RSS Feed" label="Video RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Video">Video</a></span> (2)</li>
+		
+		</ul>
+
+                
+            </div>
+        </div>
+    </div>
+	<div id="footer">
+        <p class="elapsed">This page was generated in 0.22 seconds.</p>
+		<p>© 2013 by Miguel Grinberg. All rights reserved. <a href="mailto:webmaster%20_at_%20miguelgrinberg%20_dot_%20com">Questions?</a></p>
+	</div>
+</div>
+<div id="wrap">
+</div>
+<div style="display: none;" id="cboxOverlay"></div><div style="display: none; padding-bottom: 42px; padding-right: 42px;" class="" id="colorbox"><div id="cboxWrapper"><div><div style="float: left;" id="cboxTopLeft"></div><div style="float: left;" id="cboxTopCenter"></div><div style="float: left;" id="cboxTopRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxMiddleLeft"></div><div style="float: left;" id="cboxContent"><div style="width: 0px; height: 0px; overflow: hidden; float: left;" id="cboxLoadedContent"></div><div style="float: left;" id="cboxLoadingOverlay"></div><div style="float: left;" id="cboxLoadingGraphic"></div><div style="float: left;" id="cboxTitle"></div><div style="float: left;" id="cboxCurrent"></div><div style="float: left;" id="cboxNext"></div><div style="float: left;" id="cboxPrevious"></div><div style="float: left;" id="cboxSlideshow"></div><div style="float: left;" id="cboxClose"></div></div><div style="float: left;" id="cboxMiddleRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxBottomLeft"></div><div style="float: left;" id="cboxBottomCenter"></div><div style="float: left;" id="cboxBottomRight"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div></body></html>

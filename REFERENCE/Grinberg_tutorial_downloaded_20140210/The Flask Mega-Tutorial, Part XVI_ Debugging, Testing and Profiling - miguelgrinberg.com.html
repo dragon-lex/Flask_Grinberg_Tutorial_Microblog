@@ -1,0 +1,1318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><script src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/widgets.js" id="twitter-wjs"></script><script id="bug.surrogate.20">FB={Event:{subscribe:function(){}},UIServer:{},XFBML:{parse:function(){}},init:function(){},__noSuchMethod__:function(){}};</script><script src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/all.js" id="facebook-jssdk"></script><script id="bug.surrogate.1">var urchinTracker=function(){},_gaq={push:function(){try {if(arguments[0][0]=='_link')window.location.href=arguments[0][1]}catch(er){}}},_gat={_createTracker:function(){}, _getTracker:function(){return{__noSuchMethod__:function(){},_link:function(o){if(o)location.href=o;},_linkByPost:function(){return true;},_getLinkerUrl:function(o){return o;},_trackEvent:function(){}}}};</script><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>The Flask Mega-Tutorial, Part XVI: Debugging, Testing and Profiling - miguelgrinberg.com</title>
+
+	<meta name="description" content="miguelgrinberg.com">
+	<meta name="copyright" content="Copyright (c) 2012 Miguel Grinberg">
+	<meta name="author" content="Miguel Grinberg">
+    
+    <meta name="keywords" content="python, programming, flask, web, tutorial, debugging, logging, profiling, profiler">
+    
+    <link rel="shortcut icon" href="http://blog.miguelgrinberg.com/static/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed" title="miguelgrinberg.com RSS feed">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/prettify.css" type="text/css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/colorbox.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/jquery_002.js"></script>
+	<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/jquery.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/moment.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/prettify.js"></script>
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/bootstrap-responsive.css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/style.css" rel="stylesheet" type="text/css">
+    <script src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/bootstrap.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css" media="screen, print, projection">
+    </style>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-4777284-15']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".gallery").colorbox({rel:".gallery",maxWidth:"95%",maxHeight:"95%",scalePhotos:true});
+            // add prettyprint class to all <pre><code></code></pre> blocks
+            var prettify = false;
+            $("pre code").parent().each(function() {
+                $(this).addClass('prettyprint');
+                prettify = true;
+            });
+            prettyPrint();
+        });
+    </script>
+<style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_r1_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 -63px no-repeat;width:318px;height:9px}.recaptchatable .recaptcha_r2_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r2_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -27px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r3_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r3_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px -57px no-repeat;width:300px;height:6px}.recaptchatable .recaptcha_r3_c3{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -9px 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r4_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px 0 no-repeat;width:171px;height:49px}.recaptchatable .recaptcha_r4_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -36px 0 no-repeat;width:7px;height:57px}.recaptchatable .recaptcha_r4_c4{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -214px 0 no-repeat;width:97px;height:57px}.recaptchatable .recaptcha_r7_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:171px;height:8px}.recaptchatable .recaptcha_r8_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:25px;height:8px}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px}#recaptcha_area,#recaptcha_table{width:318px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;padding:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;font-family:helvetica,sans-serif;font-size:8pt;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{position:relative;margin:auto}.recaptchatable #recaptcha_image #recaptcha_challenge_image{display:block}.recaptchatable #recaptcha_image #recaptcha_ad_image{display:block;position:absolute;top:0}.recaptchatable img{border:0!important;margin:0!important;padding:0!important}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;width:153px!important;height:45px!important;margin-left:7px!important;margin-right:7px!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;background:none!important;height:auto!important;width:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{width:153px!important;position:relative!important;bottom:7px!important;padding:0!important;margin:15px 0 0 0!important;font-size:10pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1!important}#recaptcha_instructions_error{color:red!important}.recaptcha_only_if_privacy{float:right;text-align:right}#recaptcha-ad-choices{position:absolute;height:15px;top:0;right:0}#recaptcha-ad-choices img{height:15px}.recaptcha-ad-choices-collapsed{width:15px;height:15px;display:block}.recaptcha-ad-choices-expanded{width:75px;height:15px;display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-collapsed{display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-expanded{display:block}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><style>#duqasnhvmzdfaflploqtdrhszrwxkjppiujkxz{border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.duqasnhvmzdfaflploqtdrhszrwxkjppiujkxz-blocked{color:#777 !important;display:inline !important;text-decoration:line-through !important;}#duqasnhvmzdfaflploqtdrhszrwxkjppiujkxz span{background:transparent !important;}#duqasnhvmzdfaflploqtdrhszrwxkjppiujkxz div{border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#duqasnhvmzdfaflploqtdrhszrwxkjppiujkxz a{font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}@media print{#duqasnhvmzdfaflploqtdrhszrwxkjppiujkxz{display:none !important;}}</style></head>
+<body style="padding-top: 40px;">
+<!-- facebook sdk -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- google plus sdk -->
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/plusone.js"></script>
+<!-- twitter sdk -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<!-- linkedin sdk -->
+<script src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/in.js" type="text/javascript"></script>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="http://blog.miguelgrinberg.com/">miguelgrinberg.com</a>
+            <ul class="nav">
+                <li><a href="http://blog.miguelgrinberg.com/">Home</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-me">About Me</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-this-blog">About This Blog</a></li>
+				
+            </ul>
+            <div class="nav pull-right">
+                <p class="navbar-text">
+                    <a type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss.png" alt="RSS Feed" title="RSS Feed"></a>
+                    <a href="https://www.facebook.com/miguelgrinbergblog"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/facebook.png" alt="Facebook" title="Facebook"></a>
+                    <a href="https://plus.google.com/u/0/117786742456929977820"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/googleplus.png" alt="Google+" title="Google+"></a>
+                    <a href="http://www.linkedin.com/in/miguelgrinberg"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/linkedin.png" alt="LinkedIn" title="LinkedIn"></a>
+                    <a href="https://twitter.com/#%21/miguelgrinberg"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/twitter.png" alt="Twitter" title="Twitter"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="banner"></div>
+<div class="container">
+    <div class="row">
+        <div class="span8">
+            <div id="main">
+                
+                
+                
+                
+                
+
+<div class="post">
+<p class="date">
+<script type="text/javascript">
+document.write(moment("2013-03-10T04:19:00Z").format("LL"));
+</script>March 9 2013
+</p>
+<div class="social-outer">
+    <div class="social">
+        <div class="social-box"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" data-via="miguelgrinberg" data-count="vertical">Tweet</a></div>
+        <div class="social-box" style="padding-left: 6px;"><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" data-send="false" data-layout="box_count" data-width="450" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="ofeplywzwgbgopabhesaqookwynslaaoqtblr"></iframe></div></div>
+        <div class="social-box"><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" size="tall"></g:plusone></div>
+        <div class="social-box"><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" data-counter="top"></script></div>
+    </div>
+</div>
+<h1 class="post-title">The Flask Mega-Tutorial, Part XVI: Debugging, Testing and Profiling</h1>
+<div class="posted">Posted by <span class="label label-important"><a href="http://blog.miguelgrinberg.com/author/Miguel%20Grinberg">Miguel Grinberg</a></span> under <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span>. </div>
+<div class="post_body"><p>This is the sixteenth article in the series in which I document my experience writing web applications in <a href="http://python.org/">Python</a> using the <a href="http://flask.pocoo.org/">Flask</a> microframework.</p>
+<p>The goal of the tutorial series is to develop a decently featured 
+microblogging application that demonstrating total lack of originality I
+ have decided to call <code>microblog</code>.</p>
+<p>Here is an index of all the articles in the series that have been published to date:</p>
+<ul>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world">Part I: Hello, World!</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates">Part II: Templates</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms">Part III: Web Forms</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database">Part IV: Database</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins">Part V: User Logins</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars">Part VI: Profile Page And Avatars</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-unit-testing">Part VII: Unit Testing</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers-contacts-and-friends">Part VIII: Followers, Contacts And Friends</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ix-pagination">Part IX: Pagination</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search">Part X: Full Text Search</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support">Part XI: Email Support</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xii-facelift">Part XII: Facelift</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times">Part XIII: Dates and Times</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n">Part XIV: I18n, L10n</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax">Part XV: Ajax</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling">Part XVI: Debugging, Testing and Profiling</a> (this article)</li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux-even-on-the-raspberry-pi">Part XVII: Deployment on Linux (even on the Raspberry Pi!)</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud">Part XVIII: Deployment on the Heroku Cloud</a></li>
+</ul>
+<p>Our little <code>microblog</code> application is starting to feel 
+decent enough for a release, so it is time to start thinking about 
+cleaning things up as much as we can. Recently, a reader of this blog 
+(Hi, George!) reported a strange database bug that we are going to debug
+ today. This should help us realize that no matter how careful we are 
+and how much we test our application there is a good chance we will miss
+ some bugs. Unfortunately users are very good at finding them!</p>
+<p>Instead of just fixing this bug and forgetting about it until we come
+ across another one, we are going to take some proactive measures to be 
+better prepared for the next one.</p>
+<p>In the first part of this article we'll cover <em>debugging</em>, and I'll show you some techniques I use to debug tough problems.</p>
+<p>Later we will see how we can have an idea of how effective our 
+testing strategy is. We will specifically look at measuring how much of 
+our application our unit tests are exercising, something called <em>test coverage</em>.</p>
+<p>And finally, we will think about another type of problems that many 
+applications can suffer from, bad performance. We will look at <em>profiling</em> techniques to find the parts of our application that are slow.</p>
+<p>Sounds good? Let's get started then.</p>
+<h2>The Bug</h2>
+<p>This problem was found by a reader of this blog, after he implemented
+ a new function that allows users to delete their own posts. The 
+official version of <code>microblog</code> does not have that, so we'll quickly put together this feature so that we can work on the bug.</p>
+<p>The view function that we will use to delete a post is below (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@app</span><span class="pun">.</span><span class="pln">route</span><span class="pun">(</span><span class="str">'/delete/&lt;int:id&gt;'</span><span class="pun">)</span><span class="pln">
+</span><span class="lit">@login_required</span><span class="pln">
+</span><span class="kwd">def</span><span class="pln"> </span><span class="kwd">delete</span><span class="pun">(</span><span class="pln">id</span><span class="pun">):</span><span class="pln">
+    post </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">.</span><span class="pln">query</span><span class="pun">.</span><span class="kwd">get</span><span class="pun">(</span><span class="pln">id</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> post </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">None</span><span class="pun">:</span><span class="pln">
+        flash</span><span class="pun">(</span><span class="str">'Post not found.'</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">author</span><span class="pun">.</span><span class="pln">id </span><span class="pun">!=</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">id</span><span class="pun">:</span><span class="pln">
+        flash</span><span class="pun">(</span><span class="str">'You cannot delete this post.'</span><span class="pun">)</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="kwd">delete</span><span class="pun">(</span><span class="pln">post</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+    flash</span><span class="pun">(</span><span class="str">'Your post has been deleted.'</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'index'</span><span class="pun">))</span></code></pre>
+<p>To invoke this function we will add a delete link on all posts that are authored by the logged in user (file <code>app/templates/post.html</code>):</p>
+<pre class="prettyprint"><code><span class="pun">{%</span><span class="pln"> </span><span class="kwd">if</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">author</span><span class="pun">.</span><span class="pln">id </span><span class="pun">==</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">id </span><span class="pun">%}</span><span class="pln">
+</span><span class="str">&lt;div&gt;</span><span class="pun">&lt;</span><span class="pln">a href</span><span class="pun">=</span><span class="str">"{{ url_for('delete', id = post.id) }}"</span><span class="pun">&gt;{{</span><span class="pln"> _</span><span class="pun">(</span><span class="str">'Delete'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">}}&lt;/</span><span class="pln">a</span><span class="pun">&gt;&lt;/</span><span class="pln">div</span><span class="pun">&gt;</span><span class="pln">
+</span><span class="pun">{%</span><span class="pln"> endif </span><span class="pun">%}</span></code></pre>
+<p>There is nothing earth shattering here, we've done this many times already. </p>
+<p>Now let's go ahead and start our application in production mode, to 
+experience it like a regular user would. Linux and Mac users do it like 
+this:</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">runp</span><span class="pun">.</span><span class="pln">py</span></code></pre>
+<p>Windows users do it like this instead:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="typ">Scripts</span><span class="pun">/</span><span class="pln">python runp</span><span class="pun">.</span><span class="pln">py</span></code></pre>
+<p>Now as a user, write a post, then change your mind and delete it. And right when you click the delete link... Boom!</p>
+<p>We get a terse message that says that the application has encountered
+ an error and that the administrator has been notified. This message is 
+actually our <code>500.html</code> template. In production mode Flask 
+issues the status code 500 template back to the client when an exception
+ occurs while handling a request. Since we are now in production mode we
+ will not see error messages or stack traces.</p>
+<h2>Debugging issues from the field</h2>
+<p>If you recall the <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-unit-testing">unit testing</a>
+ article, we enabled a couple of debugging services to run on the 
+production version of our application. Back then we created a logger 
+that writes to a log file, so that the application can write debugging 
+or diagnostic information at run time. Flask itself writes the stack 
+trace of any exceptions that aren't handled before ending the request 
+with a code 500 error. As an extra option, we have also enabled an email
+ based logger that will send the people in the admin list an email when 
+an error is written to the log message.</p>
+<p>So for a bug like the one above we would get some debugging 
+information captured in two places, the log file and an email sent to 
+us.</p>
+<p>A stack trace isn't much to go on, but it's far better than nothing. 
+Assuming we know nothing about the problem, we now need to figure out 
+what happened from the stack trace alone. Here is a copy of this 
+particular stack trace:</p>
+<pre class="prettyprint"><code><span class="lit">127.0</span><span class="pun">.</span><span class="lit">0.1</span><span class="pln"> </span><span class="pun">-</span><span class="pln"> </span><span class="pun">-</span><span class="pln"> </span><span class="pun">[</span><span class="lit">03</span><span class="pun">/</span><span class="typ">Mar</span><span class="pun">/</span><span class="lit">2013</span><span class="pln"> </span><span class="lit">23</span><span class="pun">:</span><span class="lit">57</span><span class="pun">:</span><span class="lit">39</span><span class="pun">]</span><span class="pln"> </span><span class="str">"GET /delete/12 HTTP/1.1"</span><span class="pln"> </span><span class="lit">500</span><span class="pln"> </span><span class="pun">-</span><span class="pln">
+</span><span class="typ">Traceback</span><span class="pln"> </span><span class="pun">(</span><span class="pln">most recent call </span><span class="kwd">last</span><span class="pun">):</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask/app.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1701</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> __call__
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">wsgi_app</span><span class="pun">(</span><span class="pln">environ</span><span class="pun">,</span><span class="pln"> start_response</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask/app.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1689</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> wsgi_app
+    response </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">make_response</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">handle_exception</span><span class="pun">(</span><span class="pln">e</span><span class="pun">))</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask/app.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1687</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> wsgi_app
+    response </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">full_dispatch_request</span><span class="pun">()</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask/app.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1360</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> full_dispatch_request
+    rv </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">handle_user_exception</span><span class="pun">(</span><span class="pln">e</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask/app.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1358</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> full_dispatch_request
+    rv </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">dispatch_request</span><span class="pun">()</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask/app.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1344</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> dispatch_request
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">view_functions</span><span class="pun">[</span><span class="pln">rule</span><span class="pun">.</span><span class="pln">endpoint</span><span class="pun">](**</span><span class="pln">req</span><span class="pun">.</span><span class="pln">view_args</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/flask_login.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">496</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> decorated_view
+    </span><span class="kwd">return</span><span class="pln"> fn</span><span class="pun">(*</span><span class="pln">args</span><span class="pun">,</span><span class="pln"> </span><span class="pun">**</span><span class="pln">kwargs</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/app/views.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">195</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> </span><span class="kwd">delete</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="kwd">delete</span><span class="pun">(</span><span class="pln">post</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/sqlalchemy/orm/scoping.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">114</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> </span><span class="kwd">do</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> getattr</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">registry</span><span class="pun">(),</span><span class="pln"> name</span><span class="pun">)(*</span><span class="pln">args</span><span class="pun">,</span><span class="pln"> </span><span class="pun">**</span><span class="pln">kwargs</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/sqlalchemy/orm/session.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1400</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> </span><span class="kwd">delete</span><span class="pln">
+    </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">_attach</span><span class="pun">(</span><span class="pln">state</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/sqlalchemy/orm/session.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1656</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> _attach
+    state</span><span class="pun">.</span><span class="pln">session_id</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">hash_key</span><span class="pun">))</span><span class="pln">
+</span><span class="typ">InvalidRequestError</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Object</span><span class="pln"> </span><span class="str">'&lt;Post at 0xff35e7ac&gt;'</span><span class="pln"> </span><span class="kwd">is</span><span class="pln"> already attached to session </span><span class="str">'1'</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">this</span><span class="pln"> </span><span class="kwd">is</span><span class="pln"> </span><span class="str">'3'</span><span class="pun">)</span></code></pre>
+<p>If you are used to reading stack traces in other languages, then be 
+aware that Python shows the stack traces in reverse order, with the 
+bottom frame being the one that caused the exception.</p>
+<p>Now how do we make sense of this?</p>
+<p>From the above stack trace we can see that the exception was 
+triggered from SQLAlchemy's session handling code, which is safe to 
+assume from the <code>sqlalchemy/orm/session.py</code> filename in the bottom most frame.</p>
+<p>With stack traces it is always useful to find out what was the last 
+statement in our own code that executed. If we start at the bottom and 
+we go up one frame at a time we'll find that the fourth frame is in our <code>app/views.py</code>, more specifically in the <code>db.session.delete(post)</code> statement in our <code>delete()</code> view function.</p>
+<p>Now we know that SQLAlchemy is unable to register the deletion of 
+this post in the database session. But we still don't know why.</p>
+<p>If you look at the text of the exception in the bottom most line of the stack trace the problem appears to be that the <code>Post</code> object is attached to a session <code>'1'</code> from before, and now we are trying to attach the same object to another session <code>'3'</code>.</p>
+<p>If you Google the exception message you will find that most people 
+having issues with this are using a multithreaded web server, and they 
+get two requests trying to add the same object to different sessions at 
+the same time. But we are using Python's development web server which is
+ single threaded, so that could not be our case. There is a different 
+problem here that causes two sessions to be active at the same time, 
+while there should only be one.</p>
+<p>To see if we can learn more about the problem we should try to 
+reproduce the bug in a more controlled environment. Luckily, trying to 
+do this in the development version of the application does reproduce, 
+and this is a bit better because when the exception occurs in 
+development mode we get Flask's web based stack trace instead of the <code>500.html</code> template.</p>
+<p>The web stack trace is nice because it allows you to inspect code and
+ evaluate expressions all from the browser. Without really understanding
+ much of what's going on in this code we know there is a session <code>'1'</code>
+ (which we can assume is the first session ever created) that for some 
+reason didn't get deleted like normal sessions do when the request that 
+created them ends. So a good approach to make progress would be to 
+figure out who is creating this first session that never goes away.</p>
+<h2>Using the Python Debugger</h2>
+<p>The easiest way to find out who is creating an object is to put a <em>breakpoint</em>
+ in the object's constructor. A breakpoint is a command that interrupts 
+the program when certain condition is met. At this point it is possible 
+to inspect the program, like obtaining the stack trace at the time of 
+interruption, checking or even changing variable values, etc. 
+Breakpoints are one of the basic features found in <em>debuggers</em>. For this task we will use the debugger that comes with Python, appropriately called <code>pdb</code>.</p>
+<p>But what class are we looking for? Let's go back to the web based 
+stack trace and look some more there. In the bottom most stack frame we 
+can use the code viewer and the Python console (note the icons to enable
+ these on the right side when you hover over the frame) to find out the 
+class that is used for sessions. In the code pane we see that we are 
+inside a <code>Session</code> class, which is likely the base class for 
+database sessions in SQLAlchemy. Since the context in the bottom stack 
+frame is inside the session object we can just get the actual class of 
+the session in the console, by running:</p>
+<pre class="prettyprint"><code><span class="pun">&gt;&gt;&gt;</span><span class="pln"> </span><span class="kwd">print</span><span class="pln"> </span><span class="kwd">self</span><span class="pln">
+</span><span class="pun">&lt;</span><span class="pln">flask_sqlalchemy</span><span class="pun">.</span><span class="typ">_SignallingSession</span><span class="pln"> </span><span class="kwd">object</span><span class="pln"> at </span><span class="lit">0xff34914c</span><span class="pun">&gt;</span></code></pre>
+<p>And now we know that the sessions that we are using are defined by 
+Flask-SQLAlchemy, because likely this extension defines its own session 
+class, which is a subclass of SQLAlchemy's <code>Session</code>.</p>
+<p>Now we can go and inspect the source code for the Flask-SQLAlchemy extension in <code>flask/lib/python2.7/site-packages/flask_sqlalchemy.py</code> and locate class <code>_SignallingSession</code> and its <code>__init__()</code> constructor, and now we are ready to play with the debugger.</p>
+<p>There is more than one way to insert a breakpoint in a Python 
+application. The simplest one is to just write the following at the 
+place we want the program to stop:</p>
+<pre class="prettyprint"><code><span class="kwd">import</span><span class="pln"> pdb</span><span class="pun">;</span><span class="pln"> pdb</span><span class="pun">.</span><span class="pln">set_trace</span><span class="pun">()</span></code></pre>
+<p>So we'll go ahead and temporarily insert this breakpoint in the <code>_SignallingSession</code> class constructor (file <code>flask/lib/python2.7/site-packages/flask_sqlalchemy.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">class</span><span class="pln"> </span><span class="typ">_SignallingSession</span><span class="pun">(</span><span class="typ">Session</span><span class="pun">):</span><span class="pln">
+
+    </span><span class="kwd">def</span><span class="pln"> __init__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">,</span><span class="pln"> db</span><span class="pun">,</span><span class="pln"> autocommit</span><span class="pun">=</span><span class="kwd">False</span><span class="pun">,</span><span class="pln"> autoflush</span><span class="pun">=</span><span class="kwd">False</span><span class="pun">,</span><span class="pln"> </span><span class="pun">**</span><span class="pln">options</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">import</span><span class="pln"> pdb</span><span class="pun">;</span><span class="pln"> pdb</span><span class="pun">.</span><span class="pln">set_trace</span><span class="pun">()</span><span class="pln"> </span><span class="com"># &lt;-- this is temporary!</span><span class="pln">
+        </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">app </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="pln">get_app</span><span class="pun">()</span><span class="pln">
+        </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">_model_changes </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{}</span><span class="pln">
+        </span><span class="typ">Session</span><span class="pun">.</span><span class="pln">__init__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">,</span><span class="pln"> autocommit</span><span class="pun">=</span><span class="pln">autocommit</span><span class="pun">,</span><span class="pln"> autoflush</span><span class="pun">=</span><span class="pln">autoflush</span><span class="pun">,</span><span class="pln">
+                         extension</span><span class="pun">=</span><span class="pln">db</span><span class="pun">.</span><span class="pln">session_extensions</span><span class="pun">,</span><span class="pln">
+                         bind</span><span class="pun">=</span><span class="pln">db</span><span class="pun">.</span><span class="pln">engine</span><span class="pun">,</span><span class="pln">
+                         binds</span><span class="pun">=</span><span class="pln">db</span><span class="pun">.</span><span class="pln">get_binds</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">app</span><span class="pun">),</span><span class="pln"> </span><span class="pun">**</span><span class="pln">options</span><span class="pun">)</span><span class="pln">
+
+    </span><span class="com"># ...</span></code></pre>
+<p>So let's run the application again to see what happens:</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">run</span><span class="pun">.</span><span class="pln">py
+</span><span class="pun">&gt;</span><span class="pln"> </span><span class="str">/home/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">flask_sqlalchemy</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">198</span><span class="pun">)</span><span class="pln">__init__</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">app </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="pln">get_app</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">(</span><span class="typ">Pdb</span><span class="pun">)</span></code></pre>
+<p>Since there is no "Running on..." message printed we know the server 
+didn't actually complete its start up procedures. The interruption that 
+brought us to the <code>pdb</code> prompt occurred because in some part of the code someone requested the creation of our mysterious session!</p>
+<p>The most important question that we need to answer right now is where
+ are we in the application, because that will tell us who is requesting 
+the creation of this session <code>'1'</code> we can't get rid of later. We will use the <code>bt</code> command (short for backtrace) to get a stack trace:</p>
+<pre class="prettyprint"><code><span class="pun">(</span><span class="typ">Pdb</span><span class="pun">)</span><span class="pln"> bt
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">run</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">2</span><span class="pun">)&lt;</span><span class="kwd">module</span><span class="pun">&gt;()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">from</span><span class="pln"> app </span><span class="kwd">import</span><span class="pln"> app
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">app</span><span class="pun">/</span><span class="pln">__init__</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">44</span><span class="pun">)&lt;</span><span class="kwd">module</span><span class="pun">&gt;()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">from</span><span class="pln"> app </span><span class="kwd">import</span><span class="pln"> views</span><span class="pun">,</span><span class="pln"> models
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">app</span><span class="pun">/</span><span class="pln">views</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">6</span><span class="pun">)&lt;</span><span class="kwd">module</span><span class="pun">&gt;()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">from</span><span class="pln"> forms </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">LoginForm</span><span class="pun">,</span><span class="pln"> </span><span class="typ">EditForm</span><span class="pun">,</span><span class="pln"> </span><span class="typ">PostForm</span><span class="pun">,</span><span class="pln"> </span><span class="typ">SearchForm</span><span class="pln">
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">app</span><span class="pun">/</span><span class="pln">forms</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">4</span><span class="pun">)&lt;</span><span class="kwd">module</span><span class="pun">&gt;()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">from</span><span class="pln"> app</span><span class="pun">.</span><span class="pln">models </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">User</span><span class="pln">
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">app</span><span class="pun">/</span><span class="pln">models</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">92</span><span class="pun">)&lt;</span><span class="kwd">module</span><span class="pun">&gt;()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> whooshalchemy</span><span class="pun">.</span><span class="pln">whoosh_index</span><span class="pun">(</span><span class="pln">app</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">)</span><span class="pln">
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">6</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">flask_whooshalchemy</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">168</span><span class="pun">)</span><span class="pln">whoosh_index</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> _create_index</span><span class="pun">(</span><span class="pln">app</span><span class="pun">,</span><span class="pln"> model</span><span class="pun">))</span><span class="pln">
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">6</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">flask_whooshalchemy</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">199</span><span class="pun">)</span><span class="pln">_create_index</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> model</span><span class="pun">.</span><span class="pln">query </span><span class="pun">=</span><span class="pln"> </span><span class="typ">_QueryProxy</span><span class="pun">(</span><span class="pln">model</span><span class="pun">.</span><span class="pln">query</span><span class="pun">,</span><span class="pln"> primary_key</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">/home/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">6</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">flask_sqlalchemy</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">397</span><span class="pun">)</span><span class="pln">__get__</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> type</span><span class="pun">.</span><span class="pln">query_class</span><span class="pun">(</span><span class="pln">mapper</span><span class="pun">,</span><span class="pln"> session</span><span class="pun">=</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">sa</span><span class="pun">.</span><span class="pln">session</span><span class="pun">())</span><span class="pln">
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">6</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">orm</span><span class="pun">/</span><span class="pln">scoping</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">54</span><span class="pun">)</span><span class="pln">__call__</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">registry</span><span class="pun">()</span><span class="pln">
+  </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">6</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">util</span><span class="pun">/</span><span class="pln">_collections</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">852</span><span class="pun">)</span><span class="pln">__call__</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">registry</span><span class="pun">.</span><span class="pln">setdefault</span><span class="pun">(</span><span class="pln">key</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">createfunc</span><span class="pun">())</span><span class="pln">
+</span><span class="pun">&gt;</span><span class="pln"> </span><span class="str">/home/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">6</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">flask_sqlalchemy</span><span class="pun">.</span><span class="pln">py</span><span class="pun">(</span><span class="lit">198</span><span class="pun">)</span><span class="pln">__init__</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">-&gt;</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">app </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="pln">get_app</span><span class="pun">()</span><span class="pln">
+</span><span class="pun">(</span><span class="typ">Pdb</span><span class="pun">)</span></code></pre>
+<p>As we did before, we start from the bottom and locate the first stack
+ frame that has code that we recognize as ours. That turns out to be our
+ <code>models.py</code> file at line 92, which is the initialization of our full text search engine:</p>
+<pre class="prettyprint"><code><span class="pln">whooshalchemy</span><span class="pun">.</span><span class="pln">whoosh_index</span><span class="pun">(</span><span class="pln">app</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">)</span></code></pre>
+<p>Hmm. We are not doing anything intentional that would trigger the 
+creation of a database session this early in the application's life, but
+ it appears that the act of initializing Flask-WhooshAlchemy does create
+ a database session.</p>
+<p>This feels like this isn't our bug after all, maybe some sort of 
+interaction between the two Flask extensions that wrap SQLAlchemy and 
+Whoosh. We could stop here and ask for help from the developers of these
+ two fine extensions or the communities around them. Or we could 
+continue debugging to see if we can figure this out and have the problem
+ solved today. I'll keep going, if you are bored already feel free to 
+jump to the next section.</p>
+<p>Let's have another look at the stack trace. We call <code>whoosh_index()</code>, which in turn calls <code>_create_index()</code>. The line of code in <code>_create_index()</code> is this:</p>
+<pre class="prettyprint"><code><span class="pln">model</span><span class="pun">.</span><span class="pln">query </span><span class="pun">=</span><span class="pln"> </span><span class="typ">_QueryProxy</span><span class="pun">(</span><span class="pln">model</span><span class="pun">.</span><span class="pln">query</span><span class="pun">,</span><span class="pln"> primary_key</span><span class="pun">,</span><span class="pln">
+            searcher</span><span class="pun">,</span><span class="pln"> model</span><span class="pun">)</span></code></pre>
+<p>The <code>model</code> variable in this context is set to our <code>Post</code> class, we passed it as an argument in our call to <code>whoosh_index()</code>. With that in mind, it appears Flask-WhooshAlchemy is creating a <code>Post.query</code> wrapper that takes the original <code>Post.query</code>
+ as an argument, plus some other Whoosh specific stuff. And here is the 
+interesting part. According to the stack trace above, the next function 
+in the call stack is <code>__get__()</code>, one of Python's <a href="http://docs.python.org/2/howto/descriptor.html">descriptor methods</a>.</p>
+<p>The <code>__get__()</code> method is used to implement descriptors, 
+which are attributes that have behavior associated with them instead of 
+just a value. Each time the descriptor is referenced the function <code>__get__()</code>
+ is called. Then the function is supposed to return the value of the 
+attribute. The only attribute that is mentioned in this line of code is <code>query</code>,
+ so now we know that this seemingly simple attribute that we have used 
+in the past to generate our database queries isn't really an attribute 
+but a descriptor. The remainder of the stack trace then is dealing with 
+computing the value of the <code>model.query</code> expression that appears in the right side, in preparation of creating the <code>_QueryProxy</code> constructor.</p>
+<p>Let's continue down the stack trace to see what happens next. The instruction in <code>__get__()</code> is this one:</p>
+<pre class="prettyprint"><code><span class="kwd">return</span><span class="pln"> type</span><span class="pun">.</span><span class="pln">query_class</span><span class="pun">(</span><span class="pln">mapper</span><span class="pun">,</span><span class="pln"> session</span><span class="pun">=</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">sa</span><span class="pun">.</span><span class="pln">session</span><span class="pun">())</span></code></pre>
+<p>And this is a pretty revealing piece of code. When we say, for example, <code>User.query.get(id)</code> we are indirectly calling this <code>__get__()</code>
+ method to provide the query object, and here we can see that this query
+ object implicitly brings a database session along with it!</p>
+<p>When Flask-WhooshAlchemy says <code>model.query</code> that also 
+triggers a session to be created and associated with the query object. 
+But the query object that Flask-WhooshAlchemy requests isn't short lived
+ like any normal queries we run inside our view functions. 
+Flask-WhooshAlchemy is wrapping this query object into its own query 
+object, which it then stores back into <code>model.query</code>. Since there is no <code>__set__()</code> method counterpart, the new object will be stored as an attribute. For our <code>Post</code>
+ class that means that after Flask-WhooshAlchemy completes its 
+initialization we will have a descriptor and an attribute with the same 
+name. According to the precedence rules, in this case the attribute 
+wins, which is expected, since if not our Whoosh searchs would not have 
+worked.</p>
+<p>The important aspect of all this is that this code is setting a persistent attribute that inside has our session <code>'1'</code>.
+ Even though the first request handled by the application will use this 
+session and then forget about it, the session does not go away because 
+it is still referenced by the <code>Post.query</code> attribute. This is our bug!</p>
+<p>The bug is caused by the confusing (my opinion) nature of 
+descriptors. They look like regular attributes, so people tend to use 
+them as such. The Flask-WhooshAlchemy developer just wanted to create an
+ enhanced query object that can store some state useful for Whoosh 
+queries, but didn't realize that referencing the <code>query</code> 
+attribute of a model does way more than it seems, as there is hidden 
+behavior associated with this attribute that starts a database session.</p>
+<h2>Regression Testing</h2>
+<p>For many, the most logical thing to do at this point would be to fix 
+the Flask-WhooshAlchemy code and move on. But if we just do that, then 
+what protects us from this or a similar bug happening in the future? For
+ example, what happens if a year from now we decide to update 
+Flask-WhooshAlchemy to a new version and forget that we had applied a 
+custom fix to it?</p>
+<p>The best option every time a bug is discovered is to create a unit test for it, so that we can make we don't have a <em>regression</em> in the future.</p>
+<p>There is some trickiness in creating a test for this bug, as we need 
+to simulate two requests inside a single test. The first request will 
+query a Post object, simulating the a query that we make to request data
+ for displaying in the web page. Since this is the first query it will 
+use the session <code>'1'</code>. Then we need to forget that session 
+and make a new one, exactly like Flask-SQLAlchemy does. Trying to delete
+ the Post object on the second session should trigger this bug, because 
+the first session would not have gone away as expected.</p>
+<p>After taking another peek at the source code for Flask-SQLAlchemy we can see that new sessions are created using the <code>db.create_scoped_session()</code> function, and when a request ends a session is destroyed by calling <code>db.session.remove()</code>. Knowing this makes it easy to write a test for this bug:</p>
+<pre class="prettyprint"><code><span class="kwd">def</span><span class="pln"> test_delete_post</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+    </span><span class="com"># create a user and a post</span><span class="pln">
+    u </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> </span><span class="str">'john'</span><span class="pun">,</span><span class="pln"> email </span><span class="pun">=</span><span class="pln"> </span><span class="str">'john@example.com'</span><span class="pun">)</span><span class="pln">
+    p </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">(</span><span class="pln">body </span><span class="pun">=</span><span class="pln"> </span><span class="str">'test post'</span><span class="pun">,</span><span class="pln"> author </span><span class="pun">=</span><span class="pln"> u</span><span class="pun">,</span><span class="pln"> timestamp </span><span class="pun">=</span><span class="pln"> datetime</span><span class="pun">.</span><span class="pln">utcnow</span><span class="pun">())</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">u</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">p</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+    </span><span class="com"># query the post and destroy the session</span><span class="pln">
+    p </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Post</span><span class="pun">.</span><span class="pln">query</span><span class="pun">.</span><span class="kwd">get</span><span class="pun">(</span><span class="lit">1</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">remove</span><span class="pun">()</span><span class="pln">
+    </span><span class="com"># delete the post using a new session</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session </span><span class="pun">=</span><span class="pln"> db</span><span class="pun">.</span><span class="pln">create_scoped_session</span><span class="pun">()</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="kwd">delete</span><span class="pun">(</span><span class="pln">p</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span></code></pre>
+<p>And sure enough, now when we run our test suite the failure appears:</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">tests</span><span class="pun">.</span><span class="pln">py
+</span><span class="pun">.</span><span class="pln">E</span><span class="pun">....</span><span class="pln">
+</span><span class="pun">======================================================================</span><span class="pln">
+ERROR</span><span class="pun">:</span><span class="pln"> test_delete_post </span><span class="pun">(</span><span class="pln">__main__</span><span class="pun">.</span><span class="typ">TestCase</span><span class="pun">)</span><span class="pln">
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Traceback</span><span class="pln"> </span><span class="pun">(</span><span class="pln">most recent call </span><span class="kwd">last</span><span class="pun">):</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"./tests.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">133</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> test_delete_post
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="kwd">delete</span><span class="pun">(</span><span class="pln">p</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/sqlalchemy/orm/scoping.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">114</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> </span><span class="kwd">do</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> getattr</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">registry</span><span class="pun">(),</span><span class="pln"> name</span><span class="pun">)(*</span><span class="pln">args</span><span class="pun">,</span><span class="pln"> </span><span class="pun">**</span><span class="pln">kwargs</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/sqlalchemy/orm/session.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1400</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> </span><span class="kwd">delete</span><span class="pln">
+    </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">_attach</span><span class="pun">(</span><span class="pln">state</span><span class="pun">)</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"/home/microblog/flask/lib/python2.7/site-packages/sqlalchemy/orm/session.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">1656</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> _attach
+    state</span><span class="pun">.</span><span class="pln">session_id</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">hash_key</span><span class="pun">))</span><span class="pln">
+</span><span class="typ">InvalidRequestError</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Object</span><span class="pln"> </span><span class="str">'&lt;Post at 0xff09b7ac&gt;'</span><span class="pln"> </span><span class="kwd">is</span><span class="pln"> already attached to session </span><span class="str">'1'</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">this</span><span class="pln"> </span><span class="kwd">is</span><span class="pln"> </span><span class="str">'3'</span><span class="pun">)</span><span class="pln">
+
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Ran</span><span class="pln"> </span><span class="lit">6</span><span class="pln"> tests </span><span class="kwd">in</span><span class="pln"> </span><span class="lit">3.852s</span><span class="pln">
+
+FAILED </span><span class="pun">(</span><span class="pln">errors</span><span class="pun">=</span><span class="lit">1</span><span class="pun">)</span></code></pre>
+<h2>The Fix</h2>
+<p>To address this problem we need to find an alternative way of attaching Flask-WhooshAlchemy's query object to the model.</p>
+<p>The documentation for Flask-SQLAlchemy mentions there is a <a href="http://pythonhosted.org/Flask-SQLAlchemy/api.html#flask.ext.sqlalchemy.Model.query_class">model.query_class</a>
+ attribute that contains the class to use for queries. This is actually a
+ much cleaner way to make Flask-SQLAlchemy use a custom query class than
+ what Flask-WhooshAlchemy is doing. If we configure Flask-SQLAlchemy to 
+create queries using the Whoosh enabled query class (which is already a 
+subclass of Flask-SQLAlchemy's <code>BaseQuery</code>), then we should have the same result as before, but without the bug.</p>
+<p>I have created a fork of the Flask-WhooshAlchemy project on github 
+where I have implemented these changes. If you want to see the changes 
+you can see the <a href="https://github.com/miguelgrinberg/Flask-WhooshAlchemy/commit/1e17350ea600e247c0094cfa4ae7145f08f4c4a3">github diff</a> for my commit, or you can also <a href="https://raw.github.com/miguelgrinberg/Flask-WhooshAlchemy/1e17350ea600e247c0094cfa4ae7145f08f4c4a3/flask_whooshalchemy.py">download the fixed extension</a> and install it in place of your original <code>flask_whooshalchemy.py</code> file.</p>
+<p>I have submitted my fix to the developer of Flask-WhooshAlchemy, so I
+ hope at some point it will get included in an official version.</p>
+<h2>Test Coverage</h2>
+<p>One way we can greatly reduce the chances of having bugs after we 
+deploy our application is to have a comprehensive test suite. We already
+ have a unit testing framework, but how do we know how much of our 
+application are we currently testing with it?</p>
+<p>A <em>test coverage</em> tool can observe a running application and 
+take note of which lines of code execute and which do not. After 
+execution ends it can produce a report showing what lines have not 
+executed. If we had such report for our test suite we would know right 
+away what parts of our code need tests that exercise them.</p>
+<p>Python has a coverage tool that we can use called simply <a href="http://nedbatchelder.com/code/coverage/">coverage</a>. Let's get it installed:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pip install coverage</span></code></pre>
+<p>This tool can be used as a command line tool or can also be started 
+from inside a script. To make it easier to not forget to run it we will 
+go with the latter.</p>
+<p>These are the changes that we need to make to add a coverage report to our test suite (file <code>tests.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> coverage </span><span class="kwd">import</span><span class="pln"> coverage
+cov </span><span class="pun">=</span><span class="pln"> coverage</span><span class="pun">(</span><span class="pln">branch </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">,</span><span class="pln"> omit </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'flask/*'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'tests.py'</span><span class="pun">])</span><span class="pln">
+cov</span><span class="pun">.</span><span class="pln">start</span><span class="pun">()</span><span class="pln">
+
+</span><span class="com"># ...</span><span class="pln">
+
+</span><span class="kwd">if</span><span class="pln"> __name__ </span><span class="pun">==</span><span class="pln"> </span><span class="str">'__main__'</span><span class="pun">:</span><span class="pln">
+    </span><span class="kwd">try</span><span class="pun">:</span><span class="pln">
+        unittest</span><span class="pun">.</span><span class="pln">main</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">except</span><span class="pun">:</span><span class="pln">
+        </span><span class="kwd">pass</span><span class="pln">
+    cov</span><span class="pun">.</span><span class="pln">stop</span><span class="pun">()</span><span class="pln">
+    cov</span><span class="pun">.</span><span class="pln">save</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">print</span><span class="pln"> </span><span class="str">"\n\nCoverage Report:\n"</span><span class="pln">
+    cov</span><span class="pun">.</span><span class="pln">report</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">print</span><span class="pln"> </span><span class="str">"HTML version: "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> os</span><span class="pun">.</span><span class="pln">path</span><span class="pun">.</span><span class="pln">join</span><span class="pun">(</span><span class="pln">basedir</span><span class="pun">,</span><span class="pln"> </span><span class="str">"tmp/coverage/index.html"</span><span class="pun">)</span><span class="pln">
+    cov</span><span class="pun">.</span><span class="pln">html_report</span><span class="pun">(</span><span class="pln">directory </span><span class="pun">=</span><span class="pln"> </span><span class="str">'tmp/coverage'</span><span class="pun">)</span><span class="pln">
+    cov</span><span class="pun">.</span><span class="pln">erase</span><span class="pun">()</span></code></pre>
+<p>We begin by initializing the <code>coverage</code> module at the very top of the script. The <code>branch = True</code> argument requests that branch analysis is done in addition to regular line based coverage. The <code>omit</code>
+ argument makes sure we do not get coverage report for the modules we 
+have installed in our virtual environment and for the unit testing 
+framework itself, we just want coverage for our application code.</p>
+<p>To gather coverage statistics we just call <code>cov.start()</code>, 
+then run our unit tests. We have to catch and pass exceptions from the 
+unit testing framework, because if not the script would end without 
+giving us a chance to produce a coverage report. After we are back from 
+the testing we stop coverage with <code>cov.stop()</code>, and write the results with <code>cov.save()</code>. Finally, <code>cov.report()</code> dumps the data to the console, <code>cov.html_report()</code> generates a nicer HTML report with the same date, and <code>cov.erase()</code> deletes the data file.</p>
+<p>Here is an example test run with coverage report included (note I left an intentional failure in there):</p>
+<pre class="prettyprint"><code><span class="pln">$ </span><span class="pun">./</span><span class="pln">tests</span><span class="pun">.</span><span class="pln">py
+</span><span class="pun">.....</span><span class="pln">F
+    </span><span class="pun">======================================================================</span><span class="pln">
+FAIL</span><span class="pun">:</span><span class="pln"> test_translation </span><span class="pun">(</span><span class="pln">__main__</span><span class="pun">.</span><span class="typ">TestCase</span><span class="pun">)</span><span class="pln">
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Traceback</span><span class="pln"> </span><span class="pun">(</span><span class="pln">most recent call </span><span class="kwd">last</span><span class="pun">):</span><span class="pln">
+  </span><span class="typ">File</span><span class="pln"> </span><span class="str">"./tests.py"</span><span class="pun">,</span><span class="pln"> line </span><span class="lit">143</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> test_translation
+    </span><span class="kwd">assert</span><span class="pln"> microsoft_translate</span><span class="pun">(</span><span class="pln">u</span><span class="str">'English'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'en'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'es'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> u</span><span class="str">'Inglés'</span><span class="pln">
+</span><span class="typ">AssertionError</span><span class="pln">
+
+</span><span class="pun">----------------------------------------------------------------------</span><span class="pln">
+</span><span class="typ">Ran</span><span class="pln"> </span><span class="lit">6</span><span class="pln"> tests </span><span class="kwd">in</span><span class="pln"> </span><span class="lit">3.981s</span><span class="pln">
+
+FAILED </span><span class="pun">(</span><span class="pln">failures</span><span class="pun">=</span><span class="lit">1</span><span class="pun">)</span><span class="pln">
+
+</span><span class="typ">Coverage</span><span class="pln"> </span><span class="typ">Report</span><span class="pun">:</span><span class="pln">
+
+</span><span class="typ">Name</span><span class="pln">             </span><span class="typ">Stmts</span><span class="pln">   </span><span class="typ">Miss</span><span class="pln"> </span><span class="typ">Branch</span><span class="pln"> </span><span class="typ">BrMiss</span><span class="pln">  </span><span class="typ">Cover</span><span class="pln">   </span><span class="typ">Missing</span><span class="pln">
+</span><span class="pun">------------------------------------------------------------</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">__init__        </span><span class="lit">39</span><span class="pln">      </span><span class="lit">0</span><span class="pln">      </span><span class="lit">6</span><span class="pln">      </span><span class="lit">3</span><span class="pln">    </span><span class="lit">93</span><span class="pun">%</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">decorators       </span><span class="lit">6</span><span class="pln">      </span><span class="lit">2</span><span class="pln">      </span><span class="lit">0</span><span class="pln">      </span><span class="lit">0</span><span class="pln">    </span><span class="lit">67</span><span class="pun">%</span><span class="pln">   </span><span class="lit">5</span><span class="pun">-</span><span class="lit">6</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">emails          </span><span class="lit">14</span><span class="pln">      </span><span class="lit">6</span><span class="pln">      </span><span class="lit">0</span><span class="pln">      </span><span class="lit">0</span><span class="pln">    </span><span class="lit">57</span><span class="pun">%</span><span class="pln">   </span><span class="lit">9</span><span class="pun">,</span><span class="pln"> </span><span class="lit">12</span><span class="pun">-</span><span class="lit">15</span><span class="pun">,</span><span class="pln"> </span><span class="lit">21</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">forms           </span><span class="lit">30</span><span class="pln">     </span><span class="lit">14</span><span class="pln">      </span><span class="lit">8</span><span class="pln">      </span><span class="lit">8</span><span class="pln">    </span><span class="lit">42</span><span class="pun">%</span><span class="pln">   </span><span class="lit">15</span><span class="pun">-</span><span class="lit">16</span><span class="pun">,</span><span class="pln"> </span><span class="lit">19</span><span class="pun">-</span><span class="lit">30</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">models          </span><span class="lit">63</span><span class="pln">      </span><span class="lit">8</span><span class="pln">     </span><span class="lit">10</span><span class="pln">      </span><span class="lit">1</span><span class="pln">    </span><span class="lit">88</span><span class="pun">%</span><span class="pln">   </span><span class="lit">32</span><span class="pun">,</span><span class="pln"> </span><span class="lit">37</span><span class="pun">,</span><span class="pln"> </span><span class="lit">47</span><span class="pun">,</span><span class="pln"> </span><span class="lit">50</span><span class="pun">,</span><span class="pln"> </span><span class="lit">53</span><span class="pun">,</span><span class="pln"> </span><span class="lit">56</span><span class="pun">,</span><span class="pln"> </span><span class="lit">78</span><span class="pun">,</span><span class="pln"> </span><span class="lit">90</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">momentjs        </span><span class="lit">12</span><span class="pln">      </span><span class="lit">5</span><span class="pln">      </span><span class="lit">0</span><span class="pln">      </span><span class="lit">0</span><span class="pln">    </span><span class="lit">58</span><span class="pun">%</span><span class="pln">   </span><span class="lit">5</span><span class="pun">,</span><span class="pln"> </span><span class="lit">8</span><span class="pun">,</span><span class="pln"> </span><span class="lit">11</span><span class="pun">,</span><span class="pln"> </span><span class="lit">14</span><span class="pun">,</span><span class="pln"> </span><span class="lit">17</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">translate       </span><span class="lit">33</span><span class="pln">     </span><span class="lit">24</span><span class="pln">      </span><span class="lit">4</span><span class="pln">      </span><span class="lit">3</span><span class="pln">    </span><span class="lit">27</span><span class="pun">%</span><span class="pln">   </span><span class="lit">10</span><span class="pun">-</span><span class="lit">36</span><span class="pun">,</span><span class="pln"> </span><span class="lit">39</span><span class="pun">-</span><span class="lit">56</span><span class="pln">
+app</span><span class="pun">/</span><span class="pln">views          </span><span class="lit">169</span><span class="pln">    </span><span class="lit">124</span><span class="pln">     </span><span class="lit">46</span><span class="pln">     </span><span class="lit">46</span><span class="pln">    </span><span class="lit">21</span><span class="pun">%</span><span class="pln">   </span><span class="lit">16</span><span class="pun">,</span><span class="pln"> </span><span class="lit">20</span><span class="pun">,</span><span class="pln"> </span><span class="lit">24</span><span class="pun">-</span><span class="lit">30</span><span class="pun">,</span><span class="pln"> </span><span class="lit">34</span><span class="pun">-</span><span class="lit">37</span><span class="pun">,</span><span class="pln"> </span><span class="lit">41</span><span class="pun">,</span><span class="pln"> </span><span class="lit">45</span><span class="pun">-</span><span class="lit">46</span><span class="pun">,</span><span class="pln"> </span><span class="lit">53</span><span class="pun">-</span><span class="lit">67</span><span class="pun">,</span><span class="pln"> </span><span class="lit">75</span><span class="pun">-</span><span class="lit">81</span><span class="pun">,</span><span class="pln"> </span><span class="lit">88</span><span class="pun">-</span><span class="lit">109</span><span class="pun">,</span><span class="pln"> </span><span class="lit">113</span><span class="pun">-</span><span class="lit">114</span><span class="pun">,</span><span class="pln"> </span><span class="lit">120</span><span class="pun">-</span><span class="lit">125</span><span class="pun">,</span><span class="pln"> </span><span class="lit">132</span><span class="pun">-</span><span class="lit">143</span><span class="pun">,</span><span class="pln"> </span><span class="lit">149</span><span class="pun">-</span><span class="lit">164</span><span class="pun">,</span><span class="pln"> </span><span class="lit">169</span><span class="pun">-</span><span class="lit">183</span><span class="pun">,</span><span class="pln"> </span><span class="lit">188</span><span class="pun">-</span><span class="lit">198</span><span class="pun">,</span><span class="pln"> </span><span class="lit">203</span><span class="pun">-</span><span class="lit">205</span><span class="pun">,</span><span class="pln"> </span><span class="lit">210</span><span class="pun">-</span><span class="lit">211</span><span class="pun">,</span><span class="pln"> </span><span class="lit">218</span><span class="pln">
+config              </span><span class="lit">22</span><span class="pln">      </span><span class="lit">0</span><span class="pln">      </span><span class="lit">0</span><span class="pln">      </span><span class="lit">0</span><span class="pln">   </span><span class="lit">100</span><span class="pun">%</span><span class="pln">
+</span><span class="pun">------------------------------------------------------------</span><span class="pln">
+TOTAL              </span><span class="lit">388</span><span class="pln">    </span><span class="lit">183</span><span class="pln">     </span><span class="lit">74</span><span class="pln">     </span><span class="lit">61</span><span class="pln">    </span><span class="lit">47</span><span class="pun">%</span><span class="pln">
+
+HTML version</span><span class="pun">:</span><span class="pln"> </span><span class="str">/home/</span><span class="pln">microblog</span><span class="pun">/</span><span class="pln">tmp</span><span class="pun">/</span><span class="pln">coverage</span><span class="pun">/</span><span class="pln">index</span><span class="pun">.</span><span class="pln">html</span></code></pre>
+<p>With this report we know that we are testing 47% of our application. 
+And we are given the list of lines that didn't get executed by the test 
+suite, so we just need to review those lines and think about what tests 
+we can write that use them.</p>
+<p>We can see that our coverage for <code>app/models.py</code> is pretty high (88%), since we have mostly focused on testing our models. The <code>app/views.py</code> coverage is pretty low (21%) because we aren't executing view function code in our tests yet.</p>
+<p>In addition to lines of code that were missed, this tool gives us <em>branch coverage</em> information in the Branch and BrMiss columns. Consider the following example script:</p>
+<pre class="prettyprint"><code><span class="kwd">def</span><span class="pln"> f</span><span class="pun">(</span><span class="pln">x</span><span class="pun">):</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> x </span><span class="pun">&gt;=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">:</span><span class="pln">
+        x </span><span class="pun">=</span><span class="pln"> x </span><span class="pun">+</span><span class="pln"> </span><span class="lit">1</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> x
+
+f</span><span class="pun">(</span><span class="lit">1</span><span class="pun">)</span></code></pre>
+<p>If we run coverage in this simple function we will get 100% coverage, because when the function gets <code>1</code>
+ as an argument its three lines execute. But we have never executed this
+ function with the argument set to 0 or less, and that causes a 
+different behavior. In a more complex case that could cause a bug.</p>
+<p>Branch coverage tells us how many branches of code we have missed, 
+and this is another pointer to the kinds of tests we might be missing in
+ our suite.</p>
+<p>The coverage tool also generates a very nice HTML based report that 
+displays the source code annotated with color coded markers for line and
+ branches covered and missed.</p>
+<p>Continuing with our testing strategy centered in testing the models we can look at the parts of our <code>app/models.py</code> file that have no test coverage. This is easy to visualize in the HTML report, from where we can obtain the following list:</p>
+<ul>
+<li><code>User.make_valid_nickname()</code></li>
+<li><code>User.is_authenticated()</code></li>
+<li><code>User.is_active()</code></li>
+<li><code>User.is_anonymous()</code></li>
+<li><code>User.get_id()</code></li>
+<li><code>User.__repr__()</code></li>
+<li><code>Post.__repr__()</code></li>
+<li><code>User.make_unique_nickname()</code> (only for the branch case where the given name is already unique)</li>
+</ul>
+<p>We can put the first five in the list in a new test:</p>
+<pre class="prettyprint"><code><span class="kwd">def</span><span class="pln"> test_user</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+    </span><span class="com"># make valid nicknames</span><span class="pln">
+    n </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_valid_nickname</span><span class="pun">(</span><span class="str">'John_123'</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> n </span><span class="pun">==</span><span class="pln"> </span><span class="str">'John_123'</span><span class="pln">
+    n </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_valid_nickname</span><span class="pun">(</span><span class="str">'John_[123]\n'</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> n </span><span class="pun">==</span><span class="pln"> </span><span class="str">'John_123'</span><span class="pln">
+    </span><span class="com"># create a user</span><span class="pln">
+    u </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> </span><span class="str">'john'</span><span class="pun">,</span><span class="pln"> email </span><span class="pun">=</span><span class="pln"> </span><span class="str">'john@example.com'</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">u</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> u</span><span class="pun">.</span><span class="pln">is_authenticated</span><span class="pun">()</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">True</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> u</span><span class="pun">.</span><span class="pln">is_active</span><span class="pun">()</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">True</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> u</span><span class="pun">.</span><span class="pln">is_anonymous</span><span class="pun">()</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">False</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> u</span><span class="pun">.</span><span class="pln">id </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">int</span><span class="pun">(</span><span class="pln">u</span><span class="pun">.</span><span class="pln">get_id</span><span class="pun">())</span></code></pre>
+<p>The <code>__repr__()</code> functions are really used internally, so we don't need to test them. For this, we can mark them as not interesting as follows:</p>
+<pre class="prettyprint"><code><span class="kwd">def</span><span class="pln"> __repr__</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln"> </span><span class="com"># pragma: no cover</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="str">'&lt;User %r&gt;'</span><span class="pln"> </span><span class="pun">%</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">)</span></code></pre>
+<p>Finally, back when we wrote the test for <code>make_unique_nickname()</code>
+ we focused only on how the function resolves a name collision, but we 
+forgot to provide a test case that is unique and requires no handling. 
+We can expand our existing test to cover that case as well:</p>
+<pre class="prettyprint"><code><span class="kwd">def</span><span class="pln"> test_make_unique_nickname</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+    </span><span class="com"># create a user and write it to the database</span><span class="pln">
+    u </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> </span><span class="str">'john'</span><span class="pun">,</span><span class="pln"> email </span><span class="pun">=</span><span class="pln"> </span><span class="str">'john@example.com'</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">u</span><span class="pun">)</span><span class="pln">
+    db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_unique_nickname</span><span class="pun">(</span><span class="str">'susan'</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> nickname </span><span class="pun">==</span><span class="pln"> </span><span class="str">'susan'</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_unique_nickname</span><span class="pun">(</span><span class="str">'john'</span><span class="pun">)</span><span class="pln">
+    </span><span class="kwd">assert</span><span class="pln"> nickname </span><span class="pun">!=</span><span class="pln"> </span><span class="str">'john'</span><span class="pln">
+    </span><span class="com">#...</span></code></pre>
+<p>And with these simple changes we get to 100% coverage on our <code>models.py</code> source file.</p>
+<p>For now we'll call it good. Some other day we may decide to pick this
+ up again and figure out a good way to test view functions, but we 
+should feel good that we have full coverage on the code that talks to 
+the database.</p>
+<h2>Profiling for performance</h2>
+<p>The next topic of the day is performance. There is nothing more 
+frustrating for users than having to wait a long time for pages to load.
+ We want to make sure our application is as fast as it can be so we need
+ to take some measures to be prepared to analyze performance problems.</p>
+<p>The technique that we are going to use is called <code>profiling</code>.
+ A code profiler watches a running program, pretty much like coverage 
+tools do, but instead of noting which lines execute and which don't it 
+notes how much time is spent on each function. At the end of the 
+profiling period a report is generated that lists all the functions that
+ executed and how long was spent in each. Sorting this list from the 
+largest to the smallest time will give us a pretty good idea of where we
+ should spend time optimizing code.</p>
+<p>Python comes with a nice source code profiler called <a href="http://docs.python.org/2/library/profile.html">cProfile</a>.
+ We could embed this profiler into our application directly, but before 
+we do any work it is a good idea to search if someone has done the 
+integration work already. A quick search for "Flask profiler" tells us 
+that the Werkzeug module used by Flask comes with a profiler plugin that
+ is all ready to go, so we'll just use that.</p>
+<p>To enable the Werkzeug profiler we can create another starter script like <code>run.py</code>. Let's call it <code>profile.py</code>:</p>
+<pre class="prettyprint"><code><span class="com">#!flask/bin/python</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> werkzeug</span><span class="pun">.</span><span class="pln">contrib</span><span class="pun">.</span><span class="pln">profiler </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">ProfilerMiddleware</span><span class="pln">
+</span><span class="kwd">from</span><span class="pln"> app </span><span class="kwd">import</span><span class="pln"> app
+
+app</span><span class="pun">.</span><span class="pln">config</span><span class="pun">[</span><span class="str">'PROFILE'</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pln">
+app</span><span class="pun">.</span><span class="pln">wsgi_app </span><span class="pun">=</span><span class="pln"> </span><span class="typ">ProfilerMiddleware</span><span class="pun">(</span><span class="pln">app</span><span class="pun">.</span><span class="pln">wsgi_app</span><span class="pun">,</span><span class="pln"> restrictions </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="lit">30</span><span class="pun">])</span><span class="pln">
+app</span><span class="pun">.</span><span class="pln">run</span><span class="pun">(</span><span class="pln">debug </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span><span class="pun">)</span></code></pre>
+<p>Starting the application with the above script will enable the 
+profiler to show the 30 most expensive functions for each request (the 
+syntax for the <code>restrictions</code> argument is documented <a href="http://docs.python.org/dev/library/profile.html#pstats.Stats.print_stats">here</a>).</p>
+<p>Once the application starts, each request will show a profiler summary. Here is an example:</p>
+<pre class="prettyprint"><code><span class="pun">--------------------------------------------------------------------------------</span><span class="pln">
+PATH</span><span class="pun">:</span><span class="pln"> </span><span class="str">'/'</span><span class="pln">
+         </span><span class="lit">95477</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> calls </span><span class="pun">(</span><span class="lit">89364</span><span class="pln"> primitive calls</span><span class="pun">)</span><span class="pln"> </span><span class="kwd">in</span><span class="pln"> </span><span class="lit">0.202</span><span class="pln"> seconds
+
+   </span><span class="typ">Ordered</span><span class="pln"> </span><span class="kwd">by</span><span class="pun">:</span><span class="pln"> </span><span class="kwd">internal</span><span class="pln"> time</span><span class="pun">,</span><span class="pln"> call count
+   </span><span class="typ">List</span><span class="pln"> reduced </span><span class="kwd">from</span><span class="pln"> </span><span class="lit">1587</span><span class="pln"> to </span><span class="lit">30</span><span class="pln"> due to restriction </span><span class="pun">&lt;</span><span class="lit">30</span><span class="pun">&gt;</span><span class="pln">
+
+   ncalls  tottime  percall  cumtime  percall filename</span><span class="pun">:</span><span class="pln">lineno</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">)</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.061</span><span class="pln">    </span><span class="lit">0.061</span><span class="pln">    </span><span class="lit">0.061</span><span class="pln">    </span><span class="lit">0.061</span><span class="pln"> </span><span class="pun">{</span><span class="pln">method </span><span class="str">'commit'</span><span class="pln"> of </span><span class="str">'sqlite3.Connection'</span><span class="pln"> objects</span><span class="pun">}</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.013</span><span class="pln">    </span><span class="lit">0.013</span><span class="pln">    </span><span class="lit">0.018</span><span class="pln">    </span><span class="lit">0.018</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">dialects</span><span class="pun">/</span><span class="pln">sqlite</span><span class="pun">/</span><span class="pln">pysqlite</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">278</span><span class="pun">(</span><span class="pln">dbapi</span><span class="pun">)</span><span class="pln">
+    </span><span class="lit">16807</span><span class="pln">    </span><span class="lit">0.006</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.006</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">isinstance</span><span class="pun">}</span><span class="pln">
+     </span><span class="lit">5053</span><span class="pln">    </span><span class="lit">0.006</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.012</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">nodes</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">163</span><span class="pun">(</span><span class="pln">iter_child_nodes</span><span class="pun">)</span><span class="pln">
+</span><span class="lit">8746</span><span class="pun">/</span><span class="lit">8733</span><span class="pln">    </span><span class="lit">0.005</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.005</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">getattr</span><span class="pun">}</span><span class="pln">
+      </span><span class="lit">817</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.011</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">lexer</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">548</span><span class="pun">(</span><span class="pln">tokeniter</span><span class="pun">)</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln"> </span><span class="pun">/</span><span class="pln">usr</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">sqlite3</span><span class="pun">/</span><span class="pln">dbapi2</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">24</span><span class="pun">(&lt;</span><span class="kwd">module</span><span class="pun">&gt;)</span><span class="pln">
+        </span><span class="lit">4</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.015</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln"> </span><span class="pun">{</span><span class="pln">__import__</span><span class="pun">}</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.009</span><span class="pln">    </span><span class="lit">0.009</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">dialects</span><span class="pun">/</span><span class="pln">sqlite</span><span class="pun">/</span><span class="pln">__init__</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">7</span><span class="pun">(&lt;</span><span class="kwd">module</span><span class="pun">&gt;)</span><span class="pln">
+   </span><span class="lit">1808</span><span class="pun">/</span><span class="lit">8</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.033</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">visitor</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">34</span><span class="pun">(</span><span class="pln">visit</span><span class="pun">)</span><span class="pln">
+     </span><span class="lit">9013</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.005</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">nodes</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">147</span><span class="pun">(</span><span class="pln">iter_fields</span><span class="pun">)</span><span class="pln">
+     </span><span class="lit">2822</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">method </span><span class="str">'match'</span><span class="pln"> of </span><span class="str">'_sre.SRE_Pattern'</span><span class="pln"> objects</span><span class="pun">}</span><span class="pln">
+      </span><span class="lit">738</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">method </span><span class="str">'split'</span><span class="pln"> of </span><span class="str">'str'</span><span class="pln"> objects</span><span class="pun">}</span><span class="pln">
+     </span><span class="lit">1808</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.006</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">visitor</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">26</span><span class="pun">(</span><span class="pln">get_visitor</span><span class="pun">)</span><span class="pln">
+     </span><span class="lit">2862</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">method </span><span class="str">'append'</span><span class="pln"> of </span><span class="str">'list'</span><span class="pln"> objects</span><span class="pun">}</span><span class="pln">
+  </span><span class="lit">110</span><span class="pun">/</span><span class="lit">106</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.008</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">parser</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">544</span><span class="pun">(</span><span class="pln">parse_primary</span><span class="pun">)</span><span class="pln">
+       </span><span class="lit">11</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">posix</span><span class="pun">.</span><span class="pln">stat</span><span class="pun">}</span><span class="pln">
+        </span><span class="lit">5</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.010</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">engine</span><span class="pun">/</span><span class="kwd">base</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">1549</span><span class="pun">(</span><span class="pln">_execute_clauseelement</span><span class="pun">)</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln">    </span><span class="lit">0.004</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">dialects</span><span class="pun">/</span><span class="pln">sqlite</span><span class="pun">/</span><span class="kwd">base</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">124</span><span class="pun">(&lt;</span><span class="kwd">module</span><span class="pun">&gt;)</span><span class="pln">
+  </span><span class="lit">1229</span><span class="pun">/</span><span class="lit">36</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.008</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">nodes</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">183</span><span class="pun">(</span><span class="pln">find_all</span><span class="pun">)</span><span class="pln">
+    </span><span class="lit">416</span><span class="pun">/</span><span class="lit">4</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.006</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">visitor</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">58</span><span class="pun">(</span><span class="pln">generic_visit</span><span class="pun">)</span><span class="pln">
+   </span><span class="lit">101</span><span class="pun">/</span><span class="lit">10</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">sre_compile</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">32</span><span class="pun">(</span><span class="pln">_compile</span><span class="pun">)</span><span class="pln">
+       </span><span class="lit">15</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.003</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">schema</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">1094</span><span class="pun">(</span><span class="pln">_make_proxy</span><span class="pun">)</span><span class="pln">
+        </span><span class="lit">8</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">method </span><span class="str">'execute'</span><span class="pln"> of </span><span class="str">'sqlite3.Cursor'</span><span class="pln"> objects</span><span class="pun">}</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">encodings</span><span class="pun">/</span><span class="pln">base64_codec</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">8</span><span class="pun">(&lt;</span><span class="kwd">module</span><span class="pun">&gt;)</span><span class="pln">
+        </span><span class="lit">2</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln"> </span><span class="pun">{</span><span class="pln">method </span><span class="str">'close'</span><span class="pln"> of </span><span class="str">'sqlite3.Connection'</span><span class="pln"> objects</span><span class="pun">}</span><span class="pln">
+        </span><span class="lit">1</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">sqlalchemy</span><span class="pun">/</span><span class="pln">dialects</span><span class="pun">/</span><span class="pln">sqlite</span><span class="pun">/</span><span class="pln">pysqlite</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">215</span><span class="pun">(&lt;</span><span class="kwd">module</span><span class="pun">&gt;)</span><span class="pln">
+        </span><span class="lit">2</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.002</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">wtforms</span><span class="pun">/</span><span class="pln">form</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">162</span><span class="pun">(</span><span class="pln">__call__</span><span class="pun">)</span><span class="pln">
+      </span><span class="lit">980</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> </span><span class="pun">{</span><span class="pln">id</span><span class="pun">}</span><span class="pln">
+  </span><span class="lit">936</span><span class="pun">/</span><span class="lit">127</span><span class="pln">    </span><span class="lit">0.001</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln">    </span><span class="lit">0.008</span><span class="pln">    </span><span class="lit">0.000</span><span class="pln"> flask</span><span class="pun">/</span><span class="pln">lib</span><span class="pun">/</span><span class="pln">python2</span><span class="pun">.</span><span class="lit">7</span><span class="pun">/</span><span class="pln">site</span><span class="pun">-</span><span class="pln">packages</span><span class="pun">/</span><span class="pln">jinja2</span><span class="pun">/</span><span class="pln">visitor</span><span class="pun">.</span><span class="pln">py</span><span class="pun">:</span><span class="lit">41</span><span class="pun">(</span><span class="pln">generic_visit</span><span class="pun">)</span><span class="pln">
+
+</span><span class="pun">--------------------------------------------------------------------------------</span><span class="pln">
+
+</span><span class="lit">127.0</span><span class="pun">.</span><span class="lit">0.1</span><span class="pln"> </span><span class="pun">-</span><span class="pln"> </span><span class="pun">-</span><span class="pln"> </span><span class="pun">[</span><span class="lit">09</span><span class="pun">/</span><span class="typ">Mar</span><span class="pun">/</span><span class="lit">2013</span><span class="pln"> </span><span class="lit">19</span><span class="pun">:</span><span class="lit">35</span><span class="pun">:</span><span class="lit">49</span><span class="pun">]</span><span class="pln"> </span><span class="str">"GET / HTTP/1.1"</span><span class="pln"> </span><span class="lit">200</span><span class="pln"> </span><span class="pun">-</span></code></pre>
+<p>The columns in this report are as follows:</p>
+<ul>
+<li><strong>ncalls</strong>: number of times this function was called.</li>
+<li><strong>tottime</strong>: total time spent inside this function.</li>
+<li><strong>percall</strong>: this is tottime divided by ncalls.</li>
+<li><strong>cumtime</strong>: total time spent inside this function and any functions called from it.</li>
+<li><strong>percall</strong>: cumtime divided by ncalls.</li>
+<li><strong>filename:lineno(function)</strong>: the function name and location.</li>
+</ul>
+<p>It is interesting to note that our templates will also appear here as
+ functions. This is because Jinja2 templates are compiled to Python 
+code. That means that the profiler will not only point us to slow code 
+we have written but also to slow templates!</p>
+<p>We really don't have a performance problem at this point, at least 
+not in this one request. We can see that the most time consuming 
+functions are related to the sqlite3 database and Jinja2 template 
+rendering, which is totally expected. Note in the header at the top that
+ the this request took just 0.2 seconds to complete, so the scale of 
+these per-function times is so small that it is in the noise.</p>
+<p>As the application grows, it is useful to run new requests we add 
+through the profiler, to make sure we are not doing anything that is 
+slow. </p>
+<h2>Database Performance</h2>
+<p>To end this article, we are going to look at database performance. 
+We've seen above that our database handling is at the top of the 
+profiler report, so it would be good to have a system in place to get an
+ alert when and if our database becomes too slow during production use.</p>
+<p>The Flask-SQLAlchemy documentation mentions a <a href="http://pythonhosted.org/Flask-SQLAlchemy/api.html#flask.ext.sqlalchemy.get_debug_queries">get_debug_queries</a> function, which returns a list of all the queries issued during the request with their durations.</p>
+<p>This is very useful information. The intended use appears to be to 
+time queries during debugging or testing, but being able to send an 
+alert when a query takes too long is useful as a feature for the 
+production version, even if it adds a little bit of overhead.</p>
+<p>To use this feature during production we need to enable it in the configuration (file <code>config.py</code>):</p>
+<pre class="prettyprint"><code><span class="pln">SQLALCHEMY_RECORD_QUERIES </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">True</span></code></pre>
+<p>We are also going to setup a threshold for what we will consider a slow query (file <code>config.py</code>):</p>
+<pre class="prettyprint"><code><span class="com"># slow database query threshold (in seconds)</span><span class="pln">
+DATABASE_QUERY_TIMEOUT </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0.5</span></code></pre>
+<p>To check if we need to send any alerts we'll add a hook after each request. In Flask this is easy, we just set up a <code>after_request</code> handler (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">sqlalchemy </span><span class="kwd">import</span><span class="pln"> get_debug_queries
+</span><span class="kwd">from</span><span class="pln"> config </span><span class="kwd">import</span><span class="pln"> DATABASE_QUERY_TIMEOUT
+
+</span><span class="lit">@app</span><span class="pun">.</span><span class="pln">after_request
+</span><span class="kwd">def</span><span class="pln"> after_request</span><span class="pun">(</span><span class="pln">response</span><span class="pun">):</span><span class="pln">
+    </span><span class="kwd">for</span><span class="pln"> query </span><span class="kwd">in</span><span class="pln"> get_debug_queries</span><span class="pun">():</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> query</span><span class="pun">.</span><span class="pln">duration </span><span class="pun">&gt;=</span><span class="pln"> DATABASE_QUERY_TIMEOUT</span><span class="pun">:</span><span class="pln">
+            app</span><span class="pun">.</span><span class="pln">logger</span><span class="pun">.</span><span class="pln">warning</span><span class="pun">(</span><span class="str">"SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n"</span><span class="pln"> </span><span class="pun">%</span><span class="pln"> </span><span class="pun">(</span><span class="pln">query</span><span class="pun">.</span><span class="pln">statement</span><span class="pun">,</span><span class="pln"> query</span><span class="pun">.</span><span class="pln">parameters</span><span class="pun">,</span><span class="pln"> query</span><span class="pun">.</span><span class="pln">duration</span><span class="pun">,</span><span class="pln"> query</span><span class="pun">.</span><span class="pln">context</span><span class="pun">))</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> response</span></code></pre>
+<p>This will write to the log any queries that took longer than half a 
+second. The information in the log will include the SQL statement, the 
+actual parameters used in that statement, the duration and the location 
+in the sources from where the query was issued.</p>
+<p>With a small database like ours it is unlikely that we will have slow
+ queries, but as the database and the application grow we may find that 
+some database queries need to be optimized, for example with the 
+addition of indexes. By simply checking the log file from time to time 
+we will learn if some of the queries we are issuing need optimization.</p>
+<h2>Final words</h2>
+<p>Today we have done a number of mundane, yet important things all 
+robust applications must have. The code for the updated application can 
+be downloaded below:</p>
+<p>Download <a href="https://github.com/miguelgrinberg/microblog/archive/v0.16.zip">microblog-0.16.zip</a>.</p>
+<p>Users comfortable with github can also get the code from <a href="https://github.com/miguelgrinberg/microblog/tree/v0.16">here</a>.</p>
+<p>It feels like we are reaching the end of this tutorial series, as I'm
+ running out of ideas for what to present. In the next, possibly last 
+chapter we will look at deployment options, both traditional and cloud 
+based. </p>
+<p>If you have any topics that you feel have not been given coverage in this tutorial please let me know in the comments below.</p>
+<p>I hope to see you next time!</p>
+<p>Miguel</p></div>
+<div class="social-mini"><table><tbody><tr>
+    <td><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" data-via="miguelgrinberg" data-count="none">Tweet</a></td>
+    <td><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" size="medium" witdh="100" annotation="none"></g:plusone></td>
+    <td><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling"></script></td>
+    <td><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling" data-send="false" data-layout="button_count" data-width="100" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="iehxxnfiukkcnmchalfrducndillojrtiksrlngg"></iframe></div></td>
+</tr></tbody></table></div>
+
+<h4 style="text-align: right"><a name="comments"></a>31 comments</h4>
+
+
+<div class="comment">
+    <ul>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#1</span> <span class="label label-info">Slarti</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-13T18:37:48Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">This whole series 
+has been wonderful. Great detail, clear explanations and examples.
+
+I'm not sure how you're defining "traditional," but when you go over 
+deployments, please include something on packaging your app in a way 
+that's friendly to the package management system and filesystem layout 
+of the server it'll be running on in production. (RPM/deb/whatever, 
+Linux FHS, etc.) Speaking as someone who's a systems admin by trade, I 
+can't tell you how often and how badly I despair when developers treat 
+tarballs or git checkouts into rathole subdirectories with their own 
+self-contained locations for confs, logs, etc. like they're legitimate 
+deployment strategies.
+
+(I also despair at how virtualenv and keeping local unmanaged copies of 
+dependency modules (potentially leading to multiple copies of the same 
+modules if more than one app lives on a system) is considered the done 
+thing rather than solving the problem of properly integrating with the 
+system-managed python, but I've accepted that I might possibly have lost
+ that fight. I'll accept considering the dependencies as part of the app
+ settle for integration of the app as a whole into the system as a 
+whole.)
+
+Thanks!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#2</span> <span class="label label-info">Jimmy Juno</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-23T16:34:08Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Coming from the 
+C/C++ world, the pythonic debugging technique of modifying 3rd-party 
+scripts to set breakpoints feels very risky.  I would suggest using pudb
+ instead of pdb for debugging anyway -- it has a much nicer UI to pdb 
+yet still runs in the console.
+
+Another great tutorial, Miguel.  I can't wait to read the one on 
+deployment. :-)</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#3</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-23T17:34:59Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Jimmy: Why do you
+ think modifying 3rd party code is risky? I also come from a C/C++ 
+world, but I learned not to take 3rd party code for granted, getting 
+familiar with the libraries that you use enable you to understand their 
+pluses and minuses better, and in fact, this bug I was chasing ended up 
+being in a 3rd party library after all!  Now with that said, I was not 
+aware of pudb, looks like a much nicer alternative to pdb and I'll 
+definitely give it a try. Thanks!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#4</span> <span class="label label-info">George Mabley</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-24T05:15:43Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">I have been 
+looking at the capabilities of the extensions we have added so far, and I
+ thought I should try out WTForm's recaptcha.  I modified my forms.py 
+correctly and added a RecaptchaField as recaptcha.  I added my keys to 
+the config.py,  and then called {{form.recaptcha}} in a template.  After
+ the code hit {{form.recaptcha}}, this traceback was given: 
+http://pastebin.com/1LVBcmMc.  The error was simply "KeyError: 'babel'."
+  Any suggestions as to what my problem is?</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#5</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-24T05:28:44Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@George: are you 
+running your app without initializing Flask-Babel maybe? The recaptcha 
+widget has internationalized texts in its template, it seems it's trying
+ to get babel to translate a text and babel isn't there.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/2c02c167f88ee80d03aa6d3b489ca935.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#6</span> <span class="label label-info">George Mabley</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-24T16:38:11Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">That was it.  Thank you!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#7</span> <span class="label label-info">Aaron</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-29T19:48:00Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Did you cover caching anywhere? I see mention of it here, but can't find it in your tutorial:
+
+http://blog.miguelgrinberg.com/post/about-this-blog</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#8</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-30T01:30:23Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Aaron: you are 
+right, I never found a good excuse to talk about caching, since 
+microblog is largely dynamic. The only place it would make sense to 
+cache is at the post level, but posts are also pretty simple. I'll think
+ about it and if I can come up with a good way to insert caching I'll 
+write an article about it. Thanks!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/ccf35211b9e3a1f0026f33c3a881cd85.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#9</span> <span class="label label-info">Aaron</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-30T03:23:21Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Oh, is the 
+software referenced in the about post not the same as what you covered 
+in this mega-tutorial?
+
+If the queries are so simple as to not need caching, it's a little 
+curious that you covered slow query logging at the end  ;-)
+
+I've been working on a project with some fairly slow queries here and 
+there, and I'll have to get some caching in place soon. I just thought I
+ ought to see if you'd covered it, as your tutorial is among the best 
+I've seen for all the things you *do* cover... even though I'm not a 
+novice, it's helpful.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#10</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-30T05:10:46Z").fromNow());
+                    </script>11 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Aaron: the 
+software mentioned in the About page is this blog, it is not the subject
+ of the tutorial. You find it a "little curious" that I don't cache my 
+database queries because you are confused about the reasons for caching 
+and how caching works. Caching is not a solution to fix slow queries, 
+for that problem you improve your database design so that your queries 
+run more efficiently. Caching only works for data that rarely changes, 
+it would not work for an application like microblog, which as I said 
+above, is dynamic and needs to show updated content constantly. On the 
+other side, caching works great for a blog since articles rarely change 
+and they are rendered exactly the same for all clients. My 
+recommendation for your problem is that you learn about database 
+optimization more than caching.</p>
+                </div>
+            </div>
+        </li>
+        
+    </ul>
+    <!--
+    <table width="100%">
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/a717bd282a6648e3852e3a344517dcd3?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#1</span> <span class="label label-info">Slarti</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-13T18:37:48Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">This whole series has been wonderful. Great detail, clear explanations and examples.
+
+I&#39;m not sure how you&#39;re defining &#34;traditional,&#34; but when you go over deployments, please include something on packaging your app in a way that&#39;s friendly to the package management system and filesystem layout of the server it&#39;ll be running on in production. (RPM/deb/whatever, Linux FHS, etc.) Speaking as someone who&#39;s a systems admin by trade, I can&#39;t tell you how often and how badly I despair when developers treat tarballs or git checkouts into rathole subdirectories with their own self-contained locations for confs, logs, etc. like they&#39;re legitimate deployment strategies.
+
+(I also despair at how virtualenv and keeping local unmanaged copies of dependency modules (potentially leading to multiple copies of the same modules if more than one app lives on a system) is considered the done thing rather than solving the problem of properly integrating with the system-managed python, but I&#39;ve accepted that I might possibly have lost that fight. I&#39;ll accept considering the dependencies as part of the app settle for integration of the app as a whole into the system as a whole.)
+
+Thanks!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/6dcc85f5501798d6895335487c49df51?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#2</span> <span class="label label-info">Jimmy Juno</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-23T16:34:08Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Coming from the C/C++ world, the pythonic debugging technique of modifying 3rd-party scripts to set breakpoints feels very risky.  I would suggest using pudb instead of pdb for debugging anyway -- it has a much nicer UI to pdb yet still runs in the console.
+
+Another great tutorial, Miguel.  I can&#39;t wait to read the one on deployment. :-)aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#3</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-23T17:34:59Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Jimmy: Why do you think modifying 3rd party code is risky? I also come from a C/C++ world, but I learned not to take 3rd party code for granted, getting familiar with the libraries that you use enable you to understand their pluses and minuses better, and in fact, this bug I was chasing ended up being in a 3rd party library after all!  Now with that said, I was not aware of pudb, looks like a much nicer alternative to pdb and I&#39;ll definitely give it a try. Thanks!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/2c02c167f88ee80d03aa6d3b489ca935?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#4</span> <span class="label label-info">George Mabley</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-24T05:15:43Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">I have been looking at the capabilities of the extensions we have added so far, and I thought I should try out WTForm&#39;s recaptcha.  I modified my forms.py correctly and added a RecaptchaField as recaptcha.  I added my keys to the config.py,  and then called {{form.recaptcha}} in a template.  After the code hit {{form.recaptcha}}, this traceback was given: http://pastebin.com/1LVBcmMc.  The error was simply &#34;KeyError: &#39;babel&#39;.&#34;  Any suggestions as to what my problem is?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#5</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-24T05:28:44Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@George: are you running your app without initializing Flask-Babel maybe? The recaptcha widget has internationalized texts in its template, it seems it&#39;s trying to get babel to translate a text and babel isn&#39;t there.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/2c02c167f88ee80d03aa6d3b489ca935?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#6</span> <span class="label label-info">George Mabley</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-24T16:38:11Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">That was it.  Thank you!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/ccf35211b9e3a1f0026f33c3a881cd85?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#7</span> <span class="label label-info">Aaron</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-29T19:48:00Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Did you cover caching anywhere? I see mention of it here, but can&#39;t find it in your tutorial:
+
+http://blog.miguelgrinberg.com/post/about-this-blogaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#8</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-30T01:30:23Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Aaron: you are right, I never found a good excuse to talk about caching, since microblog is largely dynamic. The only place it would make sense to cache is at the post level, but posts are also pretty simple. I&#39;ll think about it and if I can come up with a good way to insert caching I&#39;ll write an article about it. Thanks!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/ccf35211b9e3a1f0026f33c3a881cd85?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#9</span> <span class="label label-info">Aaron</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-30T03:23:21Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Oh, is the software referenced in the about post not the same as what you covered in this mega-tutorial?
+
+If the queries are so simple as to not need caching, it&#39;s a little curious that you covered slow query logging at the end  ;-)
+
+I&#39;ve been working on a project with some fairly slow queries here and there, and I&#39;ll have to get some caching in place soon. I just thought I ought to see if you&#39;d covered it, as your tutorial is among the best I&#39;ve seen for all the things you *do* cover... even though I&#39;m not a novice, it&#39;s helpful.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#10</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-30T05:10:46Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Aaron: the software mentioned in the About page is this blog, it is not the subject of the tutorial. You find it a &#34;little curious&#34; that I don&#39;t cache my database queries because you are confused about the reasons for caching and how caching works. Caching is not a solution to fix slow queries, for that problem you improve your database design so that your queries run more efficiently. Caching only works for data that rarely changes, it would not work for an application like microblog, which as I said above, is dynamic and needs to show updated content constantly. On the other side, caching works great for a blog since articles rarely change and they are rendered exactly the same for all clients. My recommendation for your problem is that you learn about database optimization more than caching.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    </table>
+    -->
+</div>
+
+<div class="page">
+<ul class="pager">
+  <li class="previous disabled">
+    <a href="#">««</a>
+  </li>
+  <li class="previous disabled">
+    <a href="#">«</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling/page/0#comments">»»</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling/page/2#comments">»</a>
+  </li>
+</ul>
+</div>
+
+<h3><a name="commentform"></a>Leave a Comment</h3>
+<div class="commentform">
+<form class="form-horizontal" method="post" action="#commentform">
+<div style="display:none;"><input id="csrf_token" name="csrf_token" value="20140210210339##bc188bc8157d34509e594e83b7061ee945355636" type="hidden"></div>
+
+<div class="control-group">
+    <label class="control-label" for="name">Name <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="name" name="name" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="url">Website</label>
+    <div class="controls"><input class="span5" id="url" name="url" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="email">Email <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="email" name="email" type="text"></div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="comment">Comment <span class="label label-important">*</span></label>
+    <div class="controls"><textarea class="span5" id="comment" name="comment" rows="4"></textarea><img style="cursor: pointer ! important; display: none ! important; position: absolute ! important; padding: 0px ! important; margin: 0px ! important; border: medium none ! important; width: 28px ! important; height: 14px ! important; opacity: 0.0152174 ! important; left: 664px ! important; top: 20213px ! important;" title="It's All Text!" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/gumdrop.png"></div>
+</div>
+
+<div class="control-group">
+    <div class="controls">
+<script type="text/javascript">var RecaptchaOptions = {"theme": "white", "custom_translations": {"incorrect_try_again": "Incorrect. Try again.", "help_btn": "Help", "cant_hear_this": "Download sound as MP3", "instructions_audio": "Type what you hear:", "instructions_visual": "Type the two words:", "refresh_btn": "Get a new challenge", "play_again": "Play sound again", "visual_challenge": "Get a visual challenge", "audio_challenge": "Get an audio challenge"}};</script>
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/challenge.js"></script><script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/recaptcha.js"></script><div class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio" id="recaptcha_widget_div" style=""><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_white"> <tbody><tr> <td colspan="6" class="recaptcha_r1_c1"></td> </tr> <tr> <td class="recaptcha_r2_c1"></td> <td colspan="4" class="recaptcha_image_cell"><center><div style="width: 300px; height: 57px;" id="recaptcha_image"><img id="recaptcha_challenge_image" alt="reCAPTCHA challenge image" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/image.jpg" height="57" width="300"></div></center></td> <td class="recaptcha_r2_c2"></td> </tr> <tr> <td rowspan="6" class="recaptcha_r3_c1"></td> <td colspan="4" class="recaptcha_r3_c2"></td> <td rowspan="6" class="recaptcha_r3_c3"></td> </tr> <tr> <td rowspan="3" class="recaptcha_r4_c1" height="49"> <div class="recaptcha_input_area"> <span style="display: none;" id="recaptcha_challenge_field_holder"><input name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_VushzrH1FOiC6dOy6poTNK4bLdjWHB7iglguTnxGpLPWNcL1DqEpndVP83lRSZtpdZFs_UDISiHDzlVuws8XrwDZg-i_jdlkdK8jkjL7CufhqlLfx7FF_pOAAEyD8vwiYdMmSz_1r1dedTbUKv9MDNKSeIgZEiNBnIgvUInrHxzY7y3sQ9E" type="hidden"></span><input autocomplete="off" name="recaptcha_response_field" id="recaptcha_response_field" autocorrect="off" autocapitalize="off" placeholder="Type the two words" type="text"> <span id="recaptcha_privacy" class="recaptcha_only_if_privacy"><a target="_blank" href="http://www.google.com/intl/en/policies/">Privacy &amp; Terms</a></span> </div> </td> <td rowspan="4" class="recaptcha_r4_c2"></td> <td><a title="Get a new challenge" id="recaptcha_reload_btn"><img alt="Get a new challenge" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/refresh.gif" id="recaptcha_reload" height="17" width="25"></a></td> <td rowspan="4" class="recaptcha_r4_c4"></td> </tr> <tr> <td><a title="Get an audio challenge" id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/audio.gif" id="recaptcha_switch_audio" alt="Get an audio challenge" height="16" width="25"></a><a title="Get a visual challenge" id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/text.gif" id="recaptcha_switch_img" alt="Get a visual challenge" height="16" width="25"></a></td> </tr> <tr> <td><a title="Help" id="recaptcha_whatsthis_btn"><img alt="Help" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/help.gif" id="recaptcha_whatsthis" height="16" width="25"></a></td> </tr> <tr> <td class="recaptcha_r7_c1"></td> <td class="recaptcha_r8_c1"></td> </tr> </tbody></table> </div></div>
+<noscript>
+  <div><iframe src="http://api.recaptcha.net/noscript?k=6Ld5Zs4SAAAAAOY0DOi4r18bgHlEaz41qAoRf__S" height="300" width="500"></iframe></div>
+  <div><textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  <input type="hidden" name="recaptcha_response_field" value="manual_challenge"></div>
+</noscript>
+</div>
+</div>
+
+<div class="control-group">
+    <div class="controls"><input name="submit" class="btn btn-primary" value="Post Comment" type="submit"> <span class="help-inline">Note: all comments are screened before they are published. Thank you for your patience!</span></div>
+</div>
+</form>
+</div>
+
+
+</div>
+
+            </div>
+        </div>
+        <div class="span4">
+            <div id="sidebar">
+                <h1>About Miguel</h1>
+                <img style="float: right; margin: 0px 8px 8px 0px; padding: 4px; border: 1px solid #ccc;" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/miguel.jpg">
+                <p>Welcome to my blog!</p>
+                <p>I'm a software engineer, photographer and filmmaker in Portland, Oregon, USA.</p>
+                <p>You can also find me on <a href="https://www.facebook.com/miguelgrinbergblog">Facebook</a>, <a href="https://plus.google.com/u/0/117786742456929977820">Google+</a>, <a href="http://www.linkedin.com/in/miguelgrinberg">LinkedIn</a> and <a href="https://twitter.com/#%21/miguelgrinberg">Twitter</a>.</p>
+                <p>Thank you for visiting!</p>
+                <h1>Flask Web Development Book</h1>
+                <p>I'm currently writing a book on web development with 
+Python and Flask, to be published by O'Reilly Media in 2014. The 
+official site for this book is <a href="http://flaskbook.com/">http://flaskbook.com</a>.</p>
+                <center><a href="http://flaskbook.com/"><img style="border: 1px solid black;" src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/flask-book-cover-tiny.png"></a></center>
+                <h1>Flask Tutorial at PyCon 2014</h1>
+                <p>If you want to learn Flask in a class setting then I 
+hope you will consider my upcoming tutorial session at PyCon 2014 in 
+Montréal on April 10th, 2014. Visit the <a href="https://us.pycon.org/2014/schedule/presentation/54/">tutorial page</a> for more information. I hope to see you there!</p>
+                <center><a href="https://us.pycon.org/2014/schedule/presentation/54/"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/pycon2014-blog-image.png"></a></center>
+                
+                		<h1>Categories</h1>
+		<ul>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Arduino/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Arduino RSS Feed" label="Arduino RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Arduino">Arduino</a></span> (7)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Blog/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Blog RSS Feed" label="Blog RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Blog">Blog</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/C++/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="C++ RSS Feed" label="C++ RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/C++">C++</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Cloud/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Cloud RSS Feed" label="Cloud RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Cloud">Cloud</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Filmmaking/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Filmmaking RSS Feed" label="Filmmaking RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Filmmaking">Filmmaking</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Flask/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Flask RSS Feed" label="Flask RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span> (28)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Games/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Games RSS Feed" label="Games RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Games">Games</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Gear/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Gear RSS Feed" label="Gear RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Gear">Gear</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/HTML5/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="HTML5 RSS Feed" label="HTML5 RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/HTML5">HTML5</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Heroku/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Heroku RSS Feed" label="Heroku RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Heroku">Heroku</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Javascript/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Javascript RSS Feed" label="Javascript RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Javascript">Javascript</a></span> (3)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Movie Reviews RSS Feed" label="Movie Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews">Movie Reviews</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Netflix/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Netflix RSS Feed" label="Netflix RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Netflix">Netflix</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Node.js/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Node.js RSS Feed" label="Node.js RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Node.js">Node.js</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Personal/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Personal RSS Feed" label="Personal RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Personal">Personal</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Photography/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Photography RSS Feed" label="Photography RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Photography">Photography</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Product Reviews RSS Feed" label="Product Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews">Product Reviews</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Programming/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Programming RSS Feed" label="Programming RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span> (36)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Project%20Management/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Project Management RSS Feed" label="Project Management RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Project%20Management">Project Management</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Python/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Python RSS Feed" label="Python RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span> (29)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/REST/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="REST RSS Feed" label="REST RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/REST">REST</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Raspberry Pi RSS Feed" label="Raspberry Pi RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi">Raspberry Pi</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/RhinoSteady/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="RhinoSteady RSS Feed" label="RhinoSteady RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/RhinoSteady">RhinoSteady</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Robotics/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Robotics RSS Feed" label="Robotics RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Robotics">Robotics</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Video/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XVI_%20Debugging,%20Testing%20and%20Profiling%20-%20miguelgrinberg.com_files/rss-small.png" title="Video RSS Feed" label="Video RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Video">Video</a></span> (2)</li>
+		
+		</ul>
+
+                
+            </div>
+        </div>
+    </div>
+	<div id="footer">
+        <p class="elapsed">This page was generated in 0.109 seconds.</p>
+		<p>© 2013 by Miguel Grinberg. All rights reserved. <a href="mailto:webmaster%20_at_%20miguelgrinberg%20_dot_%20com">Questions?</a></p>
+	</div>
+</div>
+<div id="wrap">
+</div>
+<div style="display: none;" id="cboxOverlay"></div><div style="display: none; padding-bottom: 42px; padding-right: 42px;" class="" id="colorbox"><div id="cboxWrapper"><div><div style="float: left;" id="cboxTopLeft"></div><div style="float: left;" id="cboxTopCenter"></div><div style="float: left;" id="cboxTopRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxMiddleLeft"></div><div style="float: left;" id="cboxContent"><div style="width: 0px; height: 0px; overflow: hidden; float: left;" id="cboxLoadedContent"></div><div style="float: left;" id="cboxLoadingOverlay"></div><div style="float: left;" id="cboxLoadingGraphic"></div><div style="float: left;" id="cboxTitle"></div><div style="float: left;" id="cboxCurrent"></div><div style="float: left;" id="cboxNext"></div><div style="float: left;" id="cboxPrevious"></div><div style="float: left;" id="cboxSlideshow"></div><div style="float: left;" id="cboxClose"></div></div><div style="float: left;" id="cboxMiddleRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxBottomLeft"></div><div style="float: left;" id="cboxBottomCenter"></div><div style="float: left;" id="cboxBottomRight"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div></body></html>

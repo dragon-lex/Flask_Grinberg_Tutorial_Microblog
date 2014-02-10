@@ -1,0 +1,994 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><script src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/widgets.js" id="twitter-wjs"></script><script id="bug.surrogate.20">FB={Event:{subscribe:function(){}},UIServer:{},XFBML:{parse:function(){}},init:function(){},__noSuchMethod__:function(){}};</script><script src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/all.js" id="facebook-jssdk"></script><script id="bug.surrogate.1">var urchinTracker=function(){},_gaq={push:function(){try {if(arguments[0][0]=='_link')window.location.href=arguments[0][1]}catch(er){}}},_gat={_createTracker:function(){}, _getTracker:function(){return{__noSuchMethod__:function(){},_link:function(o){if(o)location.href=o;},_linkByPost:function(){return true;},_getLinkerUrl:function(o){return o;},_trackEvent:function(){}}}};</script><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>The Flask Mega-Tutorial, Part XIV: I18n and L10n - miguelgrinberg.com</title>
+
+	<meta name="description" content="miguelgrinberg.com">
+	<meta name="copyright" content="Copyright (c) 2012 Miguel Grinberg">
+	<meta name="author" content="Miguel Grinberg">
+    
+    <meta name="keywords" content="python, programming, flask, web, tutorial, i18n, l10n, babel">
+    
+    <link rel="shortcut icon" href="http://blog.miguelgrinberg.com/static/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed" title="miguelgrinberg.com RSS feed">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/prettify.css" type="text/css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/colorbox.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/jquery_002.js"></script>
+	<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/jquery.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/moment.js"></script>
+    <script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/prettify.js"></script>
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/bootstrap-responsive.css" rel="stylesheet">
+    <link href="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/style.css" rel="stylesheet" type="text/css">
+    <script src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/bootstrap.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css" media="screen, print, projection">
+    </style>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-4777284-15']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".gallery").colorbox({rel:".gallery",maxWidth:"95%",maxHeight:"95%",scalePhotos:true});
+            // add prettyprint class to all <pre><code></code></pre> blocks
+            var prettify = false;
+            $("pre code").parent().each(function() {
+                $(this).addClass('prettyprint');
+                prettify = true;
+            });
+            prettyPrint();
+        });
+    </script>
+<style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_r1_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 -63px no-repeat;width:318px;height:9px}.recaptchatable .recaptcha_r2_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r2_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -27px 0 no-repeat;width:9px;height:57px}.recaptchatable .recaptcha_r3_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') 0 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r3_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -18px -57px no-repeat;width:300px;height:6px}.recaptchatable .recaptcha_r3_c3{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -9px 0 no-repeat;width:9px;height:63px}.recaptchatable .recaptcha_r4_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px 0 no-repeat;width:171px;height:49px}.recaptchatable .recaptcha_r4_c2{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -36px 0 no-repeat;width:7px;height:57px}.recaptchatable .recaptcha_r4_c4{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -214px 0 no-repeat;width:97px;height:57px}.recaptchatable .recaptcha_r7_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:171px;height:8px}.recaptchatable .recaptcha_r8_c1{background:url('http://www.google.com/recaptcha/api/img/white/sprite.png') -43px -49px no-repeat;width:25px;height:8px}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px}#recaptcha_area,#recaptcha_table{width:318px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;padding:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;font-family:helvetica,sans-serif;font-size:8pt;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{position:relative;margin:auto}.recaptchatable #recaptcha_image #recaptcha_challenge_image{display:block}.recaptchatable #recaptcha_image #recaptcha_ad_image{display:block;position:absolute;top:0}.recaptchatable img{border:0!important;margin:0!important;padding:0!important}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;width:153px!important;height:45px!important;margin-left:7px!important;margin-right:7px!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;background:none!important;height:auto!important;width:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{width:153px!important;position:relative!important;bottom:7px!important;padding:0!important;margin:15px 0 0 0!important;font-size:10pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1!important}#recaptcha_instructions_error{color:red!important}.recaptcha_only_if_privacy{float:right;text-align:right}#recaptcha-ad-choices{position:absolute;height:15px;top:0;right:0}#recaptcha-ad-choices img{height:15px}.recaptcha-ad-choices-collapsed{width:15px;height:15px;display:block}.recaptcha-ad-choices-expanded{width:75px;height:15px;display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-collapsed{display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-expanded{display:block}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><style>#nrbkiccaodmrrgwrfwlyfeucqosmwjsxx{border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.nrbkiccaodmrrgwrfwlyfeucqosmwjsxx-blocked{color:#777 !important;display:inline !important;text-decoration:line-through !important;}#nrbkiccaodmrrgwrfwlyfeucqosmwjsxx span{background:transparent !important;}#nrbkiccaodmrrgwrfwlyfeucqosmwjsxx div{border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#nrbkiccaodmrrgwrfwlyfeucqosmwjsxx a{font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}@media print{#nrbkiccaodmrrgwrfwlyfeucqosmwjsxx{display:none !important;}}</style></head>
+<body style="padding-top: 40px;">
+<!-- facebook sdk -->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- google plus sdk -->
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/plusone.js"></script>
+<!-- twitter sdk -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<!-- linkedin sdk -->
+<script src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/in.js" type="text/javascript"></script>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="http://blog.miguelgrinberg.com/">miguelgrinberg.com</a>
+            <ul class="nav">
+                <li><a href="http://blog.miguelgrinberg.com/">Home</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-me">About Me</a></li>
+                <li><a href="http://blog.miguelgrinberg.com/post/about-this-blog">About This Blog</a></li>
+				
+            </ul>
+            <div class="nav pull-right">
+                <p class="navbar-text">
+                    <a type="application/rss+xml" href="http://blog.miguelgrinberg.com/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss.png" alt="RSS Feed" title="RSS Feed"></a>
+                    <a href="https://www.facebook.com/miguelgrinbergblog"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/facebook.png" alt="Facebook" title="Facebook"></a>
+                    <a href="https://plus.google.com/u/0/117786742456929977820"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/googleplus.png" alt="Google+" title="Google+"></a>
+                    <a href="http://www.linkedin.com/in/miguelgrinberg"><img class="yfapaxbwxrlpkwtnwicp" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/linkedin.png" alt="LinkedIn" title="LinkedIn"></a>
+                    <a href="https://twitter.com/#%21/miguelgrinberg"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/twitter.png" alt="Twitter" title="Twitter"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="banner"></div>
+<div class="container">
+    <div class="row">
+        <div class="span8">
+            <div id="main">
+                
+                
+                
+                
+                
+
+<div class="post">
+<p class="date">
+<script type="text/javascript">
+document.write(moment("2013-02-01T07:28:11Z").format("LL"));
+</script>February 1 2013
+</p>
+<div class="social-outer">
+    <div class="social">
+        <div class="social-box"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" data-via="miguelgrinberg" data-count="vertical">Tweet</a></div>
+        <div class="social-box" style="padding-left: 6px;"><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" data-send="false" data-layout="box_count" data-width="450" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="aijbjghlhoybxwxoprkuaaifakfjkqowuddv"></iframe></div></div>
+        <div class="social-box"><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" size="tall"></g:plusone></div>
+        <div class="social-box"><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" data-counter="top"></script></div>
+    </div>
+</div>
+<h1 class="post-title">The Flask Mega-Tutorial, Part XIV: I18n and L10n</h1>
+<div class="posted">Posted by <span class="label label-important"><a href="http://blog.miguelgrinberg.com/author/Miguel%20Grinberg">Miguel Grinberg</a></span> under <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span>, <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span>. </div>
+<div class="post_body"><p>This is the fourteenth article in the series in which I document my experience writing web applications in <a href="http://python.org/">Python</a> using the <a href="http://flask.pocoo.org/">Flask</a> microframework.</p>
+<p>The goal of the tutorial series is to develop a decently featured 
+microblogging application that demonstrating total lack of originality I
+ have decided to call <code>microblog</code>.</p>
+<p>Here is an index of all the articles in the series that have been published to date:</p>
+<ul>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world">Part I: Hello, World!</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates">Part II: Templates</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms">Part III: Web Forms</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database">Part IV: Database</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins">Part V: User Logins</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vi-profile-page-and-avatars">Part VI: Profile Page And Avatars</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-unit-testing">Part VII: Unit Testing</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers-contacts-and-friends">Part VIII: Followers, Contacts And Friends</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ix-pagination">Part IX: Pagination</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search">Part X: Full Text Search</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support">Part XI: Email Support</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xii-facelift">Part XII: Facelift</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times">Part XIII: Dates and Times</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n">Part XIV: I18n and L10n</a> (this article)</li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-ajax">Part XV: Ajax</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-debugging-testing-and-profiling">Part XVI: Debugging, Testing and Profiling</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux-even-on-the-raspberry-pi">Part XVII: Deployment on Linux (even on the Raspberry Pi!)</a></li>
+<li><a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xviii-deployment-on-the-heroku-cloud">Part XVIII: Deployment on the Heroku Cloud</a></li>
+</ul>
+<p>The topics of today's article are Internationalization and Localization, commonly abbreviated I18n and L10n. We want our <code>microblog</code>
+ application to be used by as many people as possible, so we can't 
+forget that there is a lot of people out there that can't speak English,
+ or that can, but prefer to speak their native language.</p>
+<p>To make our application accessible to foreign visitors we are going to use the <a href="http://packages.python.org/Flask-Babel/">Flask-Babel</a> extension, which provides an extremely easy to use framework to translate the application into different languages.</p>
+<p>If you haven't installed Flask-Babel yet, then this is the time to do it. For Linux and Mac users:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pip install flask</span><span class="pun">-</span><span class="pln">babel</span></code></pre>
+<p>And for Windows users:</p>
+<pre class="prettyprint"><code><span class="pln">flask\Scripts\pip install flask</span><span class="pun">-</span><span class="pln">babel</span></code></pre>
+<h2>Configuration</h2>
+<p>Flask-Babel is initialized simply by creating an instance of class <code>Babel</code> and passing the Flask application to it (file <code>app/__init__.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">babel </span><span class="kwd">import</span><span class="pln"> </span><span class="typ">Babel</span><span class="pln">
+babel </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Babel</span><span class="pun">(</span><span class="pln">app</span><span class="pun">)</span></code></pre>
+<p>We also need to decide which languages we will offer translations 
+for. For now we'll start with a Spanish version, since we have a 
+translator at hand (your truly), but it'll be easy to add more languages
+ later. The list of supported languages will go to our configuration 
+(file <code>config.py</code>):</p>
+<pre class="prettyprint"><code><span class="com"># -*- coding: utf-8 -*-</span><span class="pln">
+</span><span class="com"># ...</span><span class="pln">
+</span><span class="com"># available languages</span><span class="pln">
+LANGUAGES </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="str">'en'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'English'</span><span class="pun">,</span><span class="pln">
+    </span><span class="str">'es'</span><span class="pun">:</span><span class="pln"> </span><span class="str">'Español'</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<p>The <code>LANGUAGES</code> dictionary has keys that are the language 
+codes for the available languages, and values that are the printable 
+name of the language. We are using the short language codes here, but 
+when necessary the long codes that specify language and region can be 
+used as well. For example if we wanted to support American and British 
+English as separate languages we would have <code>'en-US'</code> and <code>'en-GB'</code> in our dictionary.</p>
+<p>Note that because the word <code>Español</code> has a foreign character in it we have to add the <code>coding</code> comment at the top of the Python source file, to tell the Python interpreter that we are using the <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoding</a> and not ASCII, which lacks the <code>ñ</code> character.</p>
+<p>The next piece of configuration that we need is a function that Babel will use to decide which language to use (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> app </span><span class="kwd">import</span><span class="pln"> babel
+</span><span class="kwd">from</span><span class="pln"> config </span><span class="kwd">import</span><span class="pln"> LANGUAGES
+
+</span><span class="lit">@babel</span><span class="pun">.</span><span class="pln">localeselector
+</span><span class="kwd">def</span><span class="pln"> get_locale</span><span class="pun">():</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> request</span><span class="pun">.</span><span class="pln">accept_languages</span><span class="pun">.</span><span class="pln">best_match</span><span class="pun">(</span><span class="pln">LANGUAGES</span><span class="pun">.</span><span class="pln">keys</span><span class="pun">())</span></code></pre>
+<p>The function that is marked with the <code>localeselector</code> 
+decorator will be called before each request to give us a chance to 
+choose the language to use when producing its response. For now we will 
+do something very simple, we'll just read the <a href="http://www.w3.org/International/questions/qa-lang-priorities.en.php"><code>Accept-Languages</code></a>
+ header sent by the browser in the HTTP request and find the best 
+matching language from the list that we support. This is actually pretty
+ simple, the <code>best_match</code> method does all the work for us.</p>
+<p>The <code>Accept-Languages</code> header in most browsers is 
+configured by default with the language selected at the operating system
+ level, but all browsers give users the chance to select other 
+languages. Users can provide a list of languages, each with a weight. As
+ an example, here is a complex <code>Accept-Languages</code> header:</p>
+<pre class="prettyprint"><code><span class="typ">Accept</span><span class="pun">-</span><span class="typ">Language</span><span class="pun">:</span><span class="pln"> da</span><span class="pun">,</span><span class="pln"> en</span><span class="pun">-</span><span class="pln">gb</span><span class="pun">;</span><span class="pln">q</span><span class="pun">=</span><span class="lit">0.8</span><span class="pun">,</span><span class="pln"> en</span><span class="pun">;</span><span class="pln">q</span><span class="pun">=</span><span class="lit">0.7</span></code></pre>
+<p>This says that Danish is the preferred language (with default weight =
+ 1.0), followed by British English (weight = 0.8) and as a last option 
+generic English (weight = 0.7).</p>
+<p>The final piece of configuration that we need is a Babel 
+configuration file that tells Babel where to look for texts to translate
+ in our code and templates (file <code>babel.cfg</code>):</p>
+<pre class="prettyprint"><code><span class="pun">[</span><span class="pln">python</span><span class="pun">:</span><span class="pln"> </span><span class="pun">**.</span><span class="pln">py</span><span class="pun">]</span><span class="pln">
+</span><span class="pun">[</span><span class="pln">jinja2</span><span class="pun">:</span><span class="pln"> </span><span class="pun">**/</span><span class="pln">templates</span><span class="com">/**.html]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_</span></code></pre>
+<p>The first two lines give Babel the filename patterns for our Python 
+and template files respectively. The third line tells Babel to enable a 
+couple of extensions that make it possible to find text to translate in 
+Jinja2 templates.</p>
+<h2>Marking texts to translate</h2>
+<p>Now comes the most tedious aspect of this task. We need to review all
+ our code and templates and mark all English texts that need translating
+ so that Babel can find them. For example, take a look at this snippet 
+from function <code>after_login</code>:</p>
+<pre class="prettyprint"><code><span class="kwd">if</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email </span><span class="kwd">is</span><span class="pln"> </span><span class="kwd">None</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email </span><span class="pun">==</span><span class="pln"> </span><span class="str">""</span><span class="pun">:</span><span class="pln">
+    flash</span><span class="pun">(</span><span class="str">'Invalid login. Please try again.'</span><span class="pun">)</span><span class="pln">
+    redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'login'</span><span class="pun">))</span></code></pre>
+<p>Here we have a flash message that we want to translate. To expose this text to Babel we just wrap the string in Babel's <code>gettext</code> function:</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">babel </span><span class="kwd">import</span><span class="pln"> gettext
+</span><span class="com"># ...</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email </span><span class="kwd">is</span><span class="pln"> </span><span class="kwd">None</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email </span><span class="pun">==</span><span class="pln"> </span><span class="str">""</span><span class="pun">:</span><span class="pln">
+    flash</span><span class="pun">(</span><span class="pln">gettext</span><span class="pun">(</span><span class="str">'Invalid login. Please try again.'</span><span class="pun">))</span><span class="pln">
+    redirect</span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'login'</span><span class="pun">))</span></code></pre>
+<p>In a template we have to do something similar, but we have the option to use <code>_()</code> as a shorter alias to <code>gettext()</code>. For example, the word <code>Home</code> in this link from our base template:</p>
+<pre class="prettyprint"><code><span class="pln">  </span><span class="tag">&lt;li&gt;&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('index') }}"</span><span class="tag">&gt;</span><span class="pln">Home</span><span class="tag">&lt;/a&gt;&lt;/li&gt;</span></code></pre>
+<p>can be marked for translation as follows:</p>
+<pre class="prettyprint"><code><span class="pln">  </span><span class="tag">&lt;li&gt;&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{ url_for('index') }}"</span><span class="tag">&gt;</span><span class="pln">{{ _('Home') }}</span><span class="tag">&lt;/a&gt;&lt;/li&gt;</span></code></pre>
+<p>Unfortunately not all texts that we want to translate are as simple 
+as the above. As an example of a tricky one, consider the following 
+snippet from our <code>post.html</code> subtemplate:</p>
+<pre class="prettyprint"><code><span class="tag">&lt;p&gt;&lt;a</span><span class="pln"> </span><span class="atn">href</span><span class="pun">=</span><span class="atv">"{{url_for('user', nickname = post.author.nickname)}}"</span><span class="tag">&gt;</span><span class="pln">{{post.author.nickname}}</span><span class="tag">&lt;/a&gt;</span><span class="pln"> said {{momentjs(post.timestamp).fromNow()}}:</span><span class="tag">&lt;/p&gt;</span></code></pre>
+<p>Here the sentence that we want to translate has this structure: "<code>&lt;nickname&gt;</code> said <code>&lt;when&gt;</code>:".
+ One would be tempted to just mark the word "said" for translation, but 
+we can't really be sure that the order of the name and the time 
+components in this sentence will be the same in all languages. The 
+correct thing to do here is to mark the entire sentence for translation 
+using placeholders for the name and the time, so that a translator can 
+change the order if necessary. To complicate matters more, the name 
+component has a hyperlink embedded in it!</p>
+<p>There isn't really a nice and easy way to handle cases like this. The <code>gettext</code> function supports placeholders using the syntax <code>%(name)s</code> and that's the best we can do. Here is a simple example of a placeholder in a much simpler situation:</p>
+<pre class="prettyprint"><code><span class="pln">gettext</span><span class="pun">(</span><span class="str">'Hello, %(name)s'</span><span class="pun">,</span><span class="pln"> name </span><span class="pun">=</span><span class="pln"> user</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">)</span></code></pre>
+<p>The translator will need to be aware that there are placeholders and 
+that they should not be touched. Clearly the name of a placeholder 
+(what's between the <code>%(</code> and <code>)s</code>) must not be translated or else the connection to the actual value would be lost.</p>
+<p>But back to our post template example, here is how it is marked for translation:</p>
+<pre class="prettyprint"><code><span class="pun">{%</span><span class="pln"> autoescape </span><span class="kwd">false</span><span class="pln"> </span><span class="pun">%}</span><span class="pln">
+</span><span class="str">&lt;p&gt;</span><span class="pun">{{</span><span class="pln"> _</span><span class="pun">(</span><span class="str">'%(nickname)s said %(when)s:'</span><span class="pun">,</span><span class="pln"> nickname </span><span class="pun">=</span><span class="pln"> </span><span class="str">'&lt;a href="%s"&gt;%s&lt;/a&gt;'</span><span class="pln"> </span><span class="pun">%</span><span class="pln"> </span><span class="pun">(</span><span class="pln">url_for</span><span class="pun">(</span><span class="str">'user'</span><span class="pun">,</span><span class="pln"> nickname </span><span class="pun">=</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">author</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">),</span><span class="pln"> post</span><span class="pun">.</span><span class="pln">author</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">),</span><span class="pln"> </span><span class="kwd">when</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> momentjs</span><span class="pun">(</span><span class="pln">post</span><span class="pun">.</span><span class="pln">timestamp</span><span class="pun">).</span><span class="pln">fromNow</span><span class="pun">())</span><span class="pln"> </span><span class="pun">}}&lt;/</span><span class="pln">p</span><span class="pun">&gt;</span><span class="pln">
+</span><span class="pun">{%</span><span class="pln"> endautoescape </span><span class="pun">%}</span></code></pre>
+<p>The text that the translator will see for the above example is:</p>
+<pre class="prettyprint"><code><span class="pun">%(</span><span class="pln">nickname</span><span class="pun">)</span><span class="pln">s said </span><span class="pun">%(</span><span class="kwd">when</span><span class="pun">)</span><span class="pln">s</span><span class="pun">:</span></code></pre>
+<p>Which is pretty decent. The values for <code>nickname</code> and <code>when</code> are what gives this translatable sentence its complexity, but these are given as additional arguments to the <code>_()</code> wrapper function and are not seen by the translator.</p>
+<p>The <code>nickname</code> and <code>when</code> placeholders contain a
+ lot of stuff in them. In particular, for the nickname we had to build 
+an entire HTML link because we want this nickname to be clickable.</p>
+<p>Because we are putting HTML in the <code>nickname</code> placeholder 
+we need to turn off autoescaping to render this portion of the template,
+ if not Jinja2 would render our HTML elements as escaped text. But 
+requesting to render a string without escaping is considered a security 
+risk, it is unsafe to render texts entered by users without escaping.</p>
+<p>The text assigned to the <code>when</code> placeholder is safe because it is text that is entirely generated by our <code>momentjs()</code> wrapper function. What goes in the <code>nickname</code> argument, however, is coming from the <code>nickname</code> field of our <code>User</code>
+ model, which in turn comes from our database, which can be entered by 
+the user in a web form. If someone registers into our application with a
+ nickname that contains embedded HTML or Javascript and then we render 
+that malicious nickname unescaped, then we are effectively opening the 
+door to an attacker. We certainly do not want that, so we are going to 
+take a quick detour and remove any risks.</p>
+<p>The solution that makes most sense is to prevent any attacks by 
+restricting the characters that can be used in a nickname. We'll start 
+by creating a function that converts an invalid nickname into a valid 
+one (file <code>app/models.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">import</span><span class="pln"> re
+
+</span><span class="kwd">class</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">db</span><span class="pun">.</span><span class="typ">Model</span><span class="pun">):</span><span class="pln">
+    </span><span class="com">#...</span><span class="pln">
+    </span><span class="lit">@staticmethod</span><span class="pln">
+    </span><span class="kwd">def</span><span class="pln"> make_valid_nickname</span><span class="pun">(</span><span class="pln">nickname</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> re</span><span class="pun">.</span><span class="kwd">sub</span><span class="pun">(</span><span class="str">'[^a-zA-Z0-9_\.]'</span><span class="pun">,</span><span class="pln"> </span><span class="str">''</span><span class="pun">,</span><span class="pln"> nickname</span><span class="pun">)</span></code></pre>
+<p>Here we just take the nickname and remove any characters that are not letters, numbers, the dot or the underscore.</p>
+<p>When a user registers with the site we receive his or her nickname 
+from the OpenID provider, so we make sure we convert this nickname to 
+something valid (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@oid</span><span class="pun">.</span><span class="pln">after_login
+</span><span class="kwd">def</span><span class="pln"> after_login</span><span class="pun">(</span><span class="pln">resp</span><span class="pun">):</span><span class="pln">
+    </span><span class="com">#...</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_valid_nickname</span><span class="pun">(</span><span class="pln">nickname</span><span class="pun">)</span><span class="pln">
+    nickname </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_unique_nickname</span><span class="pun">(</span><span class="pln">nickname</span><span class="pun">)</span><span class="pln">
+    user </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> nickname</span><span class="pun">,</span><span class="pln"> email </span><span class="pun">=</span><span class="pln"> resp</span><span class="pun">.</span><span class="pln">email</span><span class="pun">,</span><span class="pln"> role </span><span class="pun">=</span><span class="pln"> ROLE_USER</span><span class="pun">)</span><span class="pln">
+    </span><span class="com">#...</span></code></pre>
+<p>And then in the Edit Profile form, where the user can change the 
+nickname, we can enhance our validation to not allow invalid characters 
+(file <code>app/forms.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">class</span><span class="pln"> </span><span class="typ">EditForm</span><span class="pun">(</span><span class="typ">Form</span><span class="pun">):</span><span class="pln">
+    </span><span class="com">#...</span><span class="pln">
+    </span><span class="kwd">def</span><span class="pln"> validate</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> </span><span class="kwd">not</span><span class="pln"> </span><span class="typ">Form</span><span class="pun">.</span><span class="pln">validate</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">):</span><span class="pln">
+            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">False</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">data </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">original_nickname</span><span class="pun">:</span><span class="pln">
+            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">True</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">data </span><span class="pun">!=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">make_valid_nickname</span><span class="pun">(</span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">data</span><span class="pun">):</span><span class="pln">
+            </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">errors</span><span class="pun">.</span><span class="pln">append</span><span class="pun">(</span><span class="pln">gettext</span><span class="pun">(</span><span class="str">'This nickname has invalid characters. Please use letters, numbers, dots and underscores only.'</span><span class="pun">))</span><span class="pln">
+            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">False</span><span class="pln">
+        user </span><span class="pun">=</span><span class="pln"> </span><span class="typ">User</span><span class="pun">.</span><span class="pln">query</span><span class="pun">.</span><span class="pln">filter_by</span><span class="pun">(</span><span class="pln">nickname </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">data</span><span class="pun">).</span><span class="pln">first</span><span class="pun">()</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> user </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">None</span><span class="pun">:</span><span class="pln">
+            </span><span class="kwd">self</span><span class="pun">.</span><span class="pln">nickname</span><span class="pun">.</span><span class="pln">errors</span><span class="pun">.</span><span class="pln">append</span><span class="pun">(</span><span class="pln">gettext</span><span class="pun">(</span><span class="str">'This nickname is already in use. Please choose another one.'</span><span class="pun">))</span><span class="pln">
+            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">False</span><span class="pln">
+        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">True</span></code></pre>
+<p>With these simple measures we eliminate any possible attacks resulting from rendering the nickname to a page without escaping.</p>
+<h2>Extracting texts for translation</h2>
+<p>I'm not going to enumerate here all the changes required to mark all 
+texts in the code and the templates. Interested readers can check the <a href="https://github.com/miguelgrinberg/microblog/commit/cac572cb0e427654edd3ac599f6197f1f6ee29f6">github diffs</a> for this.</p>
+<p>So let's assume we've found all the texts and wrapped them in <code>gettext()</code> or <code>_()</code> calls. What now?</p>
+<p>Now we run <code>pybabel</code> to extract the texts into a separate file:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pybabel extract </span><span class="pun">-</span><span class="pln">F babel</span><span class="pun">.</span><span class="pln">cfg </span><span class="pun">-</span><span class="pln">o messages</span><span class="pun">.</span><span class="pln">pot app</span></code></pre>
+<p>Windows users should use this command instead:</p>
+<pre class="prettyprint"><code><span class="pln">flask\Scripts\pybabel extract </span><span class="pun">-</span><span class="pln">F babel</span><span class="pun">.</span><span class="pln">cfg </span><span class="pun">-</span><span class="pln">o messages</span><span class="pun">.</span><span class="pln">pot app</span></code></pre>
+<p>The <code>pybabel extract</code> command reads the given 
+configuration file, then scans all the code and template files in the 
+directories given as arguments (just <code>app</code> in our case) and when it finds a text marked for translation it copies it to the <code>messages.pot</code> file.</p>
+<p>The <code>messages.pot</code> file is a template file that contains 
+all the texts that need to be translated. This file is used as a model 
+to generate language files.</p>
+<h2>Generating a language catalog</h2>
+<p>The next step in the process is to create a translation for a new language. We said we were going to do Spanish (language code <code>es</code>), so this is the command that adds Spanish to our application:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pybabel init </span><span class="pun">-</span><span class="pln">i messages</span><span class="pun">.</span><span class="pln">pot </span><span class="pun">-</span><span class="pln">d app</span><span class="pun">/</span><span class="pln">translations </span><span class="pun">-</span><span class="pln">l es</span></code></pre>
+<p>The <code>pybabel init</code> command takes the <code>.pot</code> file as input and writes a new language catalog to the directory given in the <code>-d</code> command line option for the language specified in the <code>-l</code> option. By default, Babel expects the translations to be in a <code>translations</code> folder at the same level as the templates, so that's where we'll put them.</p>
+<p>After running the above comment a directory <code>app/translations/es</code> is created. Inside it there is yet another directory called <code>LC_MESSAGES</code> and inside it there is a file called <code>messages.po</code>. The command can be executed multiple times with different language codes to add support for other languages.</p>
+<p>The <code>messages.po</code> file that is created in each language 
+folder uses a format that is the de facto standard for language 
+translations, the format used by the venerable <a href="http://www.gnu.org/software/gettext/">gettext</a> utility. There are many translation applications that work with <code>.po</code> files. For our translation needs we will use <a href="http://www.poedit.net/">poedit</a>, because it is one of the most popular and because it runs on all the major operating systems.</p>
+<p>If you want to put your translator hat and give this task a try go ahead and install poedit from <a href="http://www.poedit.net/">this link</a>. The usage of this application is straightforward. Below is a screenshot after all the texts have been translated to Spanish:</p>
+<p></p><center><img alt="poedit" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/flask-mega-tutorial-part-xiv-1.jpg"></center><p></p>
+<p>The top section shows the texts in their original and translated 
+languages. The bottom left has a box where the translator writes the 
+text.</p>
+<p>Once the texts have been translated and saved back to the <code>messages.po</code> file there is yet another step to publish these texts:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pybabel compile </span><span class="pun">-</span><span class="pln">d app</span><span class="pun">/</span><span class="pln">translations</span></code></pre>
+<p>The <code>pybabel compile</code> step just reads the contents of the <code>.po</code> file and writes a compiled version as a <code>.mo</code>
+ file in the same directory. This file contains the translated texts in 
+an optimized format that can be efficiently used by our application.</p>
+<p>The translations are now ready to be used. To check them you can 
+modify the language settings in your browser so that Spanish is the 
+preferred language, or if you don't feel like messing with your browser 
+configuration you can also fake it by temporarily changing the <code>localeselector</code> function to always request Spanish (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@babel</span><span class="pun">.</span><span class="pln">localeselector
+</span><span class="kwd">def</span><span class="pln"> get_locale</span><span class="pun">():</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="str">"es"</span><span class="pln"> </span><span class="com">#request.accept_languages.best_match(LANGUAGES.keys())</span></code></pre>
+<p>Now when we run the server each time the <code>gettext()</code> or <code>_()</code> functions are called instead of getting the English text we will get the translation defined for the language returned by the <code>localeselector</code> function.</p>
+<h2>Updating the translations</h2>
+<p>What happens if we leave the <code>messages.po</code> file 
+incomplete, with some of the texts missing a translation? Nothing 
+happens, the application will run just fine regardless, and those texts 
+that don't have a translation will continue to appear in English.</p>
+<p>What happens if we missed some of the English texts in our code or templates? Any strings that were not wrapped with <code>gettext()</code> or <code>_()</code>
+ will not be in the translation files, so they'll be unknown to Babel 
+and remain in English. Once we spot a missing text we can add the <code>gettext()</code> wrapper to it and then run the following <code>pybabel</code> commands to update the translation files:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pybabel extract </span><span class="pun">-</span><span class="pln">F babel</span><span class="pun">.</span><span class="pln">cfg </span><span class="pun">-</span><span class="pln">o messages</span><span class="pun">.</span><span class="pln">pot app
+flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pybabel update </span><span class="pun">-</span><span class="pln">i messages</span><span class="pun">.</span><span class="pln">pot </span><span class="pun">-</span><span class="pln">d app</span><span class="pun">/</span><span class="pln">translations</span></code></pre>
+<p>The <code>extract</code> command is identical to the one we issued earlier, it just generates an updated <code>messages.pot</code> file that adds the new texts. The <code>update</code> call takes the new <code>messages.pot</code> file and merges the new texts into all the translations found in the folder given by the <code>-d</code> argument.</p>
+<p>Once the <code>messages.po</code> files in each language folder have been updated we can run <code>poedit</code> again to enter translations for the new texts, and then repeat the <code>pybabel compile</code> command to make those new texts available to our application.</p>
+<h2>Translating <code>moment.js</code></h2>
+<p>So now that we have entered a Spanish translation for all the texts 
+in code and templates we can run the application to see how it looks.</p>
+<p>And right there we'll notice that all the timestamps are still in English. The <code>moment.js</code> library that we are using to render our dates and times hasn't been informed that we need a different language. </p>
+<p>Reading the <a href="http://momentjs.com/docs/#/i18n/loading-into-browser/"><code>moment.js</code> documentation</a>
+ we find that there is a large list of translations available, and that 
+we simply need to load a second javascript with the selected language to
+ switch to that language. So we just download the Spanish translation 
+from the <code>moment.js</code> website and put it in our <code>static/js</code> folder as <code>moment-es.min.js</code>. We will follow the convention that any language file for <code>moment.js</code> will be added with the format <code>moment-&lt;language&gt;.min.js</code>, so that we can then select the correct one dynamically.</p>
+<p>To be able to load a javascript that has the language code in its 
+name we need to expose this code to the templates. The simplest way to 
+do that is to add the language code to Flask's <code>g</code> global, in a similar way to how we expose the logged in user (file <code>app/views.py</code>):</p>
+<pre class="prettyprint"><code><span class="lit">@app</span><span class="pun">.</span><span class="pln">before_request
+</span><span class="kwd">def</span><span class="pln"> before_request</span><span class="pun">():</span><span class="pln">
+    g</span><span class="pun">.</span><span class="pln">user </span><span class="pun">=</span><span class="pln"> current_user
+    </span><span class="kwd">if</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">is_authenticated</span><span class="pun">():</span><span class="pln">
+        g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">.</span><span class="pln">last_seen </span><span class="pun">=</span><span class="pln"> datetime</span><span class="pun">.</span><span class="pln">utcnow</span><span class="pun">()</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="pln">g</span><span class="pun">.</span><span class="pln">user</span><span class="pun">)</span><span class="pln">
+        db</span><span class="pun">.</span><span class="pln">session</span><span class="pun">.</span><span class="pln">commit</span><span class="pun">()</span><span class="pln">
+        g</span><span class="pun">.</span><span class="pln">search_form </span><span class="pun">=</span><span class="pln"> </span><span class="typ">SearchForm</span><span class="pun">()</span><span class="pln">
+    g</span><span class="pun">.</span><span class="pln">locale </span><span class="pun">=</span><span class="pln"> get_locale</span><span class="pun">()</span></code></pre>
+<p>And now that we can see the language code in the templates we can load the <code>moment.js</code> language script in our base template (file <code>app/templates/base.html</code>):</p>
+<pre class="prettyprint"><code><span class="pun">{%</span><span class="pln"> </span><span class="kwd">if</span><span class="pln"> g</span><span class="pun">.</span><span class="pln">locale </span><span class="pun">!=</span><span class="pln"> </span><span class="str">'en'</span><span class="pln"> </span><span class="pun">%}</span><span class="pln">
+</span><span class="pun">&lt;</span><span class="pln">script src</span><span class="pun">=</span><span class="str">"/static/js/moment-{{g.locale}}.min.js"</span><span class="pun">&gt;&lt;/</span><span class="pln">script</span><span class="pun">&gt;</span><span class="pln">
+</span><span class="pun">{%</span><span class="pln"> endif </span><span class="pun">%}</span></code></pre>
+<p>Note that we make it conditional, because if we are showing the 
+English version of the site we already have the correct texts from the 
+first <code>moment.js</code> javascript file.</p>
+<h2>Lazy evaluation</h2>
+<p>While we continue playing with the Spanish version of our site we 
+notice another problem. When we log out and try to log back in there is a
+ flash message that reads "Please log in to access this page." in 
+English. But where is this message? Unfortunately we aren't putting out 
+this message, it is the Flask-Login extension that does it on its own.</p>
+<p>Flask-Login allows this message to be configured by the user, so we 
+are going to take advantage of that not to change the message but to 
+make it translatable. So in our first try we do this (file <code>app/__init__.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">babel </span><span class="kwd">import</span><span class="pln"> gettext
+lm</span><span class="pun">.</span><span class="pln">login_message </span><span class="pun">=</span><span class="pln"> gettext</span><span class="pun">(</span><span class="str">'Please log in to access this page.'</span><span class="pun">)</span></code></pre>
+<p>But this really does not work. The <code>gettext</code> function 
+needs to be used in the context of a request to be able to produce 
+translated messages. If we call it outside of a request it will just 
+give us the default text, which will be the English version.</p>
+<p>For cases like this Flask-Babel provides another function called <code>lazy_gettext</code>, which doesn't look for a translation immediately like <code>gettext()</code> and <code>_()</code>
+ do but instead delay the search for a translation until the string is 
+actually used. So here is how to properly set up the login message (file
+ <code>app/__init__.py</code>):</p>
+<pre class="prettyprint"><code><span class="kwd">from</span><span class="pln"> flask</span><span class="pun">.</span><span class="pln">ext</span><span class="pun">.</span><span class="pln">babel </span><span class="kwd">import</span><span class="pln"> lazy_gettext
+lm</span><span class="pun">.</span><span class="pln">login_message </span><span class="pun">=</span><span class="pln"> lazy_gettext</span><span class="pun">(</span><span class="str">'Please log in to access this page.'</span><span class="pun">)</span></code></pre>
+<p>And finally, when using <code>lazy_gettext</code> the <code>pybabel extract</code> command needs to be informed that the <code>lazy_gettext</code> function also wraps translatable texts with the <code>-k</code> option:</p>
+<pre class="prettyprint"><code><span class="pln">flask</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">pybabel extract </span><span class="pun">-</span><span class="pln">F babel</span><span class="pun">.</span><span class="pln">cfg </span><span class="pun">-</span><span class="pln">k lazy_gettext </span><span class="pun">-</span><span class="pln">o messages</span><span class="pun">.</span><span class="pln">pot app</span></code></pre>
+<p>So after extracting yet another <code>messages.pot</code> template we update the language catalogs (<code>pybabel update</code>), translate the added text (<code>poedit</code>) and finally compile the translations one more time (<code>pybabel compile</code>).</p>
+<p>And now we can say that we have a fully internationalized application!</p>
+<h2>Shortcuts</h2>
+<p>Since the <code>pybabel</code> commands are long and hard to remember
+ we are going to end this article with a few quick and dirty little 
+scripts that simplify the most common tasks we've seen above.</p>
+<p>First a script to add a language to the translation catalog (file <code>tr_init.py</code>):</p>
+<pre class="prettyprint"><code><span class="com">#!flask/bin/python</span><span class="pln">
+</span><span class="kwd">import</span><span class="pln"> os
+</span><span class="kwd">import</span><span class="pln"> sys
+</span><span class="kwd">if</span><span class="pln"> sys</span><span class="pun">.</span><span class="pln">platform </span><span class="pun">==</span><span class="pln"> </span><span class="str">'win32'</span><span class="pun">:</span><span class="pln">
+    pybabel </span><span class="pun">=</span><span class="pln"> </span><span class="str">'flask\\Scripts\\pybabel'</span><span class="pln">
+</span><span class="kwd">else</span><span class="pun">:</span><span class="pln">
+    pybabel </span><span class="pun">=</span><span class="pln"> </span><span class="str">'flask/bin/pybabel'</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> len</span><span class="pun">(</span><span class="pln">sys</span><span class="pun">.</span><span class="pln">argv</span><span class="pun">)</span><span class="pln"> </span><span class="pun">!=</span><span class="pln"> </span><span class="lit">2</span><span class="pun">:</span><span class="pln">
+    </span><span class="kwd">print</span><span class="pln"> </span><span class="str">"usage: tr_init &lt;language-code&gt;"</span><span class="pln">
+    sys</span><span class="pun">.</span><span class="kwd">exit</span><span class="pun">(</span><span class="lit">1</span><span class="pun">)</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">system</span><span class="pun">(</span><span class="pln">pybabel </span><span class="pun">+</span><span class="pln"> </span><span class="str">' extract -F babel.cfg -k lazy_gettext -o messages.pot app'</span><span class="pun">)</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">system</span><span class="pun">(</span><span class="pln">pybabel </span><span class="pun">+</span><span class="pln"> </span><span class="str">' init -i messages.pot -d app/translations -l '</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> sys</span><span class="pun">.</span><span class="pln">argv</span><span class="pun">[</span><span class="lit">1</span><span class="pun">])</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">unlink</span><span class="pun">(</span><span class="str">'messages.pot'</span><span class="pun">)</span></code></pre>
+<p>Then a script to update the catalog with new texts from source and templates (file <code>tr_update.py</code>):</p>
+<pre class="prettyprint"><code><span class="com">#!flask/bin/python</span><span class="pln">
+</span><span class="kwd">import</span><span class="pln"> os
+</span><span class="kwd">import</span><span class="pln"> sys
+</span><span class="kwd">if</span><span class="pln"> sys</span><span class="pun">.</span><span class="pln">platform </span><span class="pun">==</span><span class="pln"> </span><span class="str">'win32'</span><span class="pun">:</span><span class="pln">
+    pybabel </span><span class="pun">=</span><span class="pln"> </span><span class="str">'flask\\Scripts\\pybabel'</span><span class="pln">
+</span><span class="kwd">else</span><span class="pun">:</span><span class="pln">
+    pybabel </span><span class="pun">=</span><span class="pln"> </span><span class="str">'flask/bin/pybabel'</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">system</span><span class="pun">(</span><span class="pln">pybabel </span><span class="pun">+</span><span class="pln"> </span><span class="str">' extract -F babel.cfg -k lazy_gettext -o messages.pot app'</span><span class="pun">)</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">system</span><span class="pun">(</span><span class="pln">pybabel </span><span class="pun">+</span><span class="pln"> </span><span class="str">' update -i messages.pot -d app/translations'</span><span class="pun">)</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">unlink</span><span class="pun">(</span><span class="str">'messages.pot'</span><span class="pun">)</span></code></pre>
+<p>And finally, a script to compile the catalog (file <code>tr_compile.py</code>):</p>
+<pre class="prettyprint"><code><span class="com">#!flask/bin/python</span><span class="pln">
+</span><span class="kwd">import</span><span class="pln"> os
+</span><span class="kwd">import</span><span class="pln"> sys
+</span><span class="kwd">if</span><span class="pln"> sys</span><span class="pun">.</span><span class="pln">platform </span><span class="pun">==</span><span class="pln"> </span><span class="str">'win32'</span><span class="pun">:</span><span class="pln">
+    pybabel </span><span class="pun">=</span><span class="pln"> </span><span class="str">'flask\\Scripts\\pybabel'</span><span class="pln">
+</span><span class="kwd">else</span><span class="pun">:</span><span class="pln">
+    pybabel </span><span class="pun">=</span><span class="pln"> </span><span class="str">'flask/bin/pybabel'</span><span class="pln">
+os</span><span class="pun">.</span><span class="pln">system</span><span class="pun">(</span><span class="pln">pybabel </span><span class="pun">+</span><span class="pln"> </span><span class="str">' compile -d app/translations'</span><span class="pun">)</span></code></pre>
+<p>These scripts should make working with translation files an easy task.</p>
+<h2>Final words</h2>
+<p>Today we have implemented an often overlooked aspect of web 
+applications. Users want to work in their native language, so being able
+ to publish our application in as many languages as we can find 
+translators for is a huge accomplishment.</p>
+<p>In the next article we will look at what is probably the most complex
+ aspect in the area of I18n and L10n, which is the real time automated 
+translation of user generated content. And we will use this as an excuse
+ to add some Ajax magic to our application.</p>
+<p>Here is the download link for the latest version of <code>microblog</code>, including the complete Spanish translation:</p>
+<p>Download <a href="https://github.com/miguelgrinberg/microblog/archive/v0.14.zip">microblog-0.14.zip</a>.</p>
+<p>If you prefer, you can also find the code on github <a href="https://github.com/miguelgrinberg/microblog/tree/v0.14">here</a>.</p>
+<p>Thank you for being a loyal reader. See you next time!</p>
+<p>Miguel</p></div>
+<div class="social-mini"><table><tbody><tr>
+    <td><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" data-via="miguelgrinberg" data-count="none">Tweet</a></td>
+    <td><g:plusone href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" size="medium" witdh="100" annotation="none"></g:plusone></td>
+    <td><script type="IN/Share" data-url="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n"></script></td>
+    <td><div style="display: block;" class="fb-like" data-href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n" data-send="false" data-layout="button_count" data-width="100" data-show-faces="false" data-font="verdana"><iframe style="width: 30px; height: 19px; border: 0px none;" id="rmmsmffbmqvpzkdyjaczaortgayccgvmbdgoz"></iframe></div></td>
+</tr></tbody></table></div>
+
+<h4 style="text-align: right"><a name="comments"></a>33 comments</h4>
+
+
+<div class="comment">
+    <ul>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#1</span> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/post/www.cariaso.com">cariaso</a></span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-01T15:47:30Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">This series 
+continues to be awesome. thanks. At the moment there seems to be a 
+rendering error in the sentence after "Which is pretty decent."</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#2</span> <span class="label label-info">Jearel Alcantara</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-01T16:38:41Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">That's simple GREAT! Thanks for sharing with us your knowledge. 
+
+Saludos desde la República Dominicana!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#3</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-01T16:45:10Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@cariaso: fixed, thanks for letting me know!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#4</span> <span class="label label-info">Tian Siyuan</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-12T03:19:28Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hi Migual,
+
+How can I i18n and l10n login.html?
+
+Thanks,
+
+Tian</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#5</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-12T03:36:20Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Tian: see the 
+following link for the complete set of changes I've made to all the 
+templates to enable i18n &amp; l10nb: 
+https://github.com/miguelgrinberg/microblog/compare/v0.13...v0.14</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#6</span> <span class="label label-info">Daniel Ferreira Jorge</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-12T17:21:08Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hey! This tutorial
+ series are great! It is helping me a lot! If it is not asking too much,
+ could you make a tutorial on how to RESTify the microblog? It would be 
+really awesome because I'm planning on develop an API in my application 
+and since I'm new to flask, a tutorial about that would really help me!
+
+Thanks!</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#7</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-02-12T23:06:26Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Daniel: thanks. 
+Provided I find the time I would love to redo this tutorial as a single 
+page rich client backed by a RESTful api on the server. It won't be the 
+same tutorial, the technologies are very different. I'm not even sure I 
+would pick Flask for the REST server, to be honest. If you will write 
+your client side application in Javascript it may make more sense to 
+write the server in Javascript as well (via Node.js) so that you can 
+share models, validation, etc.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#8</span> <span class="label label-info">Artem Andreev</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-03-01T19:03:39Z").fromNow());
+                    </script>a year ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Instead of os.system(...) can be used CommandLineInterface:
+
+from babel.messages.frontend import CommandLineInterface
+
+
+if __name__ == '__main__':
+    CommandLineInterface().run('frontend.py extract -F babel.cfg -o messages.pot ..'.split(' '))</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#9</span> <span class="label label-info">Veronica</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-06-27T21:13:54Z").fromNow());
+                    </script>8 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">Hi Miguel, I'm here again.
+After all translations, when I'm using lazy_gettext, got it:
+...
+TypeError: lu'Please log in to access this page.' is not JSON serializable
+...
+Thank you for your support.</p>
+                </div>
+            </div>
+        </li>
+        
+        <li>
+            <div class="comment-thumbnail"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/729e26a2a2c7ff24a71958d4aa4e5f35.jpg"></div>
+            <div class="comment-body">
+                <p>
+                    <span class="label">#10</span> <span class="label label-important">Miguel Grinberg</span> said
+                    <script type="text/javascript">
+                    document.write(moment("2013-06-28T04:13:57Z").fromNow());
+                    </script>8 months ago:
+                </p>
+                <div style="overflow: auto;">
+                    <p style="white-space: pre-wrap;">@Veronica: can you show me the complete stack trace please?</p>
+                </div>
+            </div>
+        </li>
+        
+    </ul>
+    <!--
+    <table width="100%">
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/4f8bb42426f4b5fd1bb11d33d06ebb47?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#1</span> <span class="label label-info"><a href="www.cariaso.com">cariaso</a></span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-01T15:47:30Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">This series continues to be awesome. thanks. At the moment there seems to be a rendering error in the sentence after &#34;Which is pretty decent.&#34;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/790c71ff15f39de08719f19464ed2b5c?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#2</span> <span class="label label-info">Jearel Alcantara</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-01T16:38:41Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">That&#39;s simple GREAT! Thanks for sharing with us your knowledge. 
+
+Saludos desde la República Dominicana!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#3</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-01T16:45:10Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@cariaso: fixed, thanks for letting me know!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/6e5f833944a27be2f84427a88e299c0c?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#4</span> <span class="label label-info">Tian Siyuan</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-12T03:19:28Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hi Migual,
+
+How can I i18n and l10n login.html?
+
+Thanks,
+
+Tianaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#5</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-12T03:36:20Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Tian: see the following link for the complete set of changes I&#39;ve made to all the templates to enable i18n &amp; l10nb: https://github.com/miguelgrinberg/microblog/compare/v0.13...v0.14aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/92db9cedf927440b6edfd31d89e8843e?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#6</span> <span class="label label-info">Daniel Ferreira Jorge</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-12T17:21:08Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hey! This tutorial series are great! It is helping me a lot! If it is not asking too much, could you make a tutorial on how to RESTify the microblog? It would be really awesome because I&#39;m planning on develop an API in my application and since I&#39;m new to flask, a tutorial about that would really help me!
+
+Thanks!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#7</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-02-12T23:06:26Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Daniel: thanks. Provided I find the time I would love to redo this tutorial as a single page rich client backed by a RESTful api on the server. It won&#39;t be the same tutorial, the technologies are very different. I&#39;m not even sure I would pick Flask for the REST server, to be honest. If you will write your client side application in Javascript it may make more sense to write the server in Javascript as well (via Node.js) so that you can share models, validation, etc.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/e8e1f64796568357e5eea1f312c57835?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#8</span> <span class="label label-info">Artem Andreev</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-03-01T19:03:39Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Instead of os.system(...) can be used CommandLineInterface:
+
+from babel.messages.frontend import CommandLineInterface
+
+
+if __name__ == &#39;__main__&#39;:
+    CommandLineInterface().run(&#39;frontend.py extract -F babel.cfg -o messages.pot ..&#39;.split(&#39; &#39;))aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/61589cd2bba598dde44f97f7c229a6fc?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#9</span> <span class="label label-info">Veronica</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-06-27T21:13:54Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">Hi Miguel, I&#39;m here again.
+After all translations, when I&#39;m using lazy_gettext, got it:
+...
+TypeError: lu&#39;Please log in to access this page.&#39; is not JSON serializable
+...
+Thank you for your support.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td width="60px"><img src="http://gravatar.com/avatar/729e26a2a2c7ff24a71958d4aa4e5f35?s=60&d=identicon" /></td>
+        <td>
+            <p>
+                <span class="label">#10</span> <span class="label label-important">Miguel Grinberg</span> said
+                <script type="text/javascript">
+                document.write(moment("2013-06-28T04:13:57Z").fromNow());
+                </script>:
+            </p>
+            <div style="overflow: auto;">
+                <p style="white-space: pre-wrap;">@Veronica: can you show me the complete stack trace please?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </td>
+    </tr>
+    
+    </table>
+    -->
+</div>
+
+<div class="page">
+<ul class="pager">
+  <li class="previous disabled">
+    <a href="#">««</a>
+  </li>
+  <li class="previous disabled">
+    <a href="#">«</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n/page/0#comments">»»</a>
+  </li>
+  <li class="next">
+    <a href="http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiv-i18n-and-l10n/page/2#comments">»</a>
+  </li>
+</ul>
+</div>
+
+<h3><a name="commentform"></a>Leave a Comment</h3>
+<div class="commentform">
+<form class="form-horizontal" method="post" action="#commentform">
+<div style="display:none;"><input id="csrf_token" name="csrf_token" value="20140210210319##0dcdb66b703e04ee0a652859ee00b36bf319966d" type="hidden"></div>
+
+<div class="control-group">
+    <label class="control-label" for="name">Name <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="name" name="name" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="url">Website</label>
+    <div class="controls"><input class="span5" id="url" name="url" type="text"></div>
+</div>
+<div class="control-group">
+    <label class="control-label" for="email">Email <span class="label label-important">*</span></label>
+    <div class="controls"><input class="span5" id="email" name="email" type="text"></div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="comment">Comment <span class="label label-important">*</span></label>
+    <div class="controls"><textarea class="span5" id="comment" name="comment" rows="4"></textarea><img style="cursor: pointer ! important; display: none ! important; position: absolute ! important; padding: 0px ! important; margin: 0px ! important; border: medium none ! important; width: 28px ! important; height: 14px ! important; opacity: 0.0152174 ! important; left: 664px ! important; top: 14030px ! important;" title="It's All Text!" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/gumdrop.png"></div>
+</div>
+
+<div class="control-group">
+    <div class="controls">
+<script type="text/javascript">var RecaptchaOptions = {"theme": "white", "custom_translations": {"incorrect_try_again": "Incorrect. Try again.", "help_btn": "Help", "cant_hear_this": "Download sound as MP3", "instructions_audio": "Type what you hear:", "instructions_visual": "Type the two words:", "refresh_btn": "Get a new challenge", "play_again": "Play sound again", "visual_challenge": "Get a visual challenge", "audio_challenge": "Get an audio challenge"}};</script>
+<script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/challenge.js"></script><script type="text/javascript" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/recaptcha.js"></script><div class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio" id="recaptcha_widget_div" style=""><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_white"> <tbody><tr> <td colspan="6" class="recaptcha_r1_c1"></td> </tr> <tr> <td class="recaptcha_r2_c1"></td> <td colspan="4" class="recaptcha_image_cell"><center><div style="width: 300px; height: 57px;" id="recaptcha_image"><img id="recaptcha_challenge_image" alt="reCAPTCHA challenge image" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/image.jpg" height="57" width="300"></div></center></td> <td class="recaptcha_r2_c2"></td> </tr> <tr> <td rowspan="6" class="recaptcha_r3_c1"></td> <td colspan="4" class="recaptcha_r3_c2"></td> <td rowspan="6" class="recaptcha_r3_c3"></td> </tr> <tr> <td rowspan="3" class="recaptcha_r4_c1" height="49"> <div class="recaptcha_input_area"> <span style="display: none;" id="recaptcha_challenge_field_holder"><input name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_Vuv1lMzaObHSN77Jyj_HlElp2C6iRgn_AmGgZx0g-sNPWgjndRj0VpXh-88GzcWDGzuDawq3CJV5cQ0JULvWmhfJVjDA_cmlf8SppLGI2jluDmVK7ZPiEtaNjQGU_6tMLlCp7olR0joyC8lTRWUF2iWLHkY60ktsZvDu0zIBa_7ZVy3pnug" type="hidden"></span><input autocomplete="off" name="recaptcha_response_field" id="recaptcha_response_field" autocorrect="off" autocapitalize="off" placeholder="Type the two words" type="text"> <span id="recaptcha_privacy" class="recaptcha_only_if_privacy"><a target="_blank" href="http://www.google.com/intl/en/policies/">Privacy &amp; Terms</a></span> </div> </td> <td rowspan="4" class="recaptcha_r4_c2"></td> <td><a title="Get a new challenge" id="recaptcha_reload_btn"><img alt="Get a new challenge" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/refresh.gif" id="recaptcha_reload" height="17" width="25"></a></td> <td rowspan="4" class="recaptcha_r4_c4"></td> </tr> <tr> <td><a title="Get an audio challenge" id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/audio.gif" id="recaptcha_switch_audio" alt="Get an audio challenge" height="16" width="25"></a><a title="Get a visual challenge" id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/text.gif" id="recaptcha_switch_img" alt="Get a visual challenge" height="16" width="25"></a></td> </tr> <tr> <td><a title="Help" id="recaptcha_whatsthis_btn"><img alt="Help" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/help.gif" id="recaptcha_whatsthis" height="16" width="25"></a></td> </tr> <tr> <td class="recaptcha_r7_c1"></td> <td class="recaptcha_r8_c1"></td> </tr> </tbody></table> </div></div>
+<noscript>
+  <div><iframe src="http://api.recaptcha.net/noscript?k=6Ld5Zs4SAAAAAOY0DOi4r18bgHlEaz41qAoRf__S" height="300" width="500"></iframe></div>
+  <div><textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  <input type="hidden" name="recaptcha_response_field" value="manual_challenge"></div>
+</noscript>
+</div>
+</div>
+
+<div class="control-group">
+    <div class="controls"><input name="submit" class="btn btn-primary" value="Post Comment" type="submit"> <span class="help-inline">Note: all comments are screened before they are published. Thank you for your patience!</span></div>
+</div>
+</form>
+</div>
+
+
+</div>
+
+            </div>
+        </div>
+        <div class="span4">
+            <div id="sidebar">
+                <h1>About Miguel</h1>
+                <img style="float: right; margin: 0px 8px 8px 0px; padding: 4px; border: 1px solid #ccc;" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/miguel.jpg">
+                <p>Welcome to my blog!</p>
+                <p>I'm a software engineer, photographer and filmmaker in Portland, Oregon, USA.</p>
+                <p>You can also find me on <a href="https://www.facebook.com/miguelgrinbergblog">Facebook</a>, <a href="https://plus.google.com/u/0/117786742456929977820">Google+</a>, <a href="http://www.linkedin.com/in/miguelgrinberg">LinkedIn</a> and <a href="https://twitter.com/#%21/miguelgrinberg">Twitter</a>.</p>
+                <p>Thank you for visiting!</p>
+                <h1>Flask Web Development Book</h1>
+                <p>I'm currently writing a book on web development with 
+Python and Flask, to be published by O'Reilly Media in 2014. The 
+official site for this book is <a href="http://flaskbook.com/">http://flaskbook.com</a>.</p>
+                <center><a href="http://flaskbook.com/"><img style="border: 1px solid black;" src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/flask-book-cover-tiny.png"></a></center>
+                <h1>Flask Tutorial at PyCon 2014</h1>
+                <p>If you want to learn Flask in a class setting then I 
+hope you will consider my upcoming tutorial session at PyCon 2014 in 
+Montréal on April 10th, 2014. Visit the <a href="https://us.pycon.org/2014/schedule/presentation/54/">tutorial page</a> for more information. I hope to see you there!</p>
+                <center><a href="https://us.pycon.org/2014/schedule/presentation/54/"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/pycon2014-blog-image.png"></a></center>
+                
+                		<h1>Categories</h1>
+		<ul>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Arduino/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Arduino RSS Feed" label="Arduino RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Arduino">Arduino</a></span> (7)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Blog/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Blog RSS Feed" label="Blog RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Blog">Blog</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/C++/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="C++ RSS Feed" label="C++ RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/C++">C++</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Cloud/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Cloud RSS Feed" label="Cloud RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Cloud">Cloud</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Filmmaking/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Filmmaking RSS Feed" label="Filmmaking RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Filmmaking">Filmmaking</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Flask/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Flask RSS Feed" label="Flask RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Flask">Flask</a></span> (28)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Games/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Games RSS Feed" label="Games RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Games">Games</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Gear/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Gear RSS Feed" label="Gear RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Gear">Gear</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/HTML5/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="HTML5 RSS Feed" label="HTML5 RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/HTML5">HTML5</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Heroku/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Heroku RSS Feed" label="Heroku RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Heroku">Heroku</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Javascript/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Javascript RSS Feed" label="Javascript RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Javascript">Javascript</a></span> (3)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Movie Reviews RSS Feed" label="Movie Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Movie%20Reviews">Movie Reviews</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Netflix/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Netflix RSS Feed" label="Netflix RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Netflix">Netflix</a></span> (5)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Node.js/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Node.js RSS Feed" label="Node.js RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Node.js">Node.js</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Personal/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Personal RSS Feed" label="Personal RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Personal">Personal</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Photography/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Photography RSS Feed" label="Photography RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Photography">Photography</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Product Reviews RSS Feed" label="Product Reviews RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Product%20Reviews">Product Reviews</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Programming/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Programming RSS Feed" label="Programming RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Programming">Programming</a></span> (36)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Project%20Management/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Project Management RSS Feed" label="Project Management RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Project%20Management">Project Management</a></span> (1)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Python/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Python RSS Feed" label="Python RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Python">Python</a></span> (29)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/REST/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="REST RSS Feed" label="REST RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/REST">REST</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Raspberry Pi RSS Feed" label="Raspberry Pi RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Raspberry%20Pi">Raspberry Pi</a></span> (4)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/RhinoSteady/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="RhinoSteady RSS Feed" label="RhinoSteady RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/RhinoSteady">RhinoSteady</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Robotics/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Robotics RSS Feed" label="Robotics RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Robotics">Robotics</a></span> (6)</li>
+		
+			<li><a href="http://blog.miguelgrinberg.com/category/Video/feed"><img src="The%20Flask%20Mega-Tutorial,%20Part%20XIV_%20I18n%20and%20L10n%20-%20miguelgrinberg.com_files/rss-small.png" title="Video RSS Feed" label="Video RSS Feed"></a> <span class="label label-info"><a href="http://blog.miguelgrinberg.com/category/Video">Video</a></span> (2)</li>
+		
+		</ul>
+
+                
+            </div>
+        </div>
+    </div>
+	<div id="footer">
+        <p class="elapsed">This page was generated in 0.097 seconds.</p>
+		<p>© 2013 by Miguel Grinberg. All rights reserved. <a href="mailto:webmaster%20_at_%20miguelgrinberg%20_dot_%20com">Questions?</a></p>
+	</div>
+</div>
+<div id="wrap">
+</div>
+<div style="display: none;" id="cboxOverlay"></div><div style="display: none; padding-bottom: 42px; padding-right: 42px;" class="" id="colorbox"><div id="cboxWrapper"><div><div style="float: left;" id="cboxTopLeft"></div><div style="float: left;" id="cboxTopCenter"></div><div style="float: left;" id="cboxTopRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxMiddleLeft"></div><div style="float: left;" id="cboxContent"><div style="width: 0px; height: 0px; overflow: hidden; float: left;" id="cboxLoadedContent"></div><div style="float: left;" id="cboxLoadingOverlay"></div><div style="float: left;" id="cboxLoadingGraphic"></div><div style="float: left;" id="cboxTitle"></div><div style="float: left;" id="cboxCurrent"></div><div style="float: left;" id="cboxNext"></div><div style="float: left;" id="cboxPrevious"></div><div style="float: left;" id="cboxSlideshow"></div><div style="float: left;" id="cboxClose"></div></div><div style="float: left;" id="cboxMiddleRight"></div></div><div style="clear: left;"><div style="float: left;" id="cboxBottomLeft"></div><div style="float: left;" id="cboxBottomCenter"></div><div style="float: left;" id="cboxBottomRight"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div></body></html>
