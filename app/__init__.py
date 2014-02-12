@@ -2,8 +2,7 @@
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME,
-MAIL_PASSWORD
+from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 import os
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
@@ -44,5 +43,5 @@ if not app.debug:
                 '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.setLevel(logging.INFO)
     file_handler.setLevel(logging.INFO)
-    app.logging.addHandler(file_handler)
-    app.loger.info('microblog startup')
+    app.logger.addHandler(file_handler)
+    app.logger.info('microblog startup')
