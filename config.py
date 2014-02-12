@@ -1,4 +1,4 @@
-# Part IV
+# Part 7
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,3 +16,12 @@ OPENID_PROVIDERS = [
         {'name': 'Flickr', 'url': 'https://www.flickr.com/<username>'},
         {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'},
         ]
+
+# mail server settings
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
+
+# administrator list
+ADMINS = ['brannerchinese@gmail.com']
